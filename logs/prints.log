@@ -1,0 +1,5 @@
+17:14:29.245 [main] INFO  Common.BaseClass - Expected Url ****** ==> http://demo.guru99.com/v4/ <== ******* Found And Validation of Url Successfully Passed
+21:24:50.433 [main] INFO  Common.BaseClass - Expected Url ****** ==> http://demo.guru99.com/v4/ <== ******* Found And Validation of Url Successfully Passed
+21:34:44.823 [main] INFO  Common.BaseClass - Expected Url ****** ==> http://demo.guru99.com/v4/ <== ******* Found And Validation of Url Successfully Passed
+22:26:17.760 [main] INFO  Common.BaseClass - Expected Url ****** ==> http://demo.guru99.com/v4/ <== ******* Found And Validation of Url Successfully Passed
+22:31:10.605 [main] INFO  Common.BaseClass - Expected Url ****** ==> http://demo.guru99.com/v4/ <== ******* Found And Validation of Url Successfully Passed
