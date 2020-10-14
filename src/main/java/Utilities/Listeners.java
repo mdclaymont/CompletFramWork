@@ -7,11 +7,14 @@ import org.testng.ITestListener;
 import org.testng.ITestResult;
 import org.testng.Reporter;
 
+import com.aventstack.extentreports.ExtentTest;
+
 import Common.BaseClass;
 
 public class Listeners implements ITestListener {
 	
 	BaseClass bc=new BaseClass();
+	public static ThreadLocal<ExtentTest> test=new ThreadLocal<>();
 	
 	public void onTestStart(ITestResult result) {
 		

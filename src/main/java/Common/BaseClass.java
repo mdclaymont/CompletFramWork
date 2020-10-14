@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
@@ -28,6 +29,7 @@ import org.apache.poi.ss.util.NumberToTextConverter;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.codehaus.plexus.util.Base64;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -77,12 +79,62 @@ public class BaseClass {
 	public static String Description;
 	public static String Title;
 	public static String driverPath;
+	public static String downloadPath=System.getProperty("user.dir")+File.separator+"downloads";
+	public static JavascriptExecutor jse=((JavascriptExecutor)driver);
 	static String DomainName="TestA";
 	public static Logger Log=LogManager.getLogger(BaseClass.class.getName());	
 		
 	/*********************************  Test Base Constractor **********************************************************************************/
 	
+
+	/****************************************************************************************************************
+	 * Author: Md Rezaul Karim 
+	 * Function Name: encodedStr
+	 * Function Arg: String expStr
+	 * FunctionOutPut: It will encoded String
+	 * **************************************************************************************************************
+	 */
+
+	public static String encodedStr(String expStr) {
+		byte[] encodedStr=Base64.encodeBase64(expStr.getBytes());
+		return new String(encodedStr);
+	}
 	
+	/****************************************************************************************************************
+	 * Author: Md Rezaul Karim 
+	 * Function Name: dencodedStr
+	 * Function Arg: String expStr
+	 * FunctionOutPut: It will dencoded String
+	 * **************************************************************************************************************
+	 */
+
+	public static String dencodedStr(String expStr) {
+		byte[] dencodedStr=Base64.decodeBase64(expStr.getBytes());
+		return new String(dencodedStr);
+	}
+	
+	/****************************************************************************************************************
+	 * Author: Md Rezaul Karim 
+	 * Function Name: scrollUpdown
+	 * Function Arg: expScroll,WebElement expElement
+	 * FunctionOutPut: It will Scroll exptect
+	 * **************************************************************************************************************
+	 */
+
+	public static void scrollUpdown(String expScroll,WebElement expElement) {
+		if(expScroll.toLowerCase().contains("up")) {
+			jse.executeScript("window.scrollTo(0,-document.body.scrollHeight);");
+		}
+		else if(expScroll.toLowerCase().contains("down")) {
+			jse.executeScript("window.scrollTo(0,document.body.scrollHeight);");
+		}
+		else if(expScroll.toLowerCase().contains("horigintaldown")) {
+			jse.executeScript("window.scrollTo(0,document.body.scrollHeight);");
+		}
+		else {
+			jse.executeScript("arguments[0].scrollIntoView();",expElement);
+		}
+	}
 	
 	/****************************************************************************************************************
 	 * Author: Md Rezaul Karim 
@@ -96,6 +148,7 @@ public class BaseClass {
 		objFile=new FileInputStream(FileInStreamPath);
 		return objFile;
 	}
+			
 	/****************************************************************************************************************
 	 * Author: Md Rezaul Karim 
 	 * Function Name: getData()
@@ -186,6 +239,7 @@ public class BaseClass {
 			System.setProperty("webdriver.chrome.silentOutput","true");//it will remove unnessary log
 			ChromeOptions objoption=new ChromeOptions();
 			objoption.addArguments("headless");
+			objoption.setExperimentalOption("useAutomationExtension",false);
 			driver=new ChromeDriver(objoption);
 			browserName="chrome";
 		}
@@ -208,6 +262,7 @@ public class BaseClass {
 			ohp.put("profile.defult_content_settings.popups",0);
 			ohp.put("download.defult_directory",currentUserDirectory);  //if download any file it will save to current user dir 
 			ChromeOptions oco=new ChromeOptions();
+			oco.setExperimentalOption("useAutomationExtension",false);
 			oco.setExperimentalOption("prefs",ohp);
 			driver = new ChromeDriver();
 			browserName="chrome";
@@ -269,6 +324,32 @@ public class BaseClass {
 		Reporter.log("******************************************Url Open Ended******************************************");
 		System.out.println("******************************************Url Open Ended*****************************************************");
 	}
+	
+	/****************************************************************************************************************
+	*  Author: Md Rezaul Karim 
+	*  Function Name: explicitWait
+	*  Function Arg: WebElement ExpwebElement,String ExPText,int timeOut
+	*  FunctionOutPut: It will wait until element visible 
+	* 
+	**************************************************************************************************************/
+	
+	public static Boolean explicitWait(WebElement ExpwebElement,String ExPText,int timeOut ){
+		System.out.println("Befor Wait");
+		WebDriverWait objWait=new WebDriverWait(driver,timeOut);
+		Boolean waitStatus=objWait.ignoring(StaleElementReferenceException.class).until( ExpectedConditions.textToBePresentInElementValue(ExpwebElement,ExPText));
+		
+		if(waitStatus.TRUE)
+			{
+				System.out.println("Three Is no Element found ");
+			}
+		else
+			{
+				System.out.println(waitStatus);
+			}
+		return waitStatus;
+	}
+
+	
 		
 	////******************************   Validation Part   ******************************************************88
 	
@@ -344,6 +425,31 @@ public class BaseClass {
 		Reporter.log("******************************************Validate Url Ended******************************************");
 		System.out.println("******************************************Validate Url Ended*************************************************");
 	}
+	/****************************************************************************************************************
+	*  Author: Md Rezaul Karim 
+    *  Function Name: validateText
+	*  Function Arg: ExpectedText And Actual Text
+	*  FunctionOutPut: It will Validate Expected Text And Actual Text
+	 * @throws IOException 
+	* 
+	* ***************************************************************************************************************/
+	public static void verifyDownload(String expFileName) {
+		File objDir=new File(downloadPath+"//");
+		File[] objFiles=objDir.listFiles();
+		File lastModifiedFile=objFiles[0];
+		for(int i=0;i<objFiles.length;i++)
+		{
+			if(lastModifiedFile.lastModified()<objFiles[i].lastModified()) {
+				lastModifiedFile=objFiles[i];
+			}
+		}
+		if(lastModifiedFile.getName().toString().startsWith(expFileName)) {
+			System.out.println("Download Sucessfull");
+		}
+		
+	}
+	
+	
 	
 	
 	/****************************************************************************************************************
@@ -609,8 +715,52 @@ public class BaseClass {
 		System.out.println("******************************************Validate Brooken Link Ended****************************************");
 	}
 
+	public static void validateColor(String expColor,WebElement expColorEl) throws IOException {
+		//boolean colorResult=null;
+		String actualColor=expColorEl.getCssValue("color");
+		validateText(expColor,actualColor);
+	}
+	
 	////******************************   All Input And Random Data Function  ***********************************************************
 	
+	public static List<LinkedHashMap<String,String>> fetchTable(String expColumn){
+		List<LinkedHashMap<String,String>> allData=new ArrayList<LinkedHashMap<String,String>>();
+		boolean checkifMorePage;
+		List<String> allHeaderName=new ArrayList<String>();
+		if(expColumn.isEmpty() || expColumn.length()<1) {
+			List<WebElement> allHeaderEl=cf.TableHeaderValue();
+			for(WebElement header : allHeaderEl ) {
+				String headerName=header.getText().replaceAll("\r\n","").replaceAll("ui-btn","").trim();
+				allHeaderName.add(headerName);
+			}
+		}
+		else {
+			String[] expColumnSplit=expColumn.split(",");
+			allHeaderName=Arrays.asList(expColumnSplit);
+		}
+		int totalColumn=allHeaderName.size();
+		try {
+			Thread.sleep(1000);
+		}catch(InterruptedException e) {
+			e.printStackTrace();
+		}
+		do {
+			int totalRowList=cf.TableRowValueList().Size();
+			for(int i=0;i<totalRowList;i++) {
+				LinkedHashMap<String,String> eachRowData=new LinkedHashMap<>();
+				int k=0;
+				for(int j=0;j<totalColumn;j++) {
+					String cellValue=cf.TableRowValuelist().get(i+k).getText();
+					k=k+1;
+					eachRowData.put(allHeaderName.get(j), cellValue)
+				}
+				i=i+k-1;
+				allData.add(eachRowData);
+			}
+			checkifMorePage=cf.RightArrow().get
+		}
+		return allData;
+	}
 	/****************************************************************************************************************
 	 *  Author: Md Rezaul Karim 
 	 *  Function Name: getInput
@@ -810,6 +960,8 @@ public class BaseClass {
 		}
 	}
 	
+//======================================================		Action Method		===================================================
+	
 	/****************************************************************************************************************
 	 *  Author: Md Rezaul Karim 
 	 *  Function Name:setSelect
@@ -834,8 +986,7 @@ public class BaseClass {
 	
 	public static void clickElementByJs(WebElement ExpElement){
 		
-		JavascriptExecutor objjs=((JavascriptExecutor)driver);
-		objjs.executeScript("arguments[0].click()",ExpElement);
+		jse.executeScript("arguments[0].click()",ExpElement);
 	}
 	
 	/****************************************************************************************************************
@@ -847,9 +998,7 @@ public class BaseClass {
 	 * **************************************************************************************************************/
 	
 	public static void refreshByJs(){
-		
-		JavascriptExecutor objjs=((JavascriptExecutor)driver);
-		objjs.executeScript("history.go(0)");
+		jse.executeScript("history.go(0)");
 	}
 	
 	/****************************************************************************************************************
@@ -930,9 +1079,8 @@ public class BaseClass {
 	public static void selectByJs(WebElement expElement,String ExpValue){
 		Reporter.log("****************************************** Select By Js Strated ******************************************");
 		System.out.println("****************************************** select By Js Strated ******************************************************");
-	
-		JavascriptExecutor js=(JavascriptExecutor)driver;
-		js.executeScript("arguments[0].setAttribute('value','"+ExpValue+"');", expElement);
+			
+		jse.executeScript("arguments[0].setAttribute('value','"+ExpValue+"');", expElement);
 		Reporter.log("****************************************** Select By Js Ended ******************************************");
 		System.out.println("****************************************** Select By Js Ended ******************************************************");
 	}
@@ -944,20 +1092,17 @@ public class BaseClass {
 	*  FunctionOutPut: It will Select value from drop down when drop down is not able to select by select tag
 	* 
 	* ***************************************************************************************************************/
-	public static void AutoSuggestDropDown(String expSearchLocator, String selectValue) {
+	public static void setObjectByText(String expText, String expSearchLocator) {
 		
 		Reporter.log("******************************************Auto Suggest Drop Down Started******************************************");
 		System.out.println("******************************************Auto Suggest Drop Down Started*************************************");
 		String getSearchValue;
-		List<WebElement>	objElements=driver.findElements(By.xpath(expSearchLocator));
-		int totalElementFromDrop=objElements.size();
-		//JavascriptExecutor objJs = (JavascriptExecutor) driver;
-		
-		//String getText = (String) objJs.executeScript("return arguments[0].value;",ScriptLocator);
-		for(int i = 0;i<totalElementFromDrop;i++)
+		List<WebElement> objElements=driver.findElements(By.xpath(expSearchLocator));
+		int totalEl=objElements.size();
+		for(int i = 0;i<totalEl;i++)
 		{
-			getSearchValue=objElements.get(i).getText();
-			if(getSearchValue.equalsIgnoreCase(selectValue))
+			getSearchValue=objElements.get(i).getText().trim();
+			if(getSearchValue.equalsIgnoreCase(expText))
 			{
 				objElements.get(i).click();
 				System.out.println(getSearchValue);
@@ -969,34 +1114,30 @@ public class BaseClass {
 		System.out.println("******************************************Auto Suggest Drop Down Ended****************************************");
 	}
 	
+	public static void setObjectByText(String expText, List<WebElement> expEle) {
+		
+		Reporter.log("******************************************Auto Suggest Drop Down Started******************************************");
+		System.out.println("******************************************Auto Suggest Drop Down Started*************************************");
+		String actualValue="";
+		int totalEl=expEle.size();
+		for(int i = 0;i<totalEl;i++)
+		{
+			actualValue=expEle.get(i).getText().trim();
+			if(actualValue.equalsIgnoreCase(expText))
+			{
+				expEle.get(i).click();
+				break;
+			}
+		}
+		
+		Reporter.log("******************************************Auto Suggest Drop Down Ended******************************************");
+		System.out.println("******************************************Auto Suggest Drop Down Ended****************************************");
+	}
+	
 	//*******************************************          Utility               *****************************************************//
 
 	
-	/****************************************************************************************************************
-	*  Author: Md Rezaul Karim 
-	*  Function Name: explicitWait
-	*  Function Arg: WebElement ExpwebElement,String ExPText,int timeOut
-	*  FunctionOutPut: It will wait until element visible 
-	* 
-	**************************************************************************************************************/
 	
-	public static Boolean explicitWait(WebElement ExpwebElement,String ExPText,int timeOut ){
-		System.out.println("Befor Wait");
-		WebDriverWait ExWait=new WebDriverWait(driver,timeOut);
-		
-		Boolean waitStatus=ExWait.ignoring(StaleElementReferenceException.class).until( ExpectedConditions.textToBePresentInElementValue(ExpwebElement,ExPText));
-		
-		if(waitStatus.TRUE)
-			{
-				System.out.println("Three Is no Element found ");
-			}
-		else
-			{
-				System.out.println(waitStatus);
-			}
-		return waitStatus;
-	}
-
 	/****************************************************************************************************************
 	*  Author: Md Rezaul Karim 
 	*  Function Name: setAlert
@@ -1169,8 +1310,7 @@ public class BaseClass {
 	***************************************************************************************************************/
 		
 	public static void setBorder(WebElement expElement) throws IOException {
-		JavascriptExecutor objjs=((JavascriptExecutor)driver);
-		objjs.executeScript("arguments[0].style.border='3px solid red'", expElement);
+		jse.executeScript("arguments[0].style.border='3px solid red'", expElement);
 	}
 	
 	
