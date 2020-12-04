@@ -83,7 +83,28 @@ public class BaseClass {
 	public static JavascriptExecutor jse=((JavascriptExecutor)driver);
 	static String DomainName="TestA";
 	public static Logger Log=LogManager.getLogger(BaseClass.class.getName());	
-		
+	public static Properties appProperties;	
+//	BaseClass a=new BaseClass();
+	public BaseClass() {
+		readProperties("");
+	}
+	public static void readProperties(String expFilePath) {
+		System.out.println("Read Properties");
+		try	{
+			appProperties=new Properties();
+			if(expFilePath.isEmpty() || expFilePath.length()<1) {
+				expFilePath="./Configuration/config.properties";
+			}
+			File src=new File(expFilePath);
+			FileInputStream objFile=new FileInputStream(src);
+			objprop = new Properties();
+			objprop.load(objFile);
+			appProperties.putAll(objprop);
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+	}
+	
 	/*********************************  Test Base Constractor **********************************************************************************/
 	
 
@@ -199,6 +220,37 @@ public class BaseClass {
 		System.out.println("******************************************Get Data Imported Ended********************************************");
 	}
 		
+	public static void getData1() throws IOException {
+		Reporter.log("******************************************Get Data Imported Staretd******************************************");
+		System.out.println("******************************************Get Data Imported Staretd******************************************");
+		DomainName =appProperties.getProperty("userDomainName");
+		if (DomainName.contains("criglist")) 
+			{
+				userId = appProperties.getProperty("CrigListUserId");
+				userPassword = appProperties.getProperty("CrigListUserPassword");
+				urlAddress = appProperties.getProperty("CrigListUrl");
+			} 
+		else if (DomainName.contains("mercary")) 
+			{
+				userId = appProperties.getProperty("MercaryUserId");
+				userPassword = appProperties.getProperty("MercaryPassword");
+				urlAddress = appProperties.getProperty("MercaryUrl");
+				Description=appProperties.getProperty("MercaryDescription");
+				Title=appProperties.getProperty("MercaryTitle");
+			}
+		else if (DomainName.contains("Guru")) 
+		{
+			userId = appProperties.getProperty("GuruUserId");
+			userPassword = appProperties.getProperty("GuruPassword");
+			urlAddress = appProperties.getProperty("GuruUrl");
+		}
+		else
+			{
+				System.out.println("could not find any domain so defult id google");
+			}
+		Reporter.log("******************************************Get Data Imported Ended******************************************");
+		System.out.println("******************************************Get Data Imported Ended********************************************");
+	}
 	/****************************************************************************************************************
 	*  Author: Md Rezaul Karim 
 	*  Function Name: initilizeDriver
@@ -956,10 +1008,137 @@ public class BaseClass {
 		}
 		for(int i=0;i<primeNumber.size();i++)
 		{
-			System.out.println(primeNumber.get(i));
+			System.out.print(primeNumber.get(i));
+		}
+	}
+	/****************************************************************************************************************
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name:isPrime
+	 *  Function Arg:ExpNum 
+	 *  FunctionOutPut: It will get if number is prime number or not 
+	 * 
+	 * ***************************************************************************************************************/
+	
+	public static boolean isPrime(int ExpNum){
+		if(ExpNum<=1) {
+			return false;
+		}
+		for(int i=2;i<ExpNum;i++)
+		{
+			if(ExpNum%i==0) {
+				return false;
+			}
+		}
+		return true;
+		}
+	/****************************************************************************************************************
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name:primeNumber
+	 *  Function Arg:ExpNum 
+	 *  FunctionOutPut: It will print prime number 
+	 * 
+	 * ***************************************************************************************************************/
+	
+	public static void primeNumber(int ExpNum) {
+		for(int i=2;i<=ExpNum;i++) {
+			if(isPrime(i)) {
+				System.out.print(i+" ");
+			}
+		}
+	}
+	/****************************************************************************************************************
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name:palindrom
+	 *  Function Arg:ExpNum 
+	 *  FunctionOutPut: It will print prime number 
+	 * 
+	 * ***************************************************************************************************************/
+	public static void palindrom(int expNumber) {
+		int r=0,sum=0,t;
+		t=expNumber;
+		while(expNumber>0) {
+			r=expNumber%10;
+			sum=(sum*10)+r;
+			expNumber=expNumber/10;
+		}
+		if(t==sum) {
+			System.out.println("Given Number Is palindrome");
+		}
+		else {
+			System.out.println("Given Number is not panidrome");
 		}
 	}
 	
+	/****************************************************************************************************************
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name:palindrom
+	 *  Function Arg:ExpNum 
+	 *  FunctionOutPut: It will print prime number 
+	 * 
+	 * ***************************************************************************************************************/
+	public static void armstrongNumber(int expNumber) {
+		int r=0,sum=0,t;
+		t=expNumber;
+		while(expNumber>0) {
+			r=expNumber%10;
+			sum=sum+(r*r*r);
+			expNumber=expNumber/10;
+		}
+		if(t==sum) {
+			System.out.println("Given Number Is ArmstronNumber");
+		}
+		else {
+			System.out.println("Given Number is not ArmstronNumber");
+		}
+	}
+	/****************************************************************************************************************
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name:countword
+	 *  Function Arg:ExpNum 
+	 *  FunctionOutPut: It will print prime number 
+	 * 
+	 * ***************************************************************************************************************/
+
+	public static void countWord(String expString) {
+		int count;
+		String str[]=expString.split(" ");
+		for(int i=0;i<str.length;i++) {
+			count=1;
+			for(int j=i+1;j<str.length;j++) {
+				if(str[i].equals(str[j])) {
+					count++;
+					str[j]="0";	
+				}
+			}
+			if(str[i]!="0") {
+				System.out.println(str[i]+"\t"+count);
+			}
+		}
+	}
+	/****************************************************************************************************************
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name:findDuplicateWord
+	 *  Function Arg:ExpNum 
+	 *  FunctionOutPut: It will print prime number 
+	 * 
+	 * ***************************************************************************************************************/
+
+	public static void findDuplicateWord(String expString) {
+		int count;
+		String str[]=expString.split(" ");
+		for(int i=0;i<str.length;i++) {
+			count=1;
+			for(int j=i+1;j<str.length;j++) {
+				if(str[i].equals(str[j])) {
+					count++;
+					str[j]="0";	
+				}
+			}
+			if(count>1 && str[i]!="0") {
+				System.out.println(str[i]+"\t"+count);
+			}
+		}
+	}
 //======================================================		Action Method		===================================================
 	
 	/****************************************************************************************************************
@@ -1419,6 +1598,23 @@ public class BaseClass {
 		
 	}
 	
-	
+	public static boolean findlipYear(int expYear) {
+		boolean res = true;
+		if(expYear%4==0) {
+			if(expYear%100==0) {
+				if(expYear%400==0) {
+					res=true;
+				}
+				else {
+					 res=false;
+				}
+			}
+			else {
+				res=true;
+			}
+		
+		}
+		return res;
+	}
 	
 }

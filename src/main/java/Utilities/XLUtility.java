@@ -1,10 +1,12 @@
 package Utilities;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -17,102 +19,150 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.testng.Reporter;
 
+import Common.BaseClass;
+
 public class XLUtility {
 	public static FileInputStream fi;
 	public static FileOutputStream fo;
 	public static XSSFWorkbook wb;
-	public static XSSFSheet ws;
-	public static XSSFRow row;
-	public static XSSFCell cell;
-	public static String currentDirectory=System.getProperty("user.dir");
+	private static XSSFSheet sheet;
+	private static XSSFRow row;
+	private static XSSFCell cell;
+	private static String currentDirectory=System.getProperty("user.dir");
+	public static String downloadPath=System.getProperty("user.dir")+File.separator+"downloads";
+	
+	public static void main(String[] args){
+		new BaseClass();
+	}
+	
+	
+	
 	/****************************************************************************************************************
 	 * Author: Md Rezaul Karim 
-	 * Function Name: getExcelData
-	 * Function Arg: String expectedSheetName, String excellFilePath,String expectedTestCaseData(User Can Get Number of Data Or Using TCID Or TCFlag)
-	 * FunctionOutPut: It will Return User Defined Data From Excel Or All Data From Excel
+	 * Function Name: xls_Reader
+	 * Function Arg: String expPath,String expSheetName
+	 * expPath==> 		Expected Path where we can get data or default download file path with current directory
+	 * expSheetName==>	Expected Sheet Name if user provide and if does not provide default will be first sheet
+	 * FunctionOutPut: It will Return xls_Reader
+	 * @throws IOException 
+	 * ***************************************************************************************************************/
+	public static void xls_Reader(String expPath,String expSheetName) {
+		String actualSheetName;
+		try {
+			if(expPath.isEmpty() || expPath.length()<2){
+				expPath=currentDirectory +"/src/main/java/Data/controller.xlsx";// Get System Dir
+			}
+			fi=new FileInputStream(expPath);
+			wb=new XSSFWorkbook(fi);
+			if (!expSheetName.isEmpty() || expSheetName.length()>1){					///Check if user provide sheet name if not then default sheet will be first one
+				int TotalSheet = wb.getNumberOfSheets();				/// Total Sheet Number
+				for (int i = 0; i <= TotalSheet; i++){
+					actualSheetName = wb.getSheetName(i);
+					if(expSheetName.replaceAll(" ","").equalsIgnoreCase(actualSheetName.replaceAll(" ",""))){
+						sheet=wb.getSheetAt(i);
+						break;
+					}
+				}
+			}
+			else {
+				sheet=wb.getSheetAt(0);
+			}
+			fi.close();
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
+	}
+	/****************************************************************************************************************
+	 * Author: Md Rezaul Karim 
+	 * Function Name: getRowCount
+	 * Function Arg: String expPath,String expSheetName
+	 * expPath==> 		Expected Path where we can get data or default download file path with current directory
+	 * expSheetName==>	Expected Sheet Name if user provide and if does not provide default will be first sheet
+	 * FunctionOutPut: It will Return User Total Row Count
 	 * @throws IOException 
 	 * ***************************************************************************************************************/
 
-	public static int getRowCount(String xlFilePath,String xlsheet) throws IOException
+	public static int getRowCount(String expPath,String expSheetName) throws IOException
 	{
-		if (xlFilePath.isEmpty())						 // Check If File Path Is Empty
-		{
-			xlFilePath= currentDirectory +"/src/main/java/Data/controller.xlsx";// Get System Dir
-		}
-		fi=new FileInputStream(xlFilePath);
-		wb=new XSSFWorkbook(fi);
-		int TotalSheet = wb.getNumberOfSheets();				/// Total Sheet Number
-		for (int i = 0; i <= TotalSheet; i++){
-			String ActualSheetName = wb.getSheetName(i);
-			if (xlsheet.isEmpty())					///Check if user provide sheet name if not then default sheet will be first one
-			{
-				xlsheet= ActualSheetName;
-				break;
-			}
-			else if (ActualSheetName.equalsIgnoreCase(xlsheet)){
-				xlsheet = ActualSheetName;
-				break;
-			}
-		}
-		ws=wb.getSheet(xlsheet);
-		int rowcount=ws.getLastRowNum();
-		wb.close();
-		fi.close();
+		xls_Reader(expPath,expSheetName);
+		int rowcount=sheet.getLastRowNum();
 		return rowcount;
 	}
-	
-	public static int getCellCount(String xlFilePath,String xlsheet,int rowNum) throws IOException
-	{
-		if (xlFilePath.isEmpty())						 // Check If File Path Is Empty
-		{
-			xlFilePath= currentDirectory +"/src/main/java/Data/controller.xlsx";// Get System Dir
-		}
-		fi=new FileInputStream(xlFilePath);
-		wb=new XSSFWorkbook(fi);
-		int TotalSheet = wb.getNumberOfSheets();				/// Total Sheet Number
-		for (int i = 0; i <= TotalSheet; i++){
-			String ActualSheetName = wb.getSheetName(i);
-			if (xlsheet.isEmpty())					///Check if user provide sheet name if not then default sheet will be first one
-			{
-				xlsheet= ActualSheetName;
-				break;
-			}
-			else if (ActualSheetName.equalsIgnoreCase(xlsheet)){
-				xlsheet = ActualSheetName;
-				break;
-			}
-		}
-		ws=wb.getSheet(xlsheet);
-		row=ws.getRow(rowNum);
-		int cellCount=row.getLastCellNum();
-		wb.close();
-		fi.close();
-		return cellCount;
+	/****************************************************************************************************************
+	 * Author: Md Rezaul Karim 
+	 * Function Name: getColCount
+	 * Function Arg: String expPath,String expSheetName
+	 * expPath==> 		Expected Path where we can get data or default download file path with current directory
+	 * expSheetName==>	Expected Sheet Name if user provide and if does not provide default will be first sheet
+	 * FunctionOutPut: It will Return User Total Col Count
+	 * @throws IOException 
+	 * ***************************************************************************************************************/
+
+	public static int getColCount(String expPath,String expSheetName) throws IOException{
+		xls_Reader(expPath,expSheetName);
+		int totalColNum =row.getLastCellNum();
+		return totalColNum;
 	}
-	
-	public static String getCellData(String xlFilePath,String xlsheet,int rowNum,int colNum) throws IOException
-	{
-		if (xlFilePath.isEmpty())						 // Check If File Path Is Empty
-		{
-			xlFilePath= currentDirectory +"/src/main/java/Data/controller.xlsx";// Get System Dir
+	/****************************************************************************************************************
+	 * Author: Md Rezaul Karim 
+	 * Function Name: getHeader
+	 * Function Arg: int rowNum,int totalColNum
+	 * rowNum==> 		Expected Row that need data
+	 * totalColNum==>	Expected Total Column Number
+	 * FunctionOutPut: It will Return User Header Name
+	 * @throws IOException 
+	 * ***************************************************************************************************************/
+
+	public static void getHeader(int rowNum,int totalColNum) {
+		List<String> expHeader=new ArrayList<String>();
+		for(int i=0;i<totalColNum;i++) {
+			try {
+				String header;
+				header=sheet.getRow(rowNum).getCell(i).getStringCellValue();
+				
+			}catch(Exception e) {
+				System.out.println(e.getMessage());
+				e.printStackTrace();
+			}
+			
 		}
-		fi=new FileInputStream(xlFilePath);
+		
+	}
+	/****************************************************************************************************************
+	 * Author: Md Rezaul Karim 
+	 * Function Name: getCellData
+	 * Function Arg: String expPath,String expSheetName,int rowNum,int colNum
+	 * expPath==> 		Expected Path where we can get data or default download file path with current directory
+	 * expSheetName==>	Expected Sheet Name if user provide and if does not provide default will be first sheet
+	 * FunctionOutPut: It will Return User Total Row Count
+	 * @throws IOException 
+	 * ***************************************************************************************************************/
+	
+	
+	public static String getCellData(String expPath,String expSheetName,int rowNum,int colNum) throws IOException
+	{
+		if (expPath.isEmpty())						 // Check If File Path Is Empty
+		{
+			expPath= currentDirectory +"/src/main/java/Data/controller.xlsx";// Get System Dir
+		}
+		fi=new FileInputStream(expPath);
 		wb=new XSSFWorkbook(fi);
 		int TotalSheet = wb.getNumberOfSheets();				/// Total Sheet Number
 		for (int i = 0; i <= TotalSheet; i++){
 			String ActualSheetName = wb.getSheetName(i);
-			if (xlsheet.isEmpty())					///Check if user provide sheet name if not then default sheet will be first one
+			if (expSheetName.isEmpty())					///Check if user provide sheet name if not then default sheet will be first one
 			{
-				xlsheet= ActualSheetName;
+				expSheetName= ActualSheetName;
 				break;
 			}
-			else if (ActualSheetName.equalsIgnoreCase(xlsheet)){
-				xlsheet = ActualSheetName;
+			else if (ActualSheetName.equalsIgnoreCase(expSheetName)){
+				expSheetName = ActualSheetName;
 				break;
 			}
 		}
-		ws=wb.getSheet(xlsheet);
-		row=ws.getRow(rowNum);
+		sheet=wb.getSheet(expSheetName);
+		row=sheet.getRow(rowNum);
 		cell=row.getCell(colNum);
 		String data;
 		try {
@@ -129,32 +179,32 @@ public class XLUtility {
 		return data;
 	}
 	
-	public static void setCellData(String xlFilePath,String xlsheet,int rowNum,int colNum,String data) throws IOException
+	public static void setCellData(String expPath,String expSheetName,int rowNum,int colNum,String data) throws IOException
 	{
-		if (xlFilePath.isEmpty())						 // Check If File Path Is Empty
+		if (expPath.isEmpty())						 // Check If File Path Is Empty
 		{
-			xlFilePath= currentDirectory +"/src/main/java/Data/controller.xlsx";// Get System Dir
+			expPath= currentDirectory +"/src/main/java/Data/controller.xlsx";// Get System Dir
 		}
-		fi=new FileInputStream(xlFilePath);
+		fi=new FileInputStream(expPath);
 		wb=new XSSFWorkbook(fi);
 		int TotalSheet = wb.getNumberOfSheets();				/// Total Sheet Number
 		for (int i = 0; i <= TotalSheet; i++){
 			String ActualSheetName = wb.getSheetName(i);
-			if (xlsheet.isEmpty())					///Check if user provide sheet name if not then default sheet will be first one
+			if (expSheetName.isEmpty())					///Check if user provide sheet name if not then default sheet will be first one
 			{
-				xlsheet= ActualSheetName;
+				expSheetName= ActualSheetName;
 				break;
 			}
-			else if (ActualSheetName.equalsIgnoreCase(xlsheet)){
-				xlsheet = ActualSheetName;
+			else if (ActualSheetName.equalsIgnoreCase(expSheetName)){
+				expSheetName = ActualSheetName;
 				break;
 			}
 		}
-		ws=wb.getSheet(xlsheet);
-		row=ws.getRow(rowNum);
+		sheet=wb.getSheet(expSheetName);
+		row=sheet.getRow(rowNum);
 		cell=row.getCell(colNum);
 		cell.setCellValue(data);
-		fo=new FileOutputStream(xlFilePath);
+		fo=new FileOutputStream(expPath);
 		wb.write(fo);
 		wb.close();
 		fi.close();
@@ -650,11 +700,11 @@ public class XLUtility {
 			return CellValue;
 		}	
 	
-	public LinkedHashMap<String,String> getCellValue(int rowNum,int totalColNum,List<String> expHeader) {
+	public LinkedHashMap<String,String> getCellValue(int rowNum,int ColStart,int totalColNum,List<String> expHeader) {
 		String cellValue="";
 		LinkedHashMap<String,String> eachRowData=new LinkedHashMap<>();
-		for (int k = ColStart; k < totalColNum; k++){
-			Cell CkCell = objsheet.getRow(j).getCell(k);
+		for (int j=ColStart; j < totalColNum; j++){
+			Cell CkCell = sheet.getRow(j).getCell(j);
 			if (CkCell != null) // Validate if cell value is empty
 			{
 				switch (CkCell.getCellType()){
@@ -688,10 +738,7 @@ public class XLUtility {
 			else{
 				cellValue= " ";
 			}
-			if ((c + ColStart) != TotalcolNum) // if col does not start from begaining
-			{
-				c = c + 1;   		////Increase column
-			}
+			eachRowData.put(eachRowData.get(j),cellValue);
 		}
 		
 		return eachRowData;
