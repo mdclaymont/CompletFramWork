@@ -53,12 +53,14 @@ import org.testng.Assert;
 import org.testng.Reporter;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.asserts.SoftAssert;
 
 import Utilities.ReadConfig;
 
 //********************************************************************   Test Base Class    ************************************************************************  
 
 public class BaseClass {
+	public static BaseClass objBc=new BaseClass();
 	public static ReadConfig rc=new ReadConfig();
 	public static WebDriver driver;
 	public static Properties objprop;
@@ -79,20 +81,29 @@ public class BaseClass {
 	public static String Description;
 	public static String Title;
 	public static String driverPath;
+	public static SoftAssert soft=new SoftAssert();
 	public static String downloadPath=System.getProperty("user.dir")+File.separator+"downloads";
 	public static JavascriptExecutor jse=((JavascriptExecutor)driver);
 	static String DomainName="TestA";
-	public static Logger Log=LogManager.getLogger(BaseClass.class.getName());	
+	public static Logger log=LogManager.getLogger(BaseClass.class.getName());	
 	public static Properties appProperties;	
 //	BaseClass a=new BaseClass();
 	public BaseClass() {
 		readProperties("");
 	}
+	
+	/****************************************************************************************************************
+	 * Author: Md Rezaul Karim 
+	 * Function Name: readProperties
+	 * Function Arg: String expFilePath
+	 * FunctionOutPut: It will encoded String
+	 * **************************************************************************************************************
+	 */
 	public static void readProperties(String expFilePath) {
 		System.out.println("Read Properties");
 		try	{
 			appProperties=new Properties();
-			if(expFilePath.isEmpty() || expFilePath.length()<1) {
+			if(expFilePath.isEmpty() || expFilePath.length()<1) {	//If User provied Any properties File Path if Not use Configuration folder
 				expFilePath="./Configuration/config.properties";
 			}
 			File src=new File(expFilePath);
@@ -133,6 +144,11 @@ public class BaseClass {
 		byte[] dencodedStr=Base64.decodeBase64(expStr.getBytes());
 		return new String(dencodedStr);
 	}
+	
+	public static void softassert() {
+		
+	}
+	
 	
 	/****************************************************************************************************************
 	 * Author: Md Rezaul Karim 
@@ -438,25 +454,25 @@ public class BaseClass {
 			{
 				System.out.println("Expected Url ****** " + urlAddress + " ******* Found And Validation of Url Successfully Passed");
 				Assert.assertTrue(true,"Expected Url ****** " + urlAddress + " ******* Found And Validation of Url Successfully Passed");
-				Log.info("Expected Url ****** ==> " + urlAddress + " <== ******* Found And Validation of Url Successfully Passed");
+				log.info("Expected Url ****** ==> " + urlAddress + " <== ******* Found And Validation of Url Successfully Passed");
 			}
 		else if (actualUrl.equalsIgnoreCase(urlAddress))
 			{
 				System.out.println("Expected Url ****** " + urlAddress+ " ******* Found And Validation of Url Successfully Passed but there is lower and upper case character does not match actual Url was****"+ actualUrl+" ****");
 				Assert.assertTrue(true, "Expected Url ****** " + urlAddress+ " ******* Found And Validation of Url Successfully Passed but there is lower and upper case character does not match actual Url was****"+ actualUrl+" ****");
-				Log.warn("Expected Url ****** " + urlAddress+ " ******* Found And Validation of Url Successfully Passed but there is lower and upper case character does not match actual Url was****"+ actualUrl+" ****");
+				log.warn("Expected Url ****** " + urlAddress+ " ******* Found And Validation of Url Successfully Passed but there is lower and upper case character does not match actual Url was****"+ actualUrl+" ****");
 			}
 		else if (actualUrl.contains(urlAddress))
 			{	
 				System.out.println("Expected Url ****** " +urlAddress+ " ******* Found And Validation of Url Successfully Passed but Actual Url Contains expected Url current url is **** "+actualUrl+"****");
 				Assert.assertTrue(true,"Expected Url ****** " +urlAddress+ " ******* Found And Validation of Url Successfully Passed but Actual Url Contains expected Url current url is **** "+actualUrl+"****");
-				Log.warn("Expected Url ****** " +urlAddress+ " ******* Found And Validation of Url Successfully Passed but Actual Url Contains expected Url current url is **** "+actualUrl+"****");
+				log.warn("Expected Url ****** " +urlAddress+ " ******* Found And Validation of Url Successfully Passed but Actual Url Contains expected Url current url is **** "+actualUrl+"****");
 			} 
 		else if (actualUrl.contains(urlAddress.toLowerCase()))
 			{
 				System.out.println("Expected Url ****** " +urlAddress+ " ******* Found And Validation of Url Successfully Passed but Actual Url Contains expected Url and does not match upper and lower case letter acutal url was **** "+actualUrl+" ****");
 				Assert.assertTrue(true, "Expected Url ****** " +urlAddress+ " ******* Found And Validation of Url Successfully Passed but Actual Url Contains expected Url and does not match upper and lower case letter acutal url was **** "+actualUrl+" ****");
-				Log.warn("Expected Url ****** " +urlAddress+ " ******* Found And Validation of Url Successfully Passed but Actual Url Contains expected Url and does not match upper and lower case letter acutal url was **** "+actualUrl+" ****");
+				log.warn("Expected Url ****** " +urlAddress+ " ******* Found And Validation of Url Successfully Passed but Actual Url Contains expected Url and does not match upper and lower case letter acutal url was **** "+actualUrl+" ****");
 			}
 		else if(lengthDiffrent>0 && lengthDiffrent<5)
 			{
@@ -464,7 +480,7 @@ public class BaseClass {
 				{
 					System.out.println("Expected Url ****** " +urlAddress+ " ******* Found And Validation of Url Successfully Passed but Actual Url Contains expected Url and might be does not match upper and lower case letter acutal url was **** "+actualUrl+" ****");
 					Assert.assertTrue(true, "Expected Url ****** " +urlAddress+ " ******* Found And Validation of Url Successfully Passed but Actual Url Contains expected Url and might be does not match upper and lower case letter acutal url was **** "+actualUrl+" ****");
-					Log.warn("Expected Url ****** " +urlAddress+ " ******* Found And Validation of Url Successfully Passed but Actual Url Contains expected Url and might be does not match upper and lower case letter acutal url was **** "+actualUrl+" ****");
+					log.warn("Expected Url ****** " +urlAddress+ " ******* Found And Validation of Url Successfully Passed but Actual Url Contains expected Url and might be does not match upper and lower case letter acutal url was **** "+actualUrl+" ****");
 				}
 			}
 		else 
@@ -472,7 +488,7 @@ public class BaseClass {
 				takeScreenShot("ValidateUrl");
 				Assert.assertFalse(false, "Expected Url ***** " + urlAddress+ " ***** Not Found And Validation of Url Are Failed " + "Actual Url Was **** " + actualUrl+" ****");
 				System.out.println("Expected Url ***** " + urlAddress+ " ***** Not Found And Validation of Url Are Failed " + "Actual Url Was **** " + actualUrl+" ****");
-				Log.error("Expected Url ****** ==> " + urlAddress+ " <== ****** Not Found And Validation of Url Are Failed " + "Actual Url Was **** " + actualUrl+" ****");
+				log.error("Expected Url ****** ==> " + urlAddress+ " <== ****** Not Found And Validation of Url Are Failed " + "Actual Url Was **** " + actualUrl+" ****");
 			}
 		Reporter.log("******************************************Validate Url Ended******************************************");
 		System.out.println("******************************************Validate Url Ended*************************************************");
@@ -545,32 +561,32 @@ public class BaseClass {
 						{
 							System.out.println("Expected Text Element  ****** " + exText + " ******* Found And Validation of Text Successfully Passed");
 							Assert.assertTrue(true,"Expected Text Element  ****** " + exText + " ******* Found And Validation of Text Successfully Passed");
-							Log.info("Expected Text Element  ****** " + exText + " ******* Found And Validation of Text Successfully Passed");
+							log.info("Expected Text Element  ****** " + exText + " ******* Found And Validation of Text Successfully Passed");
 						}
 					else if (exText.equalsIgnoreCase(acText))
 						{
 							System.out.println("Expected Text Element ****** " +exText+ " ******* Found And Validation of Text Successfully Passed but there is lower and upper case character Does not match The Actual Text Was *** "+acText+" ***");
 							Assert.assertTrue(true,"Expected Text Element ****** " +exText+ " ******* Found And Validation of Text Successfully Passed but there is lower and upper case character Does not match The Actual Text Was *** "+acText+" ***");
-							Log.warn("Expected Text Element ****** " +exText+ " ******* Found And Validation of Text Successfully Passed but there is lower and upper case character Does not match The Actual Text Was *** "+acText+" ***");
+							log.warn("Expected Text Element ****** " +exText+ " ******* Found And Validation of Text Successfully Passed but there is lower and upper case character Does not match The Actual Text Was *** "+acText+" ***");
 						}
 					else if (exText.contains(acText))
 						{
 							System.out.println("Expected Text Element  ****** " +exText+ " ******* Found From Actual Text but Actual Text Contains expected Text And Validation of Text Successfully Passed The Actual Text Was *** "+acText+" ***");
 							Assert.assertTrue(true,"Expected Text Element  ****** " +exText+ " ******* Found From Actual Text but Actual Text Contains expected Text And Validation of Text Successfully Passed The Actual Text Was *** "+acText+" ***");
-							Log.warn("Expected Text Element  ****** " +exText+ " ******* Found From Actual Text but Actual Text Contains expected Text And Validation of Text Successfully Passed The Actual Text Was *** "+acText+" ***");
+							log.warn("Expected Text Element  ****** " +exText+ " ******* Found From Actual Text but Actual Text Contains expected Text And Validation of Text Successfully Passed The Actual Text Was *** "+acText+" ***");
 						} 
 					else if (exText.contains(acText.toLowerCase()))
 						{
 							System.out.println("Expected Text Element ****** " + exText+ " ******* Found From Actual Text but Actual Text Contains expected Text but there is lower and upper case character Does not match And Validation of Text SuccessfullyThe Actual Text Was *** "+acText+" ***");
 							Assert.assertTrue(true,"Expected Text Element ****** " + exText+ " ******* Found From Actual Text but Actual Text Contains expected Text but there is lower and upper case character Does not match And Validation of Text Successfully The Actual Text Was *** "+acText+" ***");
-							Log.warn("Expected Text Element ****** " + exText+ " ******* Found From Actual Text but Actual Text Contains expected Text but there is lower and upper case character Does not match And Validation of Text SuccessfullyThe Actual Text Was *** "+acText+" ***");
+							log.warn("Expected Text Element ****** " + exText+ " ******* Found From Actual Text but Actual Text Contains expected Text but there is lower and upper case character Does not match And Validation of Text SuccessfullyThe Actual Text Was *** "+acText+" ***");
 						}
 						else
 						{
 							takeScreenShot("ValidateText");
 							Assert.assertFalse(false, "Expected Text Element  ***** " + exText+ " *****  Not Found And Validation of Text element  Are Failed " + "The Actual Text Was *** " + acText+" ***");
 							System.out.println("Expected Text Element  ***** " + exText+ " *****  Not Found And Validation of Text element  Are Failed " + "The Actual Text Was *** " + acText+" ***");
-							Log.error("Expected Text Element  ***** " + exText+ " *****  Not Found And Validation of Text element  Are Failed " + "The Actual Text Was *** " + acText+" ***");
+							log.error("Expected Text Element  ***** " + exText+ " *****  Not Found And Validation of Text element  Are Failed " + "The Actual Text Was *** " + acText+" ***");
 						}
 					j++;
 					break;
@@ -626,7 +642,7 @@ public class BaseClass {
 			{
 				System.out.println("The Expected Element *** "+TextElement+" is Clicked Successfully");
 				Assert.assertTrue(true,"The Expected Element *** "+TextElement+" is Clicked Successfully");
-				Log.info("The Expected Element *** "+TextElement+" is Clicked Successfully");
+				log.info("The Expected Element *** "+TextElement+" is Clicked Successfully");
 			}
 		else
 			{
@@ -634,7 +650,7 @@ public class BaseClass {
 				takeScreenShot("ValidateClick");	
 				System.out.println("The Expected Element *** "+TextElement+" does not Performed Clicked Successfully");
 				Assert.assertTrue(false,"The Expected Element *** "+TextElement+" does not Performed Clicked Successfully");
-				Log.error("The Expected Element *** "+TextElement+" does not Performed Clicked Successfully");
+				log.error("The Expected Element *** "+TextElement+" does not Performed Clicked Successfully");
 			}
 		Reporter.log("******************************************Validate Clicked Ended******************************************");
 		System.out.println("******************************************Validate Clicked Ended*********************************************");
@@ -657,13 +673,13 @@ public class BaseClass {
 			{
 				System.out.println("The Expected Input Value *** "+actualEditValue+" *** is Successfully Set on Input Box");
 				Assert.assertTrue(true,"The Expected Input Value *** "+actualEditValue+" *** is Successfully Set on Input Box");
-				Log.info("The Expected Input Value *** "+actualEditValue+" *** is Successfully Set on Input Box");
+				log.info("The Expected Input Value *** "+actualEditValue+" *** is Successfully Set on Input Box");
 			}
 		else
 			{
 				System.out.println("The Expected Input Value *** "+actualEditValue+" *** Does not Set on Input Box Actual Input Value Was  *** "+EditValue+" ***");
 				Assert.assertTrue(false,"The Expected Input Value *** "+actualEditValue+" *** Does not Set on Input Box Actual Input Value Was  *** "+EditValue+" ***");
-				Log.error("The Expected Input Value *** "+actualEditValue+" *** Does not Set on Input Box Actual Input Value Was  *** "+EditValue+" ***");
+				log.error("The Expected Input Value *** "+actualEditValue+" *** Does not Set on Input Box Actual Input Value Was  *** "+EditValue+" ***");
 			}
 		Reporter.log("******************************************Validate Input Value Ended******************************************");
 		System.out.println("******************************************Validate Input Value Ended*****************************************");
@@ -687,13 +703,13 @@ public class BaseClass {
 			{
 				System.out.println("The Expected Selected Input Value *** "+SelectedValue+" *** is Successfully Set on Drop Down List");
 				Assert.assertTrue(true,"The Expected Selected Input Value *** "+SelectedValue+" *** is Successfully Set on Drop Down List");
-				Log.info("The Expected Selected Input Value *** "+SelectedValue+" *** is Successfully Set on Drop Down List");
+				log.info("The Expected Selected Input Value *** "+SelectedValue+" *** is Successfully Set on Drop Down List");
 			}
 		else
 			{
 				System.out.println("The Expected Selected Input Value *** "+ActualSelectedValue+" *** Does not Set on Drop Down List The Actual Selected Input Value Was  *** "+SelectedValue+" ***");
 				Assert.assertTrue(false,"The Expected Selected Input Value *** "+ActualSelectedValue+" *** Does not Set on Drop Down List The Actual Selected Input Value Was  *** "+SelectedValue+" ***");
-				Log.error("The Expected Selected Input Value *** "+ActualSelectedValue+" *** Does not Set on Drop Down List The Actual Selected Input Value Was  *** "+SelectedValue+" ***");
+				log.error("The Expected Selected Input Value *** "+ActualSelectedValue+" *** Does not Set on Drop Down List The Actual Selected Input Value Was  *** "+SelectedValue+" ***");
 			}
 		Reporter.log("******************************************Validate Drop Value Ended******************************************");
 		System.out.println("******************************************Validate Drop Value Ended******************************************");
@@ -780,7 +796,8 @@ public class BaseClass {
 		boolean checkifMorePage;
 		List<String> allHeaderName=new ArrayList<String>();
 		if(expColumn.isEmpty() || expColumn.length()<1) {
-			List<WebElement> allHeaderEl=cf.TableHeaderValue();
+			List<WebElement> allHeaderEl=log4j2.xmllog4j2.xmllog4j2.xml
+					.TableHeaderValue();
 			for(WebElement header : allHeaderEl ) {
 				String headerName=header.getText().replaceAll("\r\n","").replaceAll("ui-btn","").trim();
 				allHeaderName.add(headerName);
@@ -1197,7 +1214,7 @@ public class BaseClass {
 		String Month=expDate[0];
 		String day=expDate[1];
 		String years=expDate[2];
-		List<WebElement> objDate = driver.findElements(By.xpath(dateLocator));
+		driver.findElements(By.xpath(dateLocator));
 		if (years.length() < 3)
 			{
 			years = ("20" + years);
@@ -1377,6 +1394,22 @@ public class BaseClass {
 		Actions  action = new Actions(driver);
 		return action;
 	}
+	
+	/****************************************************************************************************************
+	*  Author: Md Rezaul Karim 
+	*  Function Name: uniqueName
+	*  Function Arg:  expFileStart it can be start With File Name  
+	*  FunctionOutPut: It will Create A Unique File Name 
+	**************************************************************************************************************/
+	
+	public static String uniqueName(String expFileStart) {
+		if(expFileStart==null || expFileStart.length()<1) {
+			expFileStart="Test";
+		}
+		Date objd=new Date();
+		String expName=expFileStart+"_"+ objd.toString().replace(":","_").replace(" ","_");
+		return expName;
+	}
 
 	/****************************************************************************************************************
 	*  Author: Md Rezaul Karim 
@@ -1386,35 +1419,25 @@ public class BaseClass {
 	* 
 	***************************************************************************************************************/
 	
-	public static String createFolder(String expFolderName){
-	 	
-		Reporter.log("******************************************Folder Create Strated******************************************");
-		System.out.println("******************************************Folder Create Strated**********************************************");
-	 	String folderNamePath;
-		DateFormat formatter = new SimpleDateFormat("MM-dd-yy");
-		String Cdate=formatter.format(new Date()); // Get Current Date 
-		Cdate=Cdate.replace("-","_");    // Replace -
-		if(expFolderName.isEmpty())   // Check if user provide folder path?
-			{
-				folderNamePath="c:\\ScreenShot\\ScreenShot_"+Cdate;
-			}
-		else
-			{
-				folderNamePath="c:\\ScreenShot\\"+expFolderName+"_"+Cdate;
-			}
-		File file = new File(folderNamePath );
-		if (!file.exists())
-	        {
-	        	file.mkdirs();
-	            System.out.println("******************************************Directory Created******************************************");
-	        }
-	    else
-	        {
-				System.out.println("******************************************Directory already exists***********************************");
-	        }
-			Reporter.log("******************************************Folder Create Ended******************************************");
-			System.out.println("******************************************Folder Create Ended*************************************************");	
-			return folderNamePath;
+	public static String createFolder(String expFolderNameAndPath) {
+
+		Reporter.log("********************************Folder Create Strated******************************************");
+		String folderNamePath;
+		String UName = uniqueName("Test"); // Replace -
+		if (expFolderNameAndPath.isEmpty() || expFolderNameAndPath.length()<1) // Check if user provide folder path?
+		{
+			folderNamePath = "c:\\Qa\\" + UName;
+		} else {
+			folderNamePath = expFolderNameAndPath;
+		}
+		File file = new File(folderNamePath);
+		if (!file.exists()) {
+			file.mkdirs();
+		} else {
+			System.out.println("******************Directory already exists***********************************");
+		}
+		Reporter.log("***************************Folder Create Ended******************************************");
+		return folderNamePath;
 	}
 	
 	/****************************************************************************************************************
@@ -1425,41 +1448,25 @@ public class BaseClass {
 	* 
 	***************************************************************************************************************/
 	
-	public static String createFolderFile(String ExpFileName,String FileExtension) throws IOException{
+	public static String createFolderFile(String expFolderNameAndPath,String expFile,String expFileExtention) throws IOException{
 	 	
-		Reporter.log("******************************************Folder and File Create Strated******************************************");
-		System.out.println("******************************************Folder and File Strated********************************************");
-		
-		//String FolderName;
-		LocalTime time = LocalTime.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-		String CTime=time.format(formatter);
-		CTime=CTime.replace(":","_");
-		String filePath=createFolder(ExpFileName);
-		if(ExpFileName.isEmpty())
-		{
-			ExpFileName="Test";
+		Reporter.log("*****************Folder and File Create Strated******************************************");
+		String folderPath = createFolder(expFolderNameAndPath);
+		if (expFile.isEmpty()|| expFile.length()<1) {
+			expFile=uniqueName("Test");;
 		}
-		if(FileExtension.isEmpty())
-			{
-			
-				filePath=filePath+"\\"+ExpFileName+"_"+CTime+".docx";
-			}
-		else
-			{
-				filePath=filePath+"\\"+ExpFileName+"_"+CTime+FileExtension;
-			}
+		if (expFileExtention.isEmpty()|| expFileExtention.length()<1) {
+			expFileExtention=".docx";
+		} 
+		
+		String filePath =folderPath+ "\\" + expFile + "_" + expFileExtention;
+		
 		File file = new File(filePath);
-	    if (file.createNewFile())
-	        {
-				System.out.println("******************************************File Created******************************************");
-	        }
-	    else
-	        {
-				System.out.println("******************************************File already exists***********************************");
-	        }
-			Reporter.log("******************************************Folder and File Ended******************************************");
-			System.out.println("******************************************Folder and File Ended******************************************");	
+		if (file.createNewFile()) {
+			Reporter.log("******************************** File Created ******************************************");
+		} else {
+			Reporter.log("******************************** File Exist ******************************************");
+			}
 		return filePath;
 	}
 		
@@ -1473,7 +1480,7 @@ public class BaseClass {
 		
 	public static void takeScreenShot(String methodName) throws IOException {
 		
-		String filePath=createFolderFile(methodName,".png");
+		String filePath=createFolderFile(System.getProperty("user.dir"),methodName,".png");
 		File scrFile = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
         //The below method will save the screen shot in d drive with test method name 
 		FileUtils.copyFile(scrFile, new File(filePath));

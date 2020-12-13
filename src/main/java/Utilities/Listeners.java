@@ -7,17 +7,36 @@ import org.testng.ITestListener;
 import org.testng.ITestResult;
 import org.testng.Reporter;
 
+import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
 
 import Common.BaseClass;
 
-public class Listeners implements ITestListener {
+public class Listeners extends BaseClass implements ITestListener {
+	public static String expMethodName,expClassName;
+	public static ExtentTest test;
+	public static ExtentReports extent=ExtentManager.createInstance();
+	public static ThreadLocal<ExtentTest> extentTest=new ThreadLocal<>();
 	
-	BaseClass bc=new BaseClass();
-	public static ThreadLocal<ExtentTest> test=new ThreadLocal<>();
 	
-	public void onTestStart(ITestResult result) {
-		
+	public void onStart() {
+		expMethodName=objBc.getClass().getName().toString().trim();
+		test=extent.createTest(expMethodName);			// This will be Create Pass Failed all Other log To Extent Report
+		extentTest.set(test);   						// Make Thread safe 
+		Reporter.log("**************** Test case Started And Details Are "+expMethodName  +" Strated ************************************");
+	}
+	public void onStart(ITestContext context) {
+		expMethodName=context.getName().toString().trim();
+		test=extent.createTest(expMethodName);			// This will be Create Pass Failed all Other log To Extent Report
+		extentTest.set(test);   						// Make Thread safe 
+		Reporter.log("**************** Test case Started And Details Are "+expMethodName  +" Strated ************************************");
+	}
+	public void onTestStart(ITestContext context) {
+		expMethodName=context.getName().toString().trim();
+		expMethodName=objBc.getClass().getName().toString().trim();
+		test=extent.createTest(expMethodName);			// This will be Create Pass Failed all Other log To Extent Report
+		extentTest.set(test);   						// Make Thread safe 
+	
 		Reporter.log("******************************************Launch BrowserUrl Strated******************************************");
 		System.out.println("******************************************Launch Browser Url Strated*****************************************");
 		
@@ -34,7 +53,7 @@ public class Listeners implements ITestListener {
 		Reporter.log("*************************  Error "+FailedmethodName+" test has failed *************************************** ");
 		System.out.println("*************************  Error "+FailedmethodName+" test has failed *************************************** ");
 		try {
-				bc.takeScreenShot(FailedmethodName);
+				takeScreenShot(FailedmethodName);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -51,13 +70,6 @@ public class Listeners implements ITestListener {
 	}
 
 	public void onTestFailedWithTimeout(ITestResult result) {
-		
-	}
-
-	public void onStart(ITestContext context) {
-		String StratmethodName=context.getName().toString().trim();
-		Reporter.log("****************************************** "+StratmethodName  +" Strated ******************************************");
-		System.out.println("******************************************"+StratmethodName  +" Strated *************************************");
 		
 	}
 

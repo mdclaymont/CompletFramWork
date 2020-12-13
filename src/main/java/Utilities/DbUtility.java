@@ -7,6 +7,15 @@ import java.util.Hashtable;
 
 public class DbUtility {
 	public static Connection objConnection;
+	
+	/****************************************************************************************************************
+	*  Author: Md Rezaul Karim 
+	*  Function Name: setUpDb
+	*  Function Arg: expectedUrl ==>Which Url Or Domain You want work for
+	*  FunctionOutPut: It will open Url That you want Automated
+	* 
+	* ***************************************************************************************************************/
+	
 	public static void setUpDb(){
 		String dbUrl=null;
 		String expDbName="",UserId = null,UserPw = null,mysqljdbcdriver = null;

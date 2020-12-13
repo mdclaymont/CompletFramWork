@@ -11,10 +11,15 @@ public class TC_001_LogInTest extends BaseClass{
 	@Test
 	public void loginTest() throws IOException, InterruptedException
 	{
-		openUrl("");
-		validateUrl();
-		LogInPage lip=new LogInPage(driver);
-		lip.LogIn();
-		validateTitle("Guru99 Bank Manager HomePage");
+		log.info("test info");
+		log.error("test error message");
+		log.warn("test warning");
+		log.debug("debug");
+		log.fatal("test fatal");
+		///openUrl("");
+		//validateUrl();
+		//LogInPage lip=new LogInPage(driver);
+		//lip.LogIn();
+		//validateTitle("Guru99 Bank Manager HomePage");
 	}
 }

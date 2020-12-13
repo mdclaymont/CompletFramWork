@@ -50,7 +50,7 @@ public class XLUtility {
 		String actualSheetName;
 		try {
 			if(expPath.isEmpty() || expPath.length()<2){
-				expPath=currentDirectory +"/src/main/java/Data/controller.xlsx";// Get System Dir
+				expPath=currentDirectory +"/src/main/java/TestData/Controller.xlsx";// Get System Dir
 			}
 			fi=new FileInputStream(expPath);
 			wb=new XSSFWorkbook(fi);
@@ -111,22 +111,31 @@ public class XLUtility {
 	 * rowNum==> 		Expected Row that need data
 	 * totalColNum==>	Expected Total Column Number
 	 * FunctionOutPut: It will Return User Header Name
+	 * @return 
 	 * @throws IOException 
 	 * ***************************************************************************************************************/
 
-	public static void getHeader(int rowNum,int totalColNum) {
-		List<String> expHeader=new ArrayList<String>();
+	public static List<String> getHeader(int rowNum,int totalColNum) {
+		List<String> excelHeader=new ArrayList<String>();
 		for(int i=0;i<totalColNum;i++) {
 			try {
-				String header;
-				header=sheet.getRow(rowNum).getCell(i).getStringCellValue();
-				
+				String headerName = null;
+				Cell CkCell =sheet.getRow(rowNum).getCell(i);
+				if(CkCell!=null) {
+					headerName=sheet.getRow(rowNum).getCell(i).getStringCellValue();
+				}	
+				excelHeader.add(headerName);
 			}catch(Exception e) {
-				System.out.println(e.getMessage());
-				e.printStackTrace();
 			}
-			
 		}
+		return excelHeader;
+	}
+	
+	public static void getTcData(String expPath,String SheetName,String expData) {
+		int rStart=0,totalColNum=0;
+		String expTc=null;
+		List<String> excelHeaderName=null;
+		
 		
 	}
 	/****************************************************************************************************************
