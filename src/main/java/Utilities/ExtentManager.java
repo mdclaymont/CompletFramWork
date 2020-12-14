@@ -13,8 +13,14 @@ public class ExtentManager extends BaseClass {
     
    public static ExtentReports extent;
     
-   public static ExtentReports createInstance() throws IOException {
-	   String fileName=createFolderFile(System.getProperty("user.dir")+"/Report/","",".html");
+   public static ExtentReports createInstance() {
+	   String fileName = null;
+	try {
+		fileName = createFolderFile(System.getProperty("user.dir")+"/Report/","",".html");
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
        ExtentHtmlReporter htmlReporter = new ExtentHtmlReporter(fileName);
         htmlReporter.config().setTestViewChartLocation(ChartLocation.BOTTOM);
         htmlReporter.config().setChartVisibilityOnOpen(true);

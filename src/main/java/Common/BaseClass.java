@@ -20,6 +20,8 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import javax.imageio.ImageIO;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -55,7 +57,12 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.asserts.SoftAssert;
 
+import com.aventstack.extentreports.Status;
+
+import ru.yandex.qatools.ashot.AShot;
+import ru.yandex.qatools.ashot.Screenshot;
 import Utilities.ReadConfig;
+import Utilities.TestListener;
 
 //********************************************************************   Test Base Class    ************************************************************************  
 
@@ -63,11 +70,12 @@ public class BaseClass {
 	public static BaseClass objBc=new BaseClass();
 	public static ReadConfig rc=new ReadConfig();
 	public static WebDriver driver;
+	public static WebDriverWait wait;
 	public static Properties objprop;
 	public static FileInputStream objFile;
 	public static String currentUserDirectory;
 	public static String browserName=rc.getBrowserName();
-	public int expWait=rc.getexpWait();
+	public static int explicit_Wait=rc.getexpWait();
 	public static int PAGE_LOAD_TIME=rc.getPAGE_LOAD_TIME();
 	public static int IMPLICIT_WAIT=rc.getIMPLICIT_WAIT();		
 	public static String chromePath=rc.getChromePath();
@@ -84,7 +92,7 @@ public class BaseClass {
 	public static SoftAssert soft=new SoftAssert();
 	public static String downloadPath=System.getProperty("user.dir")+File.separator+"downloads";
 	public static JavascriptExecutor jse=((JavascriptExecutor)driver);
-	static String DomainName="TestA";
+	public static String DomainName="TestA";
 	public static Logger log=LogManager.getLogger(BaseClass.class.getName());	
 	public static Properties appProperties;	
 //	BaseClass a=new BaseClass();
@@ -416,9 +424,46 @@ public class BaseClass {
 			}
 		return waitStatus;
 	}
-
 	
+	
+	////******************************   User Action   ******************************************************88
+	public static void click(WebElement expElement) {
+		String expClickElement=null;
+		try {
+			waitVisibility(expElement);
+			expClickElement=expElement.getText().trim();
+			expElement.click();
+			TestListener.test.log(Status.PASS,"' "+expClickElement+" ' Element Clicked");
+			log.info("' "+expClickElement+" ' Element Clicked");
+		}catch(Exception e) {
+			TestListener.test.log(Status.FAIL,"Expected ' "+expClickElement+" ' Not Found or Able To Clicked");
+			log.info("' "+expClickElement+" ' Element Clicked");
+		}
+	}
+	
+	public static void writeText(WebElement expElement,String expText) {
+		try {
+			waitVisibility(expElement);
+			expElement.sendKeys(expText);
+			TestListener.test.log(Status.PASS,"Expected ' "+expText+" ' Set Input/Edit Field");
+			log.info("' "+expText+"Expected ' Set Input/Edit Field");
+		}catch(Exception e) {
+			TestListener.test.log(Status.FAIL,"Expected ' "+expText+" ' Does Not Set Input/Edit Field");
+			log.info("Expected ' "+expText+" ' Does Not Set Input/Edit Field");
+		}
+	}
+	public static String readText(WebElement expElement) {
+		String expReadElement=null;
+		waitVisibility(expElement);
+		expReadElement=expElement.getText().trim();
+		return expReadElement;
+	}
 		
+	public static void waitVisibility(WebElement expElement) {
+		wait=new WebDriverWait(driver,explicit_Wait);
+		wait.until(ExpectedConditions.visibilityOf(expElement));
+	}
+
 	////******************************   Validation Part   ******************************************************88
 	
 	/****************************************************************************************************************
@@ -1475,16 +1520,22 @@ public class BaseClass {
 	*  Function Name: takeScreenShot
 	*  Function Arg: methodName
 	*  FunctionOutPut: It will take a screen shot from screen
+	 * @return 
 	* 
 	***************************************************************************************************************/
 		
-	public static void takeScreenShot(String methodName) throws IOException {
-		
-		String filePath=createFolderFile(System.getProperty("user.dir"),methodName,".png");
-		File scrFile = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-        //The below method will save the screen shot in d drive with test method name 
-		FileUtils.copyFile(scrFile, new File(filePath));
-		System.out.println("********      Screenshot taken and Placed where screen shot is  ******* ==> "+filePath);
+	public static String takeScreenShot(String expScName,String expScShotType) throws IOException {
+		if(expScName==null||expScName.length()<1) {
+			expScName="Screen";
+		}
+		if(expScShotType==null||expScShotType.length()<1) {
+			expScName=".png";
+		}
+		String UName=uniqueName("Test");
+		String filePath=System.getProperty("user.dir")+"//Screenshots//"+expScName+UName+expScShotType;
+		Screenshot objsc=new AShot().takeScreenshot(driver);
+		ImageIO.write(objsc.getImage(),"PNG",new File(filePath));
+		return filePath;
 	}
 	
 	/****************************************************************************************************************
