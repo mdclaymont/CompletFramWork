@@ -43,6 +43,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.interactions.Actions;
@@ -68,19 +69,18 @@ import Utilities.TestListener;
 
 public class BaseClass {
 	public static BaseClass objBc=new BaseClass();
-	public static ReadConfig rc=new ReadConfig();
+	public static ReadConfig readCon=new ReadConfig();
 	public static WebDriver driver;
 	public static WebDriverWait wait;
 	public static Properties objprop;
 	public static FileInputStream objFile;
-	public static String currentUserDirectory;
-	public static String browserName=rc.getBrowserName();
-	public static int explicit_Wait=rc.getexpWait();
-	public static int PAGE_LOAD_TIME=rc.getPAGE_LOAD_TIME();
-	public static int IMPLICIT_WAIT=rc.getIMPLICIT_WAIT();		
-	public static String chromePath=rc.getChromePath();
-	public static String ffPath=rc.getffPath();
-	public static String iePath=rc.getiePath();
+	public static String browserName=readCon.getBrowserName();
+	public static int explicit_Wait=readCon.getexpWait();
+	public static int PAGE_LOAD_TIME=readCon.getPAGE_LOAD_TIME();
+	public static int IMPLICIT_WAIT=readCon.getIMPLICIT_WAIT();		
+	public static String chromePath=readCon.getChromePath();
+	public static String ffPath=readCon.getffPath();
+	public static String iePath=readCon.getiePath();
 	public static String configFile;
 	public static String configPath;
 	public static String urlAddress;
@@ -91,13 +91,26 @@ public class BaseClass {
 	public static String driverPath;
 	public static SoftAssert soft=new SoftAssert();
 	public static String downloadPath=System.getProperty("user.dir")+File.separator+"downloads";
-	public static JavascriptExecutor jse=((JavascriptExecutor)driver);
+	public static JavascriptExecutor jse;
 	public static String DomainName="TestA";
 	public static Logger log=LogManager.getLogger(BaseClass.class.getName());	
 	public static Properties appProperties;	
 //	BaseClass a=new BaseClass();
 	public BaseClass() {
+	//	ReadConfig readCon=new ReadConfig();
 		readProperties("");
+	}
+	/****************************************************************************************************************
+	*  Author: Md Rezaul Karim 
+	*  Function Name: explicitWait
+	*  Function Arg: WebElement ExpwebElement,String ExPText,int timeOut
+	*  FunctionOutPut: It will wait until element visible 
+	* 
+	**************************************************************************************************************/
+	
+	public static WebDriverWait explicitWait(){
+		wait=new WebDriverWait(driver,explicit_Wait);
+		return wait;
 	}
 	
 	/****************************************************************************************************************
@@ -167,6 +180,7 @@ public class BaseClass {
 	 */
 
 	public static void scrollUpdown(String expScroll,WebElement expElement) {
+		jse=(JavascriptExecutor)driver;
 		if(expScroll.toLowerCase().contains("up")) {
 			jse.executeScript("window.scrollTo(0,-document.body.scrollHeight);");
 		}
@@ -243,38 +257,7 @@ public class BaseClass {
 		Reporter.log("******************************************Get Data Imported Ended******************************************");
 		System.out.println("******************************************Get Data Imported Ended********************************************");
 	}
-		
-	public static void getData1() throws IOException {
-		Reporter.log("******************************************Get Data Imported Staretd******************************************");
-		System.out.println("******************************************Get Data Imported Staretd******************************************");
-		DomainName =appProperties.getProperty("userDomainName");
-		if (DomainName.contains("criglist")) 
-			{
-				userId = appProperties.getProperty("CrigListUserId");
-				userPassword = appProperties.getProperty("CrigListUserPassword");
-				urlAddress = appProperties.getProperty("CrigListUrl");
-			} 
-		else if (DomainName.contains("mercary")) 
-			{
-				userId = appProperties.getProperty("MercaryUserId");
-				userPassword = appProperties.getProperty("MercaryPassword");
-				urlAddress = appProperties.getProperty("MercaryUrl");
-				Description=appProperties.getProperty("MercaryDescription");
-				Title=appProperties.getProperty("MercaryTitle");
-			}
-		else if (DomainName.contains("Guru")) 
-		{
-			userId = appProperties.getProperty("GuruUserId");
-			userPassword = appProperties.getProperty("GuruPassword");
-			urlAddress = appProperties.getProperty("GuruUrl");
-		}
-		else
-			{
-				System.out.println("could not find any domain so defult id google");
-			}
-		Reporter.log("******************************************Get Data Imported Ended******************************************");
-		System.out.println("******************************************Get Data Imported Ended********************************************");
-	}
+
 	/****************************************************************************************************************
 	*  Author: Md Rezaul Karim 
 	*  Function Name: initilizeDriver
@@ -284,71 +267,87 @@ public class BaseClass {
 	* ***************************************************************************************************************/
 	@BeforeClass
 	public static WebDriver initilizeDriver() throws IOException {
-		getData();
-		Reporter.log("**************************************** initilize Driver MEthod Started ******************************************");
-		System.out.println("**************************************** initilize Driver MEthod Started ******************************************");
-		String MavenbrowserName=System.getProperty("Browser");// check if maven send any browser
-		if(MavenbrowserName!= null)
-		{
-			browserName=MavenbrowserName;
-		}
-		else
-		{
-			browserName=browserName;	
-		}
-		
-		if(browserName.toLowerCase().contains("ie") || browserName.contains("internet"))
-		{
-			System.setProperty("webdriver.ie.driver",iePath);
-			driver= new InternetExplorerDriver();
-		}
-		else if(browserName.contains("firefox") || browserName.contains("ff"))
-		{
-			System.setProperty("webdriver.gecko.driver",ffPath);
-			System.setProperty(FirefoxDriver.SystemProperty.BROWSER_LOGFILE,"null");
-			driver=new FirefoxDriver();
-		}
-		//if user want headless browser then you can use it 
-		else if(browserName.contains("chromeheadless") || browserName.contains("headless"))
-		{
-			System.setProperty("webdriver.chrome.driver",chromePath);
-			System.setProperty("webdriver.chrome.silentOutput","true");//it will remove unnessary log
-			ChromeOptions objoption=new ChromeOptions();
-			objoption.addArguments("headless");
-			objoption.setExperimentalOption("useAutomationExtension",false);
-			driver=new ChromeDriver(objoption);
-			browserName="chrome";
-		}
-		else if(browserName.contains("sslcertificatebrowser") || browserName.contains("securityalartbrowser"))
-		{
-			DesiredCapabilities objCap = DesiredCapabilities.chrome();
-			objCap.setCapability(CapabilityType.ACCEPT_INSECURE_CERTS, true);
-			objCap.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
-			ChromeOptions objOption = new ChromeOptions();
-			objCap.merge(objOption);
-			System.setProperty("webdriver.chrome.driver",chromePath);
-			driver = new ChromeDriver(objOption);
-			browserName="chrome";
-		}
-		else
-		{
-			System.setProperty("webdriver.chrome.driver",chromePath);
-			System.setProperty("webdriver.chrome.silentOutput","true");//it will remove unnessary log.
-			HashMap<String,Object> ohp=new HashMap<String,Object>();
-			ohp.put("profile.defult_content_settings.popups",0);
-			ohp.put("download.defult_directory",currentUserDirectory);  //if download any file it will save to current user dir 
-			ChromeOptions oco=new ChromeOptions();
-			oco.setExperimentalOption("useAutomationExtension",false);
-			oco.setExperimentalOption("prefs",ohp);
-			driver = new ChromeDriver();
-			browserName="chrome";
-		}
-		driver.manage().window().maximize();
-		driver.manage().deleteAllCookies();
-		driver.manage().timeouts().pageLoadTimeout(PAGE_LOAD_TIME,TimeUnit.SECONDS);
-		driver.manage().timeouts().implicitlyWait(IMPLICIT_WAIT,TimeUnit.SECONDS);
-		Reporter.log("**************************************** initilize Driver MEthod Ended ******************************************");
-		System.out.println("**************************************** initilize Driver MEthod Ended ******************************************");
+		try {
+			getData();
+			Reporter.log("**************************************** initilize Driver MEthod Started ******************************************");
+			String mavenBrowserName=System.getProperty("Browser");// check if maven send any browser
+			String driverPath=System.getProperty("user.dir")+"//Driver";
+			if(mavenBrowserName!= null)
+			{
+				browserName=mavenBrowserName;
+			}
+			else
+			{
+				browserName=readCon.getBrowserName();	
+			}
+			
+			if(browserName.toLowerCase().contains("ie") || browserName.contains("internet"))
+			{
+				System.setProperty("webdriver.ie.driver",driverPath+"//IEDriverServer.exe");
+				driver= new InternetExplorerDriver();
+				browserName="Internet Explorer";
+			}
+			else if(browserName.toLowerCase().contains("edge"))
+			{
+				System.setProperty("webdriver.edge.driver",driverPath+"//msedgedriver.exe");
+				driver=new EdgeDriver();
+				browserName="Microsoft Edge";
+			}
+			else if(browserName.contains("firefox") || browserName.contains("ff"))
+			{
+				System.setProperty("webdriver.gecko.driver",driverPath+"//geckodriver.exe");
+				System.setProperty(FirefoxDriver.SystemProperty.BROWSER_LOGFILE,"null");
+				driver=new FirefoxDriver();
+				browserName="FireFox";
+			}
+			//if user want headless browser then you can use it 
+			else if(browserName.contains("chromeheadless") || browserName.contains("headless"))
+			{
+				System.setProperty("webdriver.chrome.driver",driverPath+"//chromedriver.exe");
+				System.setProperty("webdriver.chrome.silentOutput","true");//it will remove unnessary log
+				HashMap<String,Object> ohp=new HashMap<String,Object>();
+				ohp.put("profile.defult_content_settings.popups",0);
+				ohp.put("download.defult_directory",downloadPath);  //if download any file it will save to current user dir 
+				ChromeOptions objoption=new ChromeOptions();
+				objoption.addArguments("headless");
+				objoption.setExperimentalOption("useAutomationExtension",false);
+				driver=new ChromeDriver(objoption);
+				browserName="chrome";
+			}
+			else if(browserName.contains("sslcertificatebrowser") || browserName.contains("securityalartbrowser"))
+			{
+				DesiredCapabilities objCap = DesiredCapabilities.chrome();
+				objCap.setCapability(CapabilityType.ACCEPT_INSECURE_CERTS, true);
+				objCap.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
+				ChromeOptions objOption = new ChromeOptions();
+				objCap.merge(objOption);
+				System.setProperty("webdriver.chrome.driver",chromePath);
+				driver = new ChromeDriver(objOption);
+				browserName="Google Chrome";
+			}
+			else
+			{
+				System.setProperty("webdriver.chrome.driver",driverPath+"chromedriver.exe");
+				System.setProperty("webdriver.chrome.silentOutput","true");//it will remove unnessary log.
+				HashMap<String,Object> ohp=new HashMap<String,Object>();
+				ohp.put("profile.defult_content_settings.popups",0);
+				ohp.put("download.defult_directory",downloadPath);  //if download any file it will save to current user dir 
+				ChromeOptions oco=new ChromeOptions();
+				oco.setExperimentalOption("useAutomationExtension",false);
+				oco.setExperimentalOption("prefs",ohp);
+				driver = new ChromeDriver(oco);
+				browserName="Google Chrome";
+			}
+			driver.manage().window().maximize();
+			driver.manage().deleteAllCookies();
+			driver.manage().timeouts().pageLoadTimeout(PAGE_LOAD_TIME,TimeUnit.SECONDS);
+			driver.manage().timeouts().implicitlyWait(IMPLICIT_WAIT,TimeUnit.SECONDS);
+			Reporter.log("\t Expected Browser ' "+browserName+" ' Opend Successfully");
+			TestListener.test.log(Status.PASS,"\t Expected Browser ' "+browserName+" ' Opend Successfully");
+		}catch(Exception e) {
+			Reporter.log("\t Expected Browser ' "+browserName+" ' Opend Successfully");
+			TestListener.test.log(Status.FAIL,"\t Expected Browser ' "+browserName+" ' Failed To Opend");
+		}	
 		return driver;
 	}
 	
@@ -384,60 +383,47 @@ public class BaseClass {
 	* ***************************************************************************************************************/
 		
 	public static void openUrl(String expectedUrl){
-		
-		Reporter.log("******************************************Url Open Strated******************************************");
-		System.out.println("******************************************Url Open Strated***************************************************");
-		String urlAdd;
-		if(expectedUrl.isEmpty())
-			{
-			urlAdd=urlAddress;
-			}
-		else
-			{
-			urlAdd=expectedUrl;
-			}
-		driver.get(urlAdd);
-		Reporter.log("******************************************Url Open Ended******************************************");
-		System.out.println("******************************************Url Open Ended*****************************************************");
+		String urlAdd = null;
+		try {
+			Reporter.log("******************************************Url Open Strated******************************************");
+			
+			if(expectedUrl.isEmpty())
+				{
+				urlAdd=urlAddress;
+				}
+			else
+				{
+				urlAdd=expectedUrl;
+				}
+			driver.get(urlAdd);
+			Reporter.log("\t Expected Url ' "+urlAdd+" ' Opend Or Lunch");
+			TestListener.test.log(Status.PASS,"\t Expected Url ' "+urlAdd+" ' Opend Or Lunch");
+		}catch(Exception e) {
+			Reporter.log("\t Expected Url ' "+urlAdd+" ' Did Not Opend Or Lunch");
+			TestListener.test.log(Status.FAIL,"\t Expected Url ' "+urlAdd+" ' Did Not Opend Or Lunch");
+		}	
+	}
+	//******************************   User Action Start   ******************************************************88
+	public static void waitVisibility(WebElement expElement) {
+		wait=new WebDriverWait(driver,explicit_Wait);
+		wait.until(ExpectedConditions.visibilityOf(expElement));
+	}
+	public static void waitVisibilityElements(List<WebElement> expElement) {
+		wait=new WebDriverWait(driver,explicit_Wait);
+		wait.until(ExpectedConditions.invisibilityOfAllElements(expElement));
 	}
 	
-	/****************************************************************************************************************
-	*  Author: Md Rezaul Karim 
-	*  Function Name: explicitWait
-	*  Function Arg: WebElement ExpwebElement,String ExPText,int timeOut
-	*  FunctionOutPut: It will wait until element visible 
-	* 
-	**************************************************************************************************************/
-	
-	public static Boolean explicitWait(WebElement ExpwebElement,String ExPText,int timeOut ){
-		System.out.println("Befor Wait");
-		WebDriverWait objWait=new WebDriverWait(driver,timeOut);
-		Boolean waitStatus=objWait.ignoring(StaleElementReferenceException.class).until( ExpectedConditions.textToBePresentInElementValue(ExpwebElement,ExPText));
-		
-		if(waitStatus.TRUE)
-			{
-				System.out.println("Three Is no Element found ");
-			}
-		else
-			{
-				System.out.println(waitStatus);
-			}
-		return waitStatus;
-	}
-	
-	
-	////******************************   User Action   ******************************************************88
 	public static void click(WebElement expElement) {
 		String expClickElement=null;
 		try {
 			waitVisibility(expElement);
 			expClickElement=expElement.getText().trim();
 			expElement.click();
-			TestListener.test.log(Status.PASS,"' "+expClickElement+" ' Element Clicked");
-			log.info("' "+expClickElement+" ' Element Clicked");
+			TestListener.test.log(Status.PASS,"\t Expected ' "+expClickElement+" ' Element Clicked");
+			log.info("\t Expected ' "+expClickElement+" ' Element Clicked");
 		}catch(Exception e) {
-			TestListener.test.log(Status.FAIL,"Expected ' "+expClickElement+" ' Not Found or Able To Clicked");
-			log.info("' "+expClickElement+" ' Element Clicked");
+			TestListener.test.log(Status.FAIL,"\t Expected ' "+expClickElement+" ' Not Found or Able To Clicked");
+			log.info("\t Expected ' "+expClickElement+" ' Not Found or Able To Clicked");
 		}
 	}
 	
@@ -445,11 +431,35 @@ public class BaseClass {
 		try {
 			waitVisibility(expElement);
 			expElement.sendKeys(expText);
-			TestListener.test.log(Status.PASS,"Expected ' "+expText+" ' Set Input/Edit Field");
-			log.info("' "+expText+"Expected ' Set Input/Edit Field");
+			TestListener.test.log(Status.PASS,"\t Expected ' "+expText+" ' Element Set Input/Edit Field");
+			log.info("\t Expected ' "+expText+" ' Element Set Input/Edit Field");
 		}catch(Exception e) {
-			TestListener.test.log(Status.FAIL,"Expected ' "+expText+" ' Does Not Set Input/Edit Field");
-			log.info("Expected ' "+expText+" ' Does Not Set Input/Edit Field");
+			TestListener.test.log(Status.FAIL,"\t Expected ' "+expText+" ' Element Does Not Set Input/Edit Field");
+			log.info("\t Expected ' "+expText+" ' Element Does Not Set Input/Edit Field");
+		}
+	}
+	public static void writeTextByJs(WebElement expElement,String expText) {
+		try {
+			jse=(JavascriptExecutor)driver;
+			jse.executeScript("arguments[0].setAttribute('value','"+expText+"');",expElement);
+			Thread.sleep(1000);
+			String setValue=expElement.getAttribute("value").trim();
+			TestListener.test.log(Status.PASS,"\t Expected ' "+setValue+" ' Element Set Input/Edit Field");
+			log.info("\t Expected ' "+setValue+" ' Element Set Input/Edit Field");
+		}catch(Exception e) {
+			TestListener.test.log(Status.FAIL,"\t Expected ' "+expText+" ' Element Does Not Set Input/Edit Field");
+			log.info("\t Expected ' "+expText+" ' Element Does Not Set Input/Edit Field");
+		}
+	}
+	public static void clearFiled(WebElement expElement) {
+		try {
+			waitVisibility(expElement);
+			expElement.clear();;
+			TestListener.test.log(Status.PASS,"\t Expected Input/Edit Field Cleared");
+			log.info("\t Expected Input/Edit Field Cleared");
+		}catch(Exception e) {
+			TestListener.test.log(Status.FAIL,"\t Expected Input/Edit Field Did Not Cleared");
+			log.info("\t Expected Input/Edit Field Did Not Cleared");
 		}
 	}
 	public static String readText(WebElement expElement) {
@@ -458,12 +468,121 @@ public class BaseClass {
 		expReadElement=expElement.getText().trim();
 		return expReadElement;
 	}
-		
-	public static void waitVisibility(WebElement expElement) {
-		wait=new WebDriverWait(driver,explicit_Wait);
-		wait.until(ExpectedConditions.visibilityOf(expElement));
-	}
 
+	/****************************************************************************************************************
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name:setSelect
+	 *  Function Arg: ExpSelect Expected Select Element Locator 
+	 *  FunctionOutPut: It will create a object for select class
+	 * 
+	 * ***************************************************************************************************************/
+	
+	public static Select setSelect(WebElement ExpSelect){
+		
+		Select obs=new Select(ExpSelect);
+		return obs;
+	}
+	
+	/****************************************************************************************************************
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name:clickElementByJs
+	 *  Function Arg: ExpElement element locator
+	 *  FunctionOutPut: It will create a object for Action class
+	 * 
+	 * **************************************************************************************************************/
+	
+	public static void clickByJs(WebElement expElement){
+		try {
+			jse=(JavascriptExecutor)driver;
+			jse.executeScript("arguments[0].click();",expElement);
+			TestListener.test.log(Status.PASS,"\t Expected Element Clicked");
+			log.info("\t Expected Element Clicked");
+		}catch(Exception e) {
+			TestListener.test.log(Status.FAIL,"\t Expected Not Found or Able To Clicked");
+			log.info("\t Expected Not Found or Able To Clicked");
+		}
+	}
+	
+	/****************************************************************************************************************
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name:refreshByJs
+	 *  Function Arg: ExpElement element locator
+	 *  FunctionOutPut: It will create a object for Action class
+	 * 
+	 * **************************************************************************************************************/
+	
+	public static void refreshByJs(){
+		jse.executeScript("history.go(0)");
+	}
+	
+
+	/****************************************************************************************************************
+	*  Author: Md Rezaul Karim 
+	*  Function Name: selectByJs
+	*  Function Arg: WebElement expElement,String ExpValue
+	*  FunctionOutPut: It will Select value from drop down when drop down is not able to select by select tag
+	* 
+	* ***************************************************************************************************************/
+	
+	public static void selectByJs(WebElement expElement,String ExpValue){
+		Reporter.log("****************************************** Select By Js Strated ******************************************");
+		System.out.println("****************************************** select By Js Strated ******************************************************");
+			
+		jse.executeScript("arguments[0].setAttribute('value','"+ExpValue+"');", expElement);
+		Reporter.log("****************************************** Select By Js Ended ******************************************");
+		System.out.println("****************************************** Select By Js Ended ******************************************************");
+	}
+	
+	/****************************************************************************************************************
+	*  Author: Md Rezaul Karim 
+	*  Function Name: AutoSuggestDropDown
+	*  Function Arg: String expSearchLocator  ==>Search Field Locator, String selectValue  ==> The Value user want from drop down 
+	*  FunctionOutPut: It will Select value from drop down when drop down is not able to select by select tag
+	* 
+	* ***************************************************************************************************************/
+	public static void setObjectByText(String expText, String expSearchLocator) {
+		
+		Reporter.log("******************************************Auto Suggest Drop Down Started******************************************");
+		System.out.println("******************************************Auto Suggest Drop Down Started*************************************");
+		String getSearchValue;
+		List<WebElement> objElements=driver.findElements(By.xpath(expSearchLocator));
+		int totalEl=objElements.size();
+		for(int i = 0;i<totalEl;i++)
+		{
+			getSearchValue=objElements.get(i).getText().trim();
+			if(getSearchValue.equalsIgnoreCase(expText))
+			{
+				objElements.get(i).click();
+				System.out.println(getSearchValue);
+				break;
+			}
+		}
+		
+		Reporter.log("******************************************Auto Suggest Drop Down Ended******************************************");
+		System.out.println("******************************************Auto Suggest Drop Down Ended****************************************");
+	}
+	
+	public static void setObjectByText(String expText, List<WebElement> expEle) {
+		
+		Reporter.log("******************************************Auto Suggest Drop Down Started******************************************");
+		System.out.println("******************************************Auto Suggest Drop Down Started*************************************");
+		String actualValue="";
+		int totalEl=expEle.size();
+		for(int i = 0;i<totalEl;i++)
+		{
+			actualValue=expEle.get(i).getText().trim();
+			if(actualValue.equalsIgnoreCase(expText))
+			{
+				expEle.get(i).click();
+				break;
+			}
+		}
+		
+		Reporter.log("******************************************Auto Suggest Drop Down Ended******************************************");
+		System.out.println("******************************************Auto Suggest Drop Down Ended****************************************");
+	}
+	
+	
 	////******************************   Validation Part   ******************************************************88
 	
 	/****************************************************************************************************************
@@ -1201,46 +1320,9 @@ public class BaseClass {
 			}
 		}
 	}
-//======================================================		Action Method		===================================================
+//======================================================		User Action Method		===================================================
 	
-	/****************************************************************************************************************
-	 *  Author: Md Rezaul Karim 
-	 *  Function Name:setSelect
-	 *  Function Arg: ExpSelect Expected Select Element Locator 
-	 *  FunctionOutPut: It will create a object for select class
-	 * 
-	 * ***************************************************************************************************************/
 	
-	public static Select setSelect(WebElement ExpSelect){
-		
-		Select obs=new Select(ExpSelect);
-		return obs;
-	}
-	
-	/****************************************************************************************************************
-	 *  Author: Md Rezaul Karim 
-	 *  Function Name:clickElementByJs
-	 *  Function Arg: ExpElement element locator
-	 *  FunctionOutPut: It will create a object for Action class
-	 * 
-	 * **************************************************************************************************************/
-	
-	public static void clickElementByJs(WebElement ExpElement){
-		
-		jse.executeScript("arguments[0].click()",ExpElement);
-	}
-	
-	/****************************************************************************************************************
-	 *  Author: Md Rezaul Karim 
-	 *  Function Name:refreshByJs
-	 *  Function Arg: ExpElement element locator
-	 *  FunctionOutPut: It will create a object for Action class
-	 * 
-	 * **************************************************************************************************************/
-	
-	public static void refreshByJs(){
-		jse.executeScript("history.go(0)");
-	}
 	
 	/****************************************************************************************************************
 	*  Author: Md Rezaul Karim 
@@ -1309,71 +1391,6 @@ public class BaseClass {
 		System.out.println("******************************************Set Clander Ended******************************************************");
 	}	
 	
-	/****************************************************************************************************************
-	*  Author: Md Rezaul Karim 
-	*  Function Name: selectByJs
-	*  Function Arg: WebElement expElement,String ExpValue
-	*  FunctionOutPut: It will Select value from drop down when drop down is not able to select by select tag
-	* 
-	* ***************************************************************************************************************/
-	
-	public static void selectByJs(WebElement expElement,String ExpValue){
-		Reporter.log("****************************************** Select By Js Strated ******************************************");
-		System.out.println("****************************************** select By Js Strated ******************************************************");
-			
-		jse.executeScript("arguments[0].setAttribute('value','"+ExpValue+"');", expElement);
-		Reporter.log("****************************************** Select By Js Ended ******************************************");
-		System.out.println("****************************************** Select By Js Ended ******************************************************");
-	}
-	
-	/****************************************************************************************************************
-	*  Author: Md Rezaul Karim 
-	*  Function Name: AutoSuggestDropDown
-	*  Function Arg: String expSearchLocator  ==>Search Field Locator, String selectValue  ==> The Value user want from drop down 
-	*  FunctionOutPut: It will Select value from drop down when drop down is not able to select by select tag
-	* 
-	* ***************************************************************************************************************/
-	public static void setObjectByText(String expText, String expSearchLocator) {
-		
-		Reporter.log("******************************************Auto Suggest Drop Down Started******************************************");
-		System.out.println("******************************************Auto Suggest Drop Down Started*************************************");
-		String getSearchValue;
-		List<WebElement> objElements=driver.findElements(By.xpath(expSearchLocator));
-		int totalEl=objElements.size();
-		for(int i = 0;i<totalEl;i++)
-		{
-			getSearchValue=objElements.get(i).getText().trim();
-			if(getSearchValue.equalsIgnoreCase(expText))
-			{
-				objElements.get(i).click();
-				System.out.println(getSearchValue);
-				break;
-			}
-		}
-		
-		Reporter.log("******************************************Auto Suggest Drop Down Ended******************************************");
-		System.out.println("******************************************Auto Suggest Drop Down Ended****************************************");
-	}
-	
-	public static void setObjectByText(String expText, List<WebElement> expEle) {
-		
-		Reporter.log("******************************************Auto Suggest Drop Down Started******************************************");
-		System.out.println("******************************************Auto Suggest Drop Down Started*************************************");
-		String actualValue="";
-		int totalEl=expEle.size();
-		for(int i = 0;i<totalEl;i++)
-		{
-			actualValue=expEle.get(i).getText().trim();
-			if(actualValue.equalsIgnoreCase(expText))
-			{
-				expEle.get(i).click();
-				break;
-			}
-		}
-		
-		Reporter.log("******************************************Auto Suggest Drop Down Ended******************************************");
-		System.out.println("******************************************Auto Suggest Drop Down Ended****************************************");
-	}
 	
 	//*******************************************          Utility               *****************************************************//
 
