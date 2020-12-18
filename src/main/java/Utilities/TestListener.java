@@ -41,10 +41,8 @@ public class TestListener extends BaseClass implements ITestListener {
 		expMethodName = result.getName().toString().trim();
 		expClassName = result.getTestClass().getName().toString().trim();
 		test = extent.createTest(expClassName + " :: " + expMethodName); // This will be Create Pass Failed all Other
-																			// log To Extent Report
 		extentTest.set(test); // Make Thread safe
 		Reporter.log("*******************************Launch BrowserUrl Strated**********************************");
-		System.out.println("****************Launch Browser Url Strated*****************************************");
 	}
 
 	public void onTestSuccess(ITestResult result) {
@@ -53,9 +51,7 @@ public class TestListener extends BaseClass implements ITestListener {
 		Markup m = MarkupHelper.createLabel(logText, ExtentColor.GREEN);
 		extentTest.get().log(Status.PASS, m);
 		Reporter.log("*********Expected Test Case " + expMethodName + " Are Succesfully Passed*********");
-		System.out.println("****** Expected Test Case " + result.getName() + " Are Succesfully Passed*********** ");
 	}
-
 	public void onTestFailure(ITestResult result) {
 		expMethodName = result.getName().toString().trim();
 		String logText = "<b>Test Method " + expMethodName + "Failed</b>";
@@ -74,14 +70,12 @@ public class TestListener extends BaseClass implements ITestListener {
 		Reporter.log("************ Error " + expMethodName + " test has failed ********************** ");
 		System.out.println("*********** Error " + expMethodName + " test has failed ******************");
 	}
-
 	public void onTestSkipped(ITestResult result) {
 		expMethodName = result.getMethod().getMethodName().toString().trim();
 		String logText = "<b>Test Method " + expMethodName + " Skipped</b>";
 		Markup m = MarkupHelper.createLabel(logText, ExtentColor.YELLOW);
 		extentTest.get().log(Status.SKIP, m);
 		Reporter.log("**************Expected " + expMethodName + " Test Skipped ***************************");
-
 	}
 	public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
 

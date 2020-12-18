@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -129,6 +130,96 @@ public class XLUtility {
 			}
 		}
 		return excelHeader;
+	}
+	
+	public LinkedHashMap<String,String> getCellValue(int rowNum,int ColStart,int totalColNum,List<String> expHeader) {
+		String cellValue="";
+		LinkedHashMap<String,String> eachRowData=new LinkedHashMap<>();
+		for (int j=ColStart; j < totalColNum; j++){
+			Cell CkCell = sheet.getRow(j).getCell(j);
+			if (CkCell != null) // Validate if cell value is empty
+			{
+				switch (CkCell.getCellType()){
+				case BOOLEAN:
+					Boolean BCell = CkCell.getBooleanCellValue();
+					cellValue= Boolean.toString(BCell);
+					break;
+				case STRING:
+					cellValue= CkCell.getRichStringCellValue().getString();
+					break;
+				case NUMERIC:
+					if (DateUtil.isCellDateFormatted(CkCell)){
+						Date DCell = CkCell.getDateCellValue();
+						cellValue= DCell.toString();
+					}
+					else{
+						cellValue = NumberToTextConverter.toText(CkCell.getNumericCellValue());
+					}
+					break;
+				case FORMULA:
+					cellValue= CkCell.getCellFormula().toString();
+					break;
+				case BLANK:
+					System.out.print("");
+					break;
+				default:
+					System.out.print("There is no value");
+					cellValue= " ";
+				}
+			}
+			else{
+				cellValue= " ";
+			}
+			eachRowData.put(eachRowData.get(j),cellValue);
+		}
+		
+		return eachRowData;
+	}
+	public LinkedHashMap<String,String> getRowValue(int rowNum,int ColStart,int totalColNum,List<String> expHeader) {
+		String cellValue="";
+		LinkedHashMap<String,String> eachRowData=new LinkedHashMap<>();
+		int count=0;
+		for (int j=ColStart; j<totalColNum; j++){
+			Cell CkCell = sheet.getRow(rowNum).getCell(j);
+			if (CkCell != null) // Validate if cell value is empty
+			{
+				switch (CkCell.getCellType()){
+				case BOOLEAN:
+					Boolean BCell = CkCell.getBooleanCellValue();
+					cellValue= Boolean.toString(BCell).trim();
+					break;
+				case STRING:
+					cellValue= CkCell.getRichStringCellValue().getString().trim();
+					break;
+				case NUMERIC:
+					if (DateUtil.isCellDateFormatted(CkCell)){
+						Date DCell = CkCell.getDateCellValue();
+						SimpleDateFormat objformat=new SimpleDateFormat("MM/dd/yyyy");
+						cellValue=objformat.format(DCell);
+					}
+					else{
+						cellValue = NumberToTextConverter.toText(CkCell.getNumericCellValue());
+					}
+					break;
+				case FORMULA:
+					cellValue= CkCell.getRichStringCellValue().toString().trim();
+					break;
+				case BLANK:
+					cellValue="";
+					count++;
+					break;
+				default:
+					System.out.print("There is no value");
+					cellValue= " ";
+				}
+			}
+			else{
+				cellValue= " ";
+			}
+			eachRowData.put(eachRowData.get(j),cellValue);
+		}
+		
+		return eachRowData;
 	}
 	
 	public static void getTcData(String expPath,String SheetName,String expData) {
@@ -709,49 +800,6 @@ public class XLUtility {
 			return CellValue;
 		}	
 	
-	public LinkedHashMap<String,String> getCellValue(int rowNum,int ColStart,int totalColNum,List<String> expHeader) {
-		String cellValue="";
-		LinkedHashMap<String,String> eachRowData=new LinkedHashMap<>();
-		for (int j=ColStart; j < totalColNum; j++){
-			Cell CkCell = sheet.getRow(j).getCell(j);
-			if (CkCell != null) // Validate if cell value is empty
-			{
-				switch (CkCell.getCellType()){
-				case BOOLEAN:
-					Boolean BCell = CkCell.getBooleanCellValue();
-					cellValue= Boolean.toString(BCell);
-					break;
-				case STRING:
-					cellValue= CkCell.getRichStringCellValue().getString();
-					break;
-				case NUMERIC:
-					if (DateUtil.isCellDateFormatted(CkCell)){
-						Date DCell = CkCell.getDateCellValue();
-						cellValue= DCell.toString();
-					}
-					else{
-						cellValue = NumberToTextConverter.toText(CkCell.getNumericCellValue());
-					}
-					break;
-				case FORMULA:
-					cellValue= CkCell.getCellFormula().toString();
-					break;
-				case BLANK:
-					System.out.print("");
-					break;
-				default:
-					System.out.print("There is no value");
-					cellValue= " ";
-				}
-			}
-			else{
-				cellValue= " ";
-			}
-			eachRowData.put(eachRowData.get(j),cellValue);
-		}
-		
-		return eachRowData;
-	}
 	
 	
 	
