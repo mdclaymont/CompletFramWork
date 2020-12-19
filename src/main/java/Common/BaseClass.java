@@ -74,13 +74,16 @@ public class BaseClass {
 	public static WebDriverWait wait;
 	public static Properties objprop;
 	public static FileInputStream objFile;
+	/*
 	public static String browserName=readCon.getBrowserName();
 	public static int explicit_Wait=readCon.getexpWait();
 	public static int PAGE_LOAD_TIME=readCon.getPAGE_LOAD_TIME();
 	public static int IMPLICIT_WAIT=readCon.getIMPLICIT_WAIT();		
 	public static String chromePath=readCon.getChromePath();
+	
 	public static String ffPath=readCon.getffPath();
 	public static String iePath=readCon.getiePath();
+	*/
 	public static String configFile;
 	public static String configPath;
 	public static String urlAddress;
@@ -97,8 +100,7 @@ public class BaseClass {
 	public static Properties appProperties;	
 //	BaseClass a=new BaseClass();
 	public BaseClass() {
-	//	ReadConfig readCon=new ReadConfig();
-		readProperties("");
+		ReadConfig.readProperties("");
 	}
 	/****************************************************************************************************************
 	*  Author: Md Rezaul Karim 
@@ -109,34 +111,10 @@ public class BaseClass {
 	**************************************************************************************************************/
 	
 	public static WebDriverWait explicitWait(){
+		
 		wait=new WebDriverWait(driver,explicit_Wait);
 		return wait;
 	}
-	
-	/****************************************************************************************************************
-	 * Author: Md Rezaul Karim 
-	 * Function Name: readProperties
-	 * Function Arg: String expFilePath
-	 * FunctionOutPut: It will encoded String
-	 * **************************************************************************************************************
-	 */
-	public static void readProperties(String expFilePath) {
-		System.out.println("Read Properties");
-		try	{
-			appProperties=new Properties();
-			if(expFilePath.isEmpty() || expFilePath.length()<1) {	//If User provied Any properties File Path if Not use Configuration folder
-				expFilePath="./Configuration/config.properties";
-			}
-			File src=new File(expFilePath);
-			FileInputStream objFile=new FileInputStream(src);
-			objprop = new Properties();
-			objprop.load(objFile);
-			appProperties.putAll(objprop);
-		}catch (Exception e){
-			e.printStackTrace();
-		}
-	}
-	
 	/*********************************  Test Base Constractor **********************************************************************************/
 	
 
