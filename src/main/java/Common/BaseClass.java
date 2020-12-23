@@ -4,10 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,23 +19,13 @@ import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.DateUtil;
-import org.apache.poi.ss.util.NumberToTextConverter;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.codehaus.plexus.util.Base64;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.StaleElementReferenceException;
-import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -63,7 +50,6 @@ import com.aventstack.extentreports.Status;
 import PageObject.CommonField;
 import ru.yandex.qatools.ashot.AShot;
 import ru.yandex.qatools.ashot.Screenshot;
-import Utilities.ReadConfig;
 import Utilities.TestListener;
 
 //********************************************************************   Test Base Class    ************************************************************************  
@@ -691,14 +677,9 @@ public class BaseClass {
 		String day=expDate[1];
 		String years=expDate[2];
 		driver.findElements(By.xpath(dateLocator));
-		if (years.length() < 3)
-			{
+		if (years.length() < 3){
 			years = ("20" + years);
-			}
-		else 
-			{
-			years = years;
-			}
+		}
 		for (int i = 0; i < 11; i++)
 		{
 			WebElement objMonth = driver.findElement(By.xpath(monthLocator));
@@ -1240,6 +1221,7 @@ public class BaseClass {
 		System.out.println("Exit from input taker ");
 		Reporter.log("******************************************Get Input Ended******************************************");
 		System.out.println("******************************************Get Input Ended****************************************************");
+		objInputValue.close();
 	}
 	
 	/****************************************************************************************************************
@@ -1387,7 +1369,7 @@ public class BaseClass {
 	public static void Prime(int ExpNum)
 	{
 		int Num;
-		ArrayList primeNumber=new ArrayList();
+		ArrayList<Integer> primeNumber=new ArrayList<Integer>();
 		String PrimeNumber="";
 		int Tag=0;
 		for(int i=1;i<=ExpNum;i++)
