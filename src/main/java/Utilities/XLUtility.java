@@ -175,11 +175,11 @@ public class XLUtility {
 		
 		return eachRowData;
 	}
-	public static LinkedHashMap<String,String> getRowValue(int rowNum,int ColStart,int totalColNum,List<String> expHeader) {
+	public static LinkedHashMap<String,String> getRowValue(int rowNum,int totalColNum,List<String> expHeader) {
 		String cellValue="";
 		LinkedHashMap<String,String> eachRowData=new LinkedHashMap<>();
 		int count=0;
-		for (int j=ColStart; j<totalColNum; j++){
+		for (int j=0; j<totalColNum; j++){
 			Cell CkCell = sheet.getRow(rowNum).getCell(j);
 			if (CkCell != null) // Validate if cell value is empty
 			{
@@ -262,7 +262,7 @@ public class XLUtility {
 				if (row != null && cell != null) {
 					TcValue=sheet.getRow(i).getCell(0).getStringCellValue();
 					if (TcValue.replaceAll(" ", "").equalsIgnoreCase(expTcData.replaceAll(" ", ""))) {
-						LinkedHashMap<String,String>eachRowData=getRowValue(i,0,totalColNum,excelHeaderNames);
+						LinkedHashMap<String,String>eachRowData=getRowValue(i,totalColNum,excelHeaderNames);
 						allexcelData.add(eachRowData);
 						break; // if expected Test case Find Exit From loop
 					}
@@ -272,84 +272,7 @@ public class XLUtility {
 
 			}
 		}
-					ExColData = objsheet.getRow(j).getCell(ExTCFlagColStart).getStringCellValue();
-					if (ExpTestCase[1].toLowerCase().contains(ExColData.toLowerCase())) {
-						RowArraySize = RowArraySize + 1;
-					}
-				}
-				break;
-			}
-		}
-	}}}else{FinalFlag=1;RowArraySize=TotalrowNum-RowStart;}ColArraySize=TotalcolNum-ColStart;CellValue=new Object[RowArraySize][ColArraySize];for(
-
-	int j = RowStart;j<TotalrowNum;j++)
-	{
-		Cell CkCellEmpty = objsheet.getRow(j).getCell(ExTCFlagColStart);
-		if (AllTC == 1 && CkCellEmpty != null) // check if user TCID provide then
-		{
-			AcTCID = (int) CkCellEmpty.getNumericCellValue();
-			if (AcTCID == ExTCId) {
-				FinalFlag = 1;// If Flag value 1 then get data
-			}
-		} else if (AllTC == 2 && CkCellEmpty != null) {
-			AcTCFlag = CkCellEmpty.getStringCellValue();
-			if (AcTCFlag.toLowerCase().contains(ExpTestCase[1].toLowerCase())) {
-				FinalFlag = 1;
-			}
-		}
-		if (FinalFlag == 1) {
-			c = 0;
-			for (int k = ColStart; k < TotalcolNum; k++) {
-				Cell CkCell = objsheet.getRow(j).getCell(k);
-				if (CkCell != null) // Validate if cell value is empty
-				{
-					switch (CkCell.getCellType()) {
-					case BOOLEAN:
-						Boolean BCell = CkCell.getBooleanCellValue();
-						CellValue[r][c] = Boolean.toString(BCell);
-						break;
-					case STRING:
-						CellValue[r][c] = CkCell.getRichStringCellValue().getString();
-						break;
-					case NUMERIC:
-						if (DateUtil.isCellDateFormatted(CkCell)) {
-							Date DCell = CkCell.getDateCellValue();
-							CellValue[r][c] = DCell.toString();
-						} else {
-							CellValue[r][c] = NumberToTextConverter.toText(CkCell.getNumericCellValue());
-						}
-						break;
-					case FORMULA:
-						CellValue[r][c] = CkCell.getCellFormula().toString();
-						break;
-					case BLANK:
-						System.out.print("");
-						break;
-					default:
-						System.out.print("There is no value");
-						CellValue[r][c] = " ";
-					}
-				} else {
-					CellValue[r][c] = " ";
-				}
-				if ((c + ColStart) != TotalcolNum) // if col does not start from begaining
-				{
-					c = c + 1; //// Increase column
-				}
-			}
-		}
-		if (FinalFlag == 1 && (r + RowStart) != TotalrowNum) // if row does not strat from begaining
-		{
-			r = r + 1; //// Increase row
-		}
-		if (AllTC == 1 && FinalFlag == 1) // if only one row data need then break loop
-		{
-			break;
-		}
-		if (AllTC == 2) {
-			FinalFlag = 0;
-		}
-	}Reporter.log("******************************************Get Data From Excel Ended******************************************");System.out.println("******************************************Get Data From Excel Ended****************************************");WorkBook.close();return CellValue;
+		return allexcelData;
 	}
 	
 	/****************************************************************************************************************
@@ -369,11 +292,11 @@ public class XLUtility {
 		{
 			expPath= currentDirectory +"/src/main/java/Data/controller.xlsx";// Get System Dir
 		}
-		fi=new FileInputStream(expPath);
-		wb=new XSSFWorkbook(fi);
-		int TotalSheet = wb.getNumberOfSheets();				/// Total Sheet Number
+		fis=new FileInputStream(expPath);
+		workbook=new XSSFWorkbook(fis);
+		int TotalSheet = workbook.getNumberOfSheets();				/// Total Sheet Number
 		for (int i = 0; i <= TotalSheet; i++){
-			String ActualSheetName = wb.getSheetName(i);
+			String ActualSheetName =workbook.getSheetName(i);
 			if (expSheetName.isEmpty())					///Check if user provide sheet name if not then default sheet will be first one
 			{
 				expSheetName= ActualSheetName;
@@ -384,7 +307,7 @@ public class XLUtility {
 				break;
 			}
 		}
-		sheet=wb.getSheet(expSheetName);
+		sheet=workbook.getSheet(expSheetName);
 		row=sheet.getRow(rowNum);
 		cell=row.getCell(colNum);
 		String data;
@@ -397,8 +320,8 @@ public class XLUtility {
 		{
 			data="";
 		}
-		wb.close();
-		fi.close();
+		workbook.close();
+		fis.close();
 		return data;
 	}
 	
@@ -408,11 +331,11 @@ public class XLUtility {
 		{
 			expPath= currentDirectory +"/src/main/java/Data/controller.xlsx";// Get System Dir
 		}
-		fi=new FileInputStream(expPath);
-		wb=new XSSFWorkbook(fi);
-		int TotalSheet = wb.getNumberOfSheets();				/// Total Sheet Number
+		fis=new FileInputStream(expPath);
+		workbook=new XSSFWorkbook(fis);
+		int TotalSheet =workbook.getNumberOfSheets();				/// Total Sheet Number
 		for (int i = 0; i <= TotalSheet; i++){
-			String ActualSheetName = wb.getSheetName(i);
+			String ActualSheetName =workbook.getSheetName(i);
 			if (expSheetName.isEmpty())					///Check if user provide sheet name if not then default sheet will be first one
 			{
 				expSheetName= ActualSheetName;
@@ -423,15 +346,15 @@ public class XLUtility {
 				break;
 			}
 		}
-		sheet=wb.getSheet(expSheetName);
+		sheet=workbook.getSheet(expSheetName);
 		row=sheet.getRow(rowNum);
 		cell=row.getCell(colNum);
 		cell.setCellValue(data);
-		fo=new FileOutputStream(expPath);
-		wb.write(fo);
-		wb.close();
-		fi.close();
-		fo.close();
+		fileOut=new FileOutputStream(expPath);
+		workbook.write(fileOut);
+		workbook.close();
+		fis.close();
+		fileOut.close();
 	}
 	
 	public static Object[][] getExcelData1(String expectedSheetName, String excellFilePath, String expectedTestCaseData)

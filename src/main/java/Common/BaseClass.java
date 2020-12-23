@@ -60,6 +60,7 @@ import org.testng.asserts.SoftAssert;
 
 import com.aventstack.extentreports.Status;
 
+import PageObject.CommonField;
 import ru.yandex.qatools.ashot.AShot;
 import ru.yandex.qatools.ashot.Screenshot;
 import Utilities.ReadConfig;
@@ -68,22 +69,20 @@ import Utilities.TestListener;
 //********************************************************************   Test Base Class    ************************************************************************  
 
 public class BaseClass {
+	
 	public static BaseClass objBc=new BaseClass();
-	public static ReadConfig readCon=new ReadConfig();
 	public static WebDriver driver;
 	public static WebDriverWait wait;
-	public static Properties objprop;
 	public static FileInputStream objFile;
-	/*
-	public static String browserName=readCon.getBrowserName();
-	public static int explicit_Wait=readCon.getexpWait();
-	public static int PAGE_LOAD_TIME=readCon.getPAGE_LOAD_TIME();
-	public static int IMPLICIT_WAIT=readCon.getIMPLICIT_WAIT();		
-	public static String chromePath=readCon.getChromePath();
-	
-	public static String ffPath=readCon.getffPath();
-	public static String iePath=readCon.getiePath();
-	*/
+	public static Properties appProperties;
+	public static Properties objprop;
+	public static String browserName=appProperties.getProperty("browserName");
+	public static int explicit_Wait=Integer.parseInt(appProperties.getProperty("explicitWait"));
+	public static int PAGE_LOAD_TIME=Integer.parseInt(appProperties.getProperty("pageLoadTime"));
+	public static int IMPLICIT_WAIT=Integer.parseInt(appProperties.getProperty("inplicitWait"));	
+	//public static String chromePath=appProperties.getProperty("browserName");
+	//public static String ffPath=appProperties.getProperty("browserName");
+	//public static String iePath=appProperties.getProperty("browserName");
 	public static String configFile;
 	public static String configPath;
 	public static String urlAddress;
@@ -97,10 +96,26 @@ public class BaseClass {
 	public static JavascriptExecutor jse;
 	public static String DomainName="TestA";
 	public static Logger log=LogManager.getLogger(BaseClass.class.getName());	
-	public static Properties appProperties;	
-//	BaseClass a=new BaseClass();
-	public BaseClass() {
-		ReadConfig.readProperties("");
+	public static CommonField cf=new CommonField();
+	
+	public	BaseClass() {
+		readProperties("");
+	} 
+
+	public static void readProperties(String expFilePath) {
+		try {
+			appProperties = new Properties();
+			if (expFilePath.isEmpty() || expFilePath.length() < 1) {
+				expFilePath = "./Configuration/Config.properties";// If User provied Any properties File Path if Not use// Configuration folder
+			}
+			File objsrc = new File(expFilePath);
+			FileInputStream objFile = new FileInputStream(objsrc);
+			objprop = new Properties();
+			objprop.load(objFile);
+			appProperties.putAll(objprop);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	/****************************************************************************************************************
 	*  Author: Md Rezaul Karim 
@@ -254,11 +269,6 @@ public class BaseClass {
 			{
 				browserName=mavenBrowserName;
 			}
-			else
-			{
-				browserName=readCon.getBrowserName();	
-			}
-			
 			if(browserName.toLowerCase().contains("ie") || browserName.contains("internet"))
 			{
 				System.setProperty("webdriver.ie.driver",driverPath+"//IEDriverServer.exe");
@@ -299,7 +309,7 @@ public class BaseClass {
 				objCap.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
 				ChromeOptions objOption = new ChromeOptions();
 				objCap.merge(objOption);
-				System.setProperty("webdriver.chrome.driver",chromePath);
+				System.setProperty("webdriver.chrome.driver",driverPath+"//chromedriver.exe");
 				driver = new ChromeDriver(objOption);
 				browserName="Google Chrome";
 			}
@@ -359,19 +369,17 @@ public class BaseClass {
 	*  FunctionOutPut: It will open Url That you want Automated
 	* 
 	* ***************************************************************************************************************/
-		
-	public static void openUrl(String expectedUrl){
+	public static void openUrl(String expUrl){
 		String urlAdd = null;
 		try {
 			Reporter.log("******************************************Url Open Strated******************************************");
-			
-			if(expectedUrl.isEmpty())
+			if(expUrl.isEmpty())
 				{
 				urlAdd=urlAddress;
 				}
 			else
 				{
-				urlAdd=expectedUrl;
+				urlAdd=expUrl;
 				}
 			driver.get(urlAdd);
 			Reporter.log("\t Expected Url ' "+urlAdd+" ' Opend Or Lunch");
@@ -402,6 +410,25 @@ public class BaseClass {
 		}catch(Exception e) {
 			TestListener.test.log(Status.FAIL,"\t Expected ' "+expClickElement+" ' Not Found or Able To Clicked");
 			log.info("\t Expected ' "+expClickElement+" ' Not Found or Able To Clicked");
+		}
+	}
+	/****************************************************************************************************************
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name:clickElementByJs
+	 *  Function Arg: ExpElement element locator
+	 *  FunctionOutPut: It will create a object for Action class
+	 * 
+	 * **************************************************************************************************************/
+	
+	public static void clickByJs(WebElement expElement){
+		try {
+			jse=(JavascriptExecutor)driver;
+			jse.executeScript("arguments[0].click();",expElement);
+			TestListener.test.log(Status.PASS,"\t Expected Element Clicked");
+			log.info("\t Expected Element Clicked");
+		}catch(Exception e) {
+			TestListener.test.log(Status.FAIL,"\t Expected Not Found or Able To Clicked");
+			log.info("\t Expected Not Found or Able To Clicked");
 		}
 	}
 	
@@ -461,25 +488,6 @@ public class BaseClass {
 		return obs;
 	}
 	
-	/****************************************************************************************************************
-	 *  Author: Md Rezaul Karim 
-	 *  Function Name:clickElementByJs
-	 *  Function Arg: ExpElement element locator
-	 *  FunctionOutPut: It will create a object for Action class
-	 * 
-	 * **************************************************************************************************************/
-	
-	public static void clickByJs(WebElement expElement){
-		try {
-			jse=(JavascriptExecutor)driver;
-			jse.executeScript("arguments[0].click();",expElement);
-			TestListener.test.log(Status.PASS,"\t Expected Element Clicked");
-			log.info("\t Expected Element Clicked");
-		}catch(Exception e) {
-			TestListener.test.log(Status.FAIL,"\t Expected Not Found or Able To Clicked");
-			log.info("\t Expected Not Found or Able To Clicked");
-		}
-	}
 	
 	/****************************************************************************************************************
 	 *  Author: Md Rezaul Karim 
@@ -559,9 +567,284 @@ public class BaseClass {
 		Reporter.log("******************************************Auto Suggest Drop Down Ended******************************************");
 		System.out.println("******************************************Auto Suggest Drop Down Ended****************************************");
 	}
+
+	public static void selectDropDown(WebElement expElement,String expValue) {
+		Select objd=new Select(expElement);
+		objd.selectByVisibleText(expValue);
+	}
+	
+	public static String currentDate() {
+		SimpleDateFormat formatter=new SimpleDateFormat("MM/dd/yyyy");
+		Date date=new Date();
+		String expDate=formatter.format(date).toString();
+		return expDate;
+	}
+	
+	
+	/****************************************************************************************************************
+	*  Author: Md Rezaul Karim 
+	*  Function Name: SetClander
+	*  Function Arg: String dateLocator, String monthLocator, String yearLocator, String nextLocator,String expectedDate
+	*  FunctionOutPut: It will Select value from drop down when drop down is not able to select by select tag
+	* 
+	* ***************************************************************************************************************/
+	
+	public static void selectDate(String expDate) throws InterruptedException {
+		
+		try{
+			String sDate;
+			if(expDate.isEmpty()|| expDate.length()<6) {
+				sDate=currentDate().replace("/","");
+			}
+			else {
+				sDate=expDate.replace("/","");
+			}
+			if(sDate.indexOf(".")!=-1) {
+				sDate=sDate.substring(0,sDate.indexOf("."));
+			}
+			String day,month,year;
+			if(sDate.length()>7) {
+				month=sDate.substring(0,2);
+				day=sDate.substring(2,4);
+				year=sDate.substring(4);
+			}
+			else {
+				month=sDate.substring(0,1);
+				day=sDate.substring(1,3);
+				year=sDate.substring(3);
+			}
+			month=Integer.toString(Integer.parseInt(month));
+			day=Integer.toString(Integer.parseInt(day));
+			selectDropDown(cf.setYear(),year);
+			String monthstr;
+			switch(month) {
+			case "1":
+			monthstr="January";
+			break;
+			case "2":
+			monthstr="February";
+			break;
+			case "3":
+			monthstr="March";
+			break;
+			case "4":
+			monthstr="April";
+			break;
+			case "5":
+			monthstr="May";
+			break;
+			case "6":
+			monthstr="June";
+			break;
+			case "7":
+			monthstr="July";
+			break;
+			case "8":
+			monthstr="August";
+			break;
+			case "9":
+			monthstr="September";
+			break;
+			case "10":
+			monthstr="October";
+			break;
+			case "11":
+			monthstr="November";
+			break;
+			case "12":
+			monthstr="December";
+			break;
+			default:
+				monthstr="Invalid Month";
+				break;
+			}
+			selectDropDown(cf.setYear(),monthstr);
+			List<WebElement> allDates=cf.setDay();
+			for(WebElement ele:allDates) {
+				if(day.equals(ele.getText())) {
+					ele.click();
+					break;
+				}
+			}
+			TestListener.test.log(Status.PASS,"\t Expected Date Selected");
+			log.info("\t Expected Date Selected");
+		}catch(Exception e) {
+			TestListener.test.log(Status.FAIL,"\t Expected Date Did Not Selected");
+			log.info("\t Expected Date Did Not Selected");
+		}
+		}
+	/****************************************************************************************************************
+	*  Author: Md Rezaul Karim 
+	*  Function Name: SetClander
+	*  Function Arg: String dateLocator, String monthLocator, String yearLocator, String nextLocator,String expectedDate
+	*  FunctionOutPut: It will Select value from drop down when drop down is not able to select by select tag
+	* 
+	* ***************************************************************************************************************/
+	
+	public static void SetClander(String dateLocator, String monthLocator, String yearLocator, String nextLocator,String expectedDate) throws InterruptedException {
+		
+		Reporter.log("******************************************Set Clander Started******************************************");
+		System.out.println("******************************************Set Clander Started************************************************");
+		
+		String expDate[] = expectedDate.split("/");
+		String Month=expDate[0];
+		String day=expDate[1];
+		String years=expDate[2];
+		driver.findElements(By.xpath(dateLocator));
+		if (years.length() < 3)
+			{
+			years = ("20" + years);
+			}
+		else 
+			{
+			years = years;
+			}
+		for (int i = 0; i < 11; i++)
+		{
+			WebElement objMonth = driver.findElement(By.xpath(monthLocator));
+			WebElement objYear = driver.findElement(By.xpath(yearLocator));
+			String month = objMonth.getText();
+			String year = objYear.getText();
+			if (month.toLowerCase().contains(Month.toLowerCase()))
+				{
+					if (year.toLowerCase().contains(years.toLowerCase()))
+						{
+							break;
+						}
+				} 
+			else
+				{
+					driver.findElement(By.xpath(nextLocator)).click();
+				}
+		}
+		List<WebElement> listDate = driver.findElements(By.xpath(dateLocator));
+		int totalDate = listDate.size();
+		for (int i = 0; i < totalDate; i++)
+		{
+			String actualDate = listDate.get(i).getText();
+			String reActualDate = actualDate.trim();
+			if (reActualDate.contains(day))
+				{
+					if(listDate.get(i).isEnabled())//check if date is enable 
+					{
+						listDate.get(i).click();
+						break;
+					}
+					else
+					{
+						System.out.println("The Date you want select is Disable");
+					}	
+				}
+		}
+		Reporter.log("******************************************Set Clander Ended******************************************");
+		System.out.println("******************************************Set Clander Ended******************************************************");
+	}	
+	public static List<String> tableHeader() {
+		int count=0,scindex=0,strSize=0;
+		List<String> allHeaderName=new ArrayList<String>();
+		List<WebElement> allHeaderEle=cf.TableHeaderValue();
+		for(WebElement header:allHeaderEle) {
+			String headerName=header.getText().replaceAll("[\r\n]","").replaceAll("ui-btn","").trim();
+			strSize=strSize+headerName.length();
+			allHeaderName.add(headerName);
+			count++;
+			if(count%4==0 && (count!=allHeaderEle.size()  || strSize>=80)) {
+				if(allHeaderEle.size()-count>=4) {
+					
+					scindex=count+3;
+				}
+				else {
+					scindex=allHeaderEle.size()-1;
+				}
+				scrollUpdown("",allHeaderEle.get(scindex));
+				strSize=0;
+			}
+			
+		}
+		return allHeaderName;
+	}
+
+	public static List<LinkedHashMap<String,String>> fetchWebTable(String expColumn,String expPage){
+		boolean checkifMorePage;
+		int pageFlag=0,pageCount=0;
+		char allPageTag=0;
+		List<LinkedHashMap<String,String>> allData=new ArrayList<LinkedHashMap<String,String>>();
+		List<String> allHeaderNames=new ArrayList<String>();
+		if(expPage.isEmpty() || expPage.toLowerCase().contains("all")){
+			allPageTag='y';
+		}
+		else {
+			pageFlag=Integer.parseInt(expPage);							//Number of page that user want retrive data
+		}
+		if(expColumn.isEmpty() || expColumn.length()<1) {				//if user does not provide column value then get it from table
+			allHeaderNames=tableHeader();
+		}
+		else {
+			String[] expColumnSplit=expColumn.split(",");
+			allHeaderNames=Arrays.asList(expColumnSplit);
+		}
+		int totalColumn=allHeaderNames.size();
+		try {
+			Thread.sleep(1000);
+		}catch(InterruptedException e) {
+			e.printStackTrace();
+		}
+		do {
+			int totalRowList=cf.TableRowValueList().size();
+			for(int i=0;i<totalRowList;i++) {
+				LinkedHashMap<String,String> eachRowData=new LinkedHashMap<>();
+				int k=0;
+				for(int j=0;j<totalColumn;j++) {
+					String cellValue=cf.TableRowValueList().get(i+k).getText().trim();
+					k=k+1;
+					eachRowData.put(allHeaderNames.get(j), cellValue);
+				}
+				i=i+k-1;
+				allData.add(eachRowData);
+			}
+			pageCount++;
+			if(pageCount>=pageFlag && allPageTag!='y') {
+				break;
+			}
+			else {
+				checkifMorePage=cf.RightArrow().getAttribute("class").contains("disable");
+				if(!checkifMorePage) {
+					cf.RightArrow().click();
+				}
+			}
+			
+		}while(!checkifMorePage);
+		return allData;
+	}
 	
 	
 	////******************************   Validation Part   ******************************************************88
+	public static boolean checkDisable(WebElement expElement) {
+		boolean applyResult=false;
+		String actualClassValue=expElement.getAttribute("class");
+		if(actualClassValue.toLowerCase().contains("disabled")) {
+			applyResult=true;
+		}
+		return applyResult;
+	}
+	public static void validateDisable(WebElement expElement) throws IOException {
+		String expDisableElement=null;
+		waitVisibility(expElement);
+		expDisableElement=expElement.getText().trim();
+		if (checkDisable(expElement)==true){
+				Assert.assertTrue(true,"Expected ==> "+expDisableElement+" <==Disabled And Passed");
+				TestListener.test.log(Status.PASS,"Expected ==> "+expDisableElement+" <==Disabled And Passed");
+				log.info("Expected ==> "+expDisableElement+" <==Disabled And Passed");
+			}
+		else
+			{
+			Assert.assertTrue(true,"\tExpected ==> "+expDisableElement+" <==Enabled And Failed");
+			TestListener.test.log(Status.PASS,"\tExpected ==> "+expDisableElement+" <==Enabled And Failed");
+			log.info("\tExpected ==> "+expDisableElement+" <==Enabled And Failed");
+			takeScreenShot("ValidateTitle",".png");
+		}
+	}
+	
 	
 	/****************************************************************************************************************
 	*  Author: Md Rezaul Karim 
@@ -627,7 +910,7 @@ public class BaseClass {
 			}
 		else 
 			{
-				takeScreenShot("ValidateUrl");
+				takeScreenShot("ValidateUrl",".png");
 				Assert.assertFalse(false, "Expected Url ***** " + urlAddress+ " ***** Not Found And Validation of Url Are Failed " + "Actual Url Was **** " + actualUrl+" ****");
 				System.out.println("Expected Url ***** " + urlAddress+ " ***** Not Found And Validation of Url Are Failed " + "Actual Url Was **** " + actualUrl+" ****");
 				log.error("Expected Url ****** ==> " + urlAddress+ " <== ****** Not Found And Validation of Url Are Failed " + "Actual Url Was **** " + actualUrl+" ****");
@@ -725,7 +1008,7 @@ public class BaseClass {
 						}
 						else
 						{
-							takeScreenShot("ValidateText");
+							takeScreenShot("ValidateText",".png");
 							Assert.assertFalse(false, "Expected Text Element  ***** " + exText+ " *****  Not Found And Validation of Text element  Are Failed " + "The Actual Text Was *** " + acText+" ***");
 							System.out.println("Expected Text Element  ***** " + exText+ " *****  Not Found And Validation of Text element  Are Failed " + "The Actual Text Was *** " + acText+" ***");
 							log.error("Expected Text Element  ***** " + exText+ " *****  Not Found And Validation of Text element  Are Failed " + "The Actual Text Was *** " + acText+" ***");
@@ -759,7 +1042,7 @@ public class BaseClass {
 			}
 		else
 			{
-				takeScreenShot("ValidateTitle");
+				takeScreenShot("ValidateTitle",".png");
 				Assert.assertTrue(false,"The Expected *** ==> "+expectedTitle+" <==*** Not Found Test Case Failed. The Actual Title was ***==> "+actualTitle+"<==*** ");
 				System.out.println("The Expected *** ==> "+expectedTitle+" <==*** Not Found Test Case Failed. The Actual Title was ***==> "+actualTitle+"<==*** ");
 			}
@@ -789,7 +1072,7 @@ public class BaseClass {
 		else
 			{
 				setBorder(expectedClick);	
-				takeScreenShot("ValidateClick");	
+				takeScreenShot("ValidateClick",".png");	
 				System.out.println("The Expected Element *** "+TextElement+" does not Performed Clicked Successfully");
 				Assert.assertTrue(false,"The Expected Element *** "+TextElement+" does not Performed Clicked Successfully");
 				log.error("The Expected Element *** "+TextElement+" does not Performed Clicked Successfully");
@@ -933,45 +1216,6 @@ public class BaseClass {
 	
 	////******************************   All Input And Random Data Function  ***********************************************************
 	
-	public static List<LinkedHashMap<String,String>> fetchTable(String expColumn){
-		List<LinkedHashMap<String,String>> allData=new ArrayList<LinkedHashMap<String,String>>();
-		boolean checkifMorePage;
-		List<String> allHeaderName=new ArrayList<String>();
-		if(expColumn.isEmpty() || expColumn.length()<1) {
-			List<WebElement> allHeaderEl=log4j2.xmllog4j2.xmllog4j2.xml
-					.TableHeaderValue();
-			for(WebElement header : allHeaderEl ) {
-				String headerName=header.getText().replaceAll("\r\n","").replaceAll("ui-btn","").trim();
-				allHeaderName.add(headerName);
-			}
-		}
-		else {
-			String[] expColumnSplit=expColumn.split(",");
-			allHeaderName=Arrays.asList(expColumnSplit);
-		}
-		int totalColumn=allHeaderName.size();
-		try {
-			Thread.sleep(1000);
-		}catch(InterruptedException e) {
-			e.printStackTrace();
-		}
-		do {
-			int totalRowList=cf.TableRowValueList().Size();
-			for(int i=0;i<totalRowList;i++) {
-				LinkedHashMap<String,String> eachRowData=new LinkedHashMap<>();
-				int k=0;
-				for(int j=0;j<totalColumn;j++) {
-					String cellValue=cf.TableRowValuelist().get(i+k).getText();
-					k=k+1;
-					eachRowData.put(allHeaderName.get(j), cellValue)
-				}
-				i=i+k-1;
-				allData.add(eachRowData);
-			}
-			checkifMorePage=cf.RightArrow().get
-		}
-		return allData;
-	}
 	/****************************************************************************************************************
 	 *  Author: Md Rezaul Karim 
 	 *  Function Name: getInput
@@ -1301,73 +1545,6 @@ public class BaseClass {
 //======================================================		User Action Method		===================================================
 	
 	
-	
-	/****************************************************************************************************************
-	*  Author: Md Rezaul Karim 
-	*  Function Name: SetClander
-	*  Function Arg: String dateLocator, String monthLocator, String yearLocator, String nextLocator,String expectedDate
-	*  FunctionOutPut: It will Select value from drop down when drop down is not able to select by select tag
-	* 
-	* ***************************************************************************************************************/
-	
-	public static void SetClander(String dateLocator, String monthLocator, String yearLocator, String nextLocator,String expectedDate) throws InterruptedException {
-		
-		Reporter.log("******************************************Set Clander Started******************************************");
-		System.out.println("******************************************Set Clander Started************************************************");
-		
-		String expDate[] = expectedDate.split("/");
-		String Month=expDate[0];
-		String day=expDate[1];
-		String years=expDate[2];
-		driver.findElements(By.xpath(dateLocator));
-		if (years.length() < 3)
-			{
-			years = ("20" + years);
-			}
-		else 
-			{
-			years = years;
-			}
-		for (int i = 0; i < 11; i++)
-		{
-			WebElement objMonth = driver.findElement(By.xpath(monthLocator));
-			WebElement objYear = driver.findElement(By.xpath(yearLocator));
-			String month = objMonth.getText();
-			String year = objYear.getText();
-			if (month.toLowerCase().contains(Month.toLowerCase()))
-				{
-					if (year.toLowerCase().contains(years.toLowerCase()))
-						{
-							break;
-						}
-				} 
-			else
-				{
-					driver.findElement(By.xpath(nextLocator)).click();
-				}
-		}
-		List<WebElement> listDate = driver.findElements(By.xpath(dateLocator));
-		int totalDate = listDate.size();
-		for (int i = 0; i < totalDate; i++)
-		{
-			String actualDate = listDate.get(i).getText();
-			String reActualDate = actualDate.trim();
-			if (reActualDate.contains(day))
-				{
-					if(listDate.get(i).isEnabled())//check if date is enable 
-					{
-						listDate.get(i).click();
-						break;
-					}
-					else
-					{
-						System.out.println("The Date you want select is Disable");
-					}	
-				}
-		}
-		Reporter.log("******************************************Set Clander Ended******************************************");
-		System.out.println("******************************************Set Clander Ended******************************************************");
-	}	
 	
 	
 	//*******************************************          Utility               *****************************************************//

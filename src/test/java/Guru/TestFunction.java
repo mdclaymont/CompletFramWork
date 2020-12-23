@@ -11,7 +11,7 @@ public class TestFunction extends BaseClass{
 	public static void main(String[] args) {
 		
 System.out.println(IMPLICIT_WAIT);
-System.out.println(iePath);
+
 	}
 	
 }
