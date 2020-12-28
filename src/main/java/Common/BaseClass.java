@@ -48,6 +48,8 @@ import org.testng.asserts.SoftAssert;
 import com.aventstack.extentreports.Status;
 
 import PageObject.CommonField;
+import PageObject.LandingPage;
+import PageObject.LogInPage;
 import ru.yandex.qatools.ashot.AShot;
 import ru.yandex.qatools.ashot.Screenshot;
 import Utilities.TestListeners;
@@ -67,9 +69,6 @@ public class BaseClass {
 	public static int explicit_Wait=Integer.parseInt(appProperties.getProperty("explicitWait"));
 	public static int PAGE_LOAD_TIME=Integer.parseInt(appProperties.getProperty("pageLoadTime"));
 	public static int IMPLICIT_WAIT=Integer.parseInt(appProperties.getProperty("inplicitWait"));	
-	//public static String chromePath=appProperties.getProperty("browserName");
-	//public static String ffPath=appProperties.getProperty("browserName");
-	//public static String iePath=appProperties.getProperty("browserName");
 	public static String configFile;
 	public static String configPath;
 	public static String urlAddress=appProperties.getProperty(DomainName+"Url");
@@ -84,6 +83,9 @@ public class BaseClass {
 	
 	public static Logger log=LogManager.getLogger(BaseClass.class.getName());	
 	public static CommonField cf=new CommonField();
+	public static LandingPage lp=new LandingPage();
+	public static LogInPage lip=new LogInPage(driver);
+	
 	
 	public	BaseClass() {
 		readProperties("");

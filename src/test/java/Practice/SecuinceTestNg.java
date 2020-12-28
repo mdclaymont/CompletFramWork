@@ -22,16 +22,17 @@ public class SecuinceTestNg extends BaseClass {
 	public void beforMethod() throws IOException {
 		initilizeDriver();
 		openUrl("");
+		click(lp.myAccount());
 	}
 	@Test
 	public void Testc() {
-	System.out.println("Test");
-	//TestListener.test.log(Status.FAIL,"Exptest Test Pass Failed");	
+		System.out.println("postIphone(");
+
 	}
 	/*
 	@Test(groups= {"Smoke","Sanity"})
 	public void postIphone() {
-	System.out.println("postIphone(");
+	
 	//TestListener.test.log(Status.FAIL,"Exptest Test Pass Failed");	
 	}
 	@Test(groups={"Smoke","Sanity"})
@@ -47,7 +48,7 @@ public class SecuinceTestNg extends BaseClass {
 	*/
 	@AfterMethod
 	public void afterMethod() {
-		System.out.println("Test After Method");
+		closeBrowser("");
 	}
 	
 }

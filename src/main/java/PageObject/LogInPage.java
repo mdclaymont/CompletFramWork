@@ -14,9 +14,9 @@ public class LogInPage extends BaseClass {
 		ldriver=rdriver;
 		PageFactory.initElements(rdriver, this);
 	}
-	@FindBy(xpath="//*[@name='uid']") WebElement inputid ;
-	@FindBy(xpath="//*[@name='password']" ) WebElement UiPassword  ;
-	@FindBy(xpath= "//*[@name='btnLogin']") WebElement login   ;
+	@FindBy(xpath="//*[@name='inputEmailHandle']") WebElement inputid ;
+	@FindBy(xpath="//*[@name='inputPassword']" ) WebElement UiPassword  ;
+	@FindBy(xpath= "//*[@name='login']") WebElement login   ;
 	@FindBy(xpath= "//a[text()='Log out']") WebElement logout   ;
 	
 	/****************************************************************************************************/	
@@ -48,9 +48,9 @@ public class LogInPage extends BaseClass {
      * @throws IOException **************************************************************************************************/	
     public void LogIn() throws InterruptedException, IOException
     {
-    	inputid.sendKeys(userId);
-    	UiPassword.sendKeys(userPassword);
-       	login.click();
+    	writeText(inputid,userId);
+    	writeText(UiPassword,userPassword);
+       	click(login);
        	Thread.sleep(3000);
        	validateClick(login,"submit");
     	//return new DescriptionPage(); 

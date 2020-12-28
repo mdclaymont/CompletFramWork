@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
+import org.testng.Reporter;
 
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
@@ -16,17 +17,22 @@ import com.aventstack.extentreports.markuputils.MarkupHelper;
 
 import Common.BaseClass;
 
-public class TestListeners implements ITestListener {
+public class TestListeners extends BaseClass implements ITestListener {
 	public static ExtentTest test;
 	public static String expMethodName, expClassName;
 	public static ExtentReports extent = ExtentManager.createInstance();
 	public static ThreadLocal<ExtentTest> extentTest = new ThreadLocal<>();
-
+	
+	public static void onStart() {
+		expMethodName = objBc.getClass().getName().toString().trim();
+		test = extent.createTest(expMethodName); // This will be Create Pass Failed all Other log To Extent Report
+		extentTest.set(test); // Make Thread safe
+		Reporter.log("****** Test case Started And Details Are " + expMethodName + " Strated **************");
+	}
 	public void onStart(ITestContext context) {
 		expMethodName = context.getName().toString().trim();
 		test = extent.createTest(expMethodName); // This will be Create Pass Failed all Other log To Extent Report
 		extentTest.set(test); // Make Thread safe
-
 	}
 
 	public void onTestStart(ITestResult result) {
@@ -40,11 +46,9 @@ public class TestListeners implements ITestListener {
 		expMethodName = result.getMethod().getMethodName().trim();
 		test = extent.createTest(expClassName + " :: " + expMethodName); // This will be Create Pass Failed all Other
 		extentTest.set(test);																	// log To Extent Report
-
 		String logText = "<b>Test Method " + expMethodName + "Successful</b>";
 		Markup m = MarkupHelper.createLabel(logText, ExtentColor.GREEN);
 		extentTest.get().log(Status.PASS, m);
-
 	}
 
 	public void onTestFailure(ITestResult result) {
@@ -62,7 +66,6 @@ public class TestListeners implements ITestListener {
 		}
 		Markup m = MarkupHelper.createLabel(logText, ExtentColor.RED);
 		extentTest.get().log(Status.FAIL, m);
-
 	}
 
 	public void onFinish(ITestContext context) {
@@ -70,7 +73,12 @@ public class TestListeners implements ITestListener {
 			extent.flush();
 		}
 	}
-
+	public static void onFinish() {
+		expMethodName = objBc.getClass().getName().toString().trim();
+		if (extent != null) {
+			extent.flush();
+		}
+	}
 	public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
 
 	}
