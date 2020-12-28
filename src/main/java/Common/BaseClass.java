@@ -50,7 +50,7 @@ import com.aventstack.extentreports.Status;
 import PageObject.CommonField;
 import ru.yandex.qatools.ashot.AShot;
 import ru.yandex.qatools.ashot.Screenshot;
-import Utilities.TestListener;
+import Utilities.TestListeners;
 
 //********************************************************************   Test Base Class    ************************************************************************  
 
@@ -63,6 +63,7 @@ public class BaseClass {
 	public static Properties appProperties;
 	public static Properties objprop;
 	public static String browserName=appProperties.getProperty("browserName");
+	public static String DomainName=appProperties.getProperty("userDomainName");
 	public static int explicit_Wait=Integer.parseInt(appProperties.getProperty("explicitWait"));
 	public static int PAGE_LOAD_TIME=Integer.parseInt(appProperties.getProperty("pageLoadTime"));
 	public static int IMPLICIT_WAIT=Integer.parseInt(appProperties.getProperty("inplicitWait"));	
@@ -71,16 +72,16 @@ public class BaseClass {
 	//public static String iePath=appProperties.getProperty("browserName");
 	public static String configFile;
 	public static String configPath;
-	public static String urlAddress;
-	public static String userId;
-	public static String userPassword;
+	public static String urlAddress=appProperties.getProperty(DomainName+"Url");
+	public static String userId=appProperties.getProperty(DomainName+"UserId");
+	public static String userPassword=appProperties.getProperty(DomainName+"UserPassword");
 	public static String Description;
 	public static String Title;
 	public static String driverPath;
 	public static SoftAssert soft=new SoftAssert();
 	public static String downloadPath=System.getProperty("user.dir")+File.separator+"downloads";
 	public static JavascriptExecutor jse;
-	public static String DomainName="TestA";
+	
 	public static Logger log=LogManager.getLogger(BaseClass.class.getName());	
 	public static CommonField cf=new CommonField();
 	
@@ -197,7 +198,7 @@ public class BaseClass {
 	public static void getData() throws IOException {
 		Reporter.log("******************************************Get Data Imported Staretd******************************************");
 		System.out.println("******************************************Get Data Imported Staretd******************************************");
-		File src=new File("./Configuration/config.properties");
+		File src=new File("./Configuration/Config.properties");
 		try
 		{
 			FileInputStream objFile=new FileInputStream(src);
@@ -244,32 +245,32 @@ public class BaseClass {
 	*  FunctionOutPut: It will initilize Driver
 	* 
 	* ***************************************************************************************************************/
-	@BeforeClass
 	public static WebDriver initilizeDriver() throws IOException {
 		try {
-			getData();
+			//getData();
 			Reporter.log("**************************************** initilize Driver MEthod Started ******************************************");
+			System.out.println(browserName);
 			String mavenBrowserName=System.getProperty("Browser");// check if maven send any browser
-			String driverPath=System.getProperty("user.dir")+"//Driver";
+			String driverPath=System.getProperty("user.dir")+"\\Drivers";
 			if(mavenBrowserName!= null)
 			{
 				browserName=mavenBrowserName;
 			}
 			if(browserName.toLowerCase().contains("ie") || browserName.contains("internet"))
 			{
-				System.setProperty("webdriver.ie.driver",driverPath+"//IEDriverServer.exe");
+				System.setProperty("webdriver.ie.driver",driverPath+"\\IEDriverServer.exe");
 				driver= new InternetExplorerDriver();
 				browserName="Internet Explorer";
 			}
 			else if(browserName.toLowerCase().contains("edge"))
 			{
-				System.setProperty("webdriver.edge.driver",driverPath+"//msedgedriver.exe");
+				System.setProperty("webdriver.edge.driver",driverPath+"\\msedgedriver.exe");
 				driver=new EdgeDriver();
 				browserName="Microsoft Edge";
 			}
 			else if(browserName.contains("firefox") || browserName.contains("ff"))
 			{
-				System.setProperty("webdriver.gecko.driver",driverPath+"//geckodriver.exe");
+				System.setProperty("webdriver.gecko.driver",driverPath+"\\geckodriver.exe");
 				System.setProperty(FirefoxDriver.SystemProperty.BROWSER_LOGFILE,"null");
 				driver=new FirefoxDriver();
 				browserName="FireFox";
@@ -277,7 +278,7 @@ public class BaseClass {
 			//if user want headless browser then you can use it 
 			else if(browserName.contains("chromeheadless") || browserName.contains("headless"))
 			{
-				System.setProperty("webdriver.chrome.driver",driverPath+"//chromedriver.exe");
+				System.setProperty("webdriver.chrome.driver",driverPath+"\\chromedriver.exe");
 				System.setProperty("webdriver.chrome.silentOutput","true");//it will remove unnessary log
 				HashMap<String,Object> ohp=new HashMap<String,Object>();
 				ohp.put("profile.defult_content_settings.popups",0);
@@ -295,13 +296,14 @@ public class BaseClass {
 				objCap.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
 				ChromeOptions objOption = new ChromeOptions();
 				objCap.merge(objOption);
-				System.setProperty("webdriver.chrome.driver",driverPath+"//chromedriver.exe");
+				System.setProperty("webdriver.chrome.driver",driverPath+"\\chromedriver.exe");
 				driver = new ChromeDriver(objOption);
 				browserName="Google Chrome";
 			}
 			else
 			{
-				System.setProperty("webdriver.chrome.driver",driverPath+"chromedriver.exe");
+				System.setProperty("webdriver.chrome.driver","I:\\Selenium Poject\\CompletFramWork\\Drivers\\chromedriver.exe");
+				System.setProperty("webdriver.chrome.whitelistedIps", "");
 				System.setProperty("webdriver.chrome.silentOutput","true");//it will remove unnessary log.
 				HashMap<String,Object> ohp=new HashMap<String,Object>();
 				ohp.put("profile.defult_content_settings.popups",0);
@@ -309,18 +311,20 @@ public class BaseClass {
 				ChromeOptions oco=new ChromeOptions();
 				oco.setExperimentalOption("useAutomationExtension",false);
 				oco.setExperimentalOption("prefs",ohp);
-				driver = new ChromeDriver(oco);
+				driver = new ChromeDriver();
 				browserName="Google Chrome";
 			}
 			driver.manage().window().maximize();
 			driver.manage().deleteAllCookies();
 			driver.manage().timeouts().pageLoadTimeout(PAGE_LOAD_TIME,TimeUnit.SECONDS);
 			driver.manage().timeouts().implicitlyWait(IMPLICIT_WAIT,TimeUnit.SECONDS);
-			Reporter.log("\t Expected Browser ' "+browserName+" ' Opend Successfully");
-			TestListener.test.log(Status.PASS,"\t Expected Browser ' "+browserName+" ' Opend Successfully");
+			TestListeners.test.log(Status.PASS,"\t Expected Browser  Opend Successfully");
+			log.info("\t Expected Browser ' "+browserName+" ' Opend Successfully");
+			
 		}catch(Exception e) {
 			Reporter.log("\t Expected Browser ' "+browserName+" ' Opend Successfully");
-			TestListener.test.log(Status.FAIL,"\t Expected Browser ' "+browserName+" ' Failed To Opend");
+			TestListeners.test.log(Status.FAIL,"\t Expected Browser ' "+browserName+" ' Failed To Opend");
+			log.error("\t Expected Browser ' "+browserName+" ' Failed To Open");
 		}	
 		return driver;
 	}
@@ -368,11 +372,11 @@ public class BaseClass {
 				urlAdd=expUrl;
 				}
 			driver.get(urlAdd);
-			Reporter.log("\t Expected Url ' "+urlAdd+" ' Opend Or Lunch");
-			TestListener.test.log(Status.PASS,"\t Expected Url ' "+urlAdd+" ' Opend Or Lunch");
+			log.info("\t Expected Url ' "+urlAdd+" ' Opend Or Lunch");
+			TestListeners.test.log(Status.PASS,"\t Expected Url ' "+urlAdd+" ' Opend Or Lunch");
 		}catch(Exception e) {
-			Reporter.log("\t Expected Url ' "+urlAdd+" ' Did Not Opend Or Lunch");
-			TestListener.test.log(Status.FAIL,"\t Expected Url ' "+urlAdd+" ' Did Not Opend Or Lunch");
+			log.error("\t Expected Url ' "+urlAdd+" ' Did Not Opend Or Lunch");
+			TestListeners.test.log(Status.FAIL,"\t Expected Url ' "+urlAdd+" ' Did Not Opend Or Lunch");
 		}	
 	}
 	//******************************   User Action Start   ******************************************************88
@@ -391,11 +395,11 @@ public class BaseClass {
 			waitVisibility(expElement);
 			expClickElement=expElement.getText().trim();
 			expElement.click();
-			TestListener.test.log(Status.PASS,"\t Expected ' "+expClickElement+" ' Element Clicked");
+			TestListeners.test.log(Status.PASS,"\t Expected ' "+expClickElement+" ' Element Clicked");
 			log.info("\t Expected ' "+expClickElement+" ' Element Clicked");
 		}catch(Exception e) {
-			TestListener.test.log(Status.FAIL,"\t Expected ' "+expClickElement+" ' Not Found or Able To Clicked");
-			log.info("\t Expected ' "+expClickElement+" ' Not Found or Able To Clicked");
+			TestListeners.test.log(Status.FAIL,"\t Expected ' "+expClickElement+" ' Not Found or Able To Clicked");
+			log.error("\t Expected ' "+expClickElement+" ' Not Found or Able To Clicked");
 		}
 	}
 	/****************************************************************************************************************
@@ -410,11 +414,11 @@ public class BaseClass {
 		try {
 			jse=(JavascriptExecutor)driver;
 			jse.executeScript("arguments[0].click();",expElement);
-			TestListener.test.log(Status.PASS,"\t Expected Element Clicked");
+			TestListeners.test.log(Status.PASS,"\t Expected Element Clicked");
 			log.info("\t Expected Element Clicked");
 		}catch(Exception e) {
-			TestListener.test.log(Status.FAIL,"\t Expected Not Found or Able To Clicked");
-			log.info("\t Expected Not Found or Able To Clicked");
+			TestListeners.test.log(Status.FAIL,"\t Expected Not Found or Able To Clicked");
+			log.error("\t Expected Not Found or Able To Clicked");
 		}
 	}
 	
@@ -422,11 +426,11 @@ public class BaseClass {
 		try {
 			waitVisibility(expElement);
 			expElement.sendKeys(expText);
-			TestListener.test.log(Status.PASS,"\t Expected ' "+expText+" ' Element Set Input/Edit Field");
+			TestListeners.test.log(Status.PASS,"\t Expected ' "+expText+" ' Element Set Input/Edit Field");
 			log.info("\t Expected ' "+expText+" ' Element Set Input/Edit Field");
 		}catch(Exception e) {
-			TestListener.test.log(Status.FAIL,"\t Expected ' "+expText+" ' Element Does Not Set Input/Edit Field");
-			log.info("\t Expected ' "+expText+" ' Element Does Not Set Input/Edit Field");
+			TestListeners.test.log(Status.FAIL,"\t Expected ' "+expText+" ' Element Does Not Set Input/Edit Field");
+			log.error("\t Expected ' "+expText+" ' Element Does Not Set Input/Edit Field");
 		}
 	}
 	public static void writeTextByJs(WebElement expElement,String expText) {
@@ -435,21 +439,21 @@ public class BaseClass {
 			jse.executeScript("arguments[0].setAttribute('value','"+expText+"');",expElement);
 			Thread.sleep(1000);
 			String setValue=expElement.getAttribute("value").trim();
-			TestListener.test.log(Status.PASS,"\t Expected ' "+setValue+" ' Element Set Input/Edit Field");
+			TestListeners.test.log(Status.PASS,"\t Expected ' "+setValue+" ' Element Set Input/Edit Field");
 			log.info("\t Expected ' "+setValue+" ' Element Set Input/Edit Field");
 		}catch(Exception e) {
-			TestListener.test.log(Status.FAIL,"\t Expected ' "+expText+" ' Element Does Not Set Input/Edit Field");
-			log.info("\t Expected ' "+expText+" ' Element Does Not Set Input/Edit Field");
+			TestListeners.test.log(Status.FAIL,"\t Expected ' "+expText+" ' Element Does Not Set Input/Edit Field");
+			log.error("\t Expected ' "+expText+" ' Element Does Not Set Input/Edit Field");
 		}
 	}
 	public static void clearFiled(WebElement expElement) {
 		try {
 			waitVisibility(expElement);
 			expElement.clear();;
-			TestListener.test.log(Status.PASS,"\t Expected Input/Edit Field Cleared");
+			TestListeners.test.log(Status.PASS,"\t Expected Input/Edit Field Cleared");
 			log.info("\t Expected Input/Edit Field Cleared");
 		}catch(Exception e) {
-			TestListener.test.log(Status.FAIL,"\t Expected Input/Edit Field Did Not Cleared");
+			TestListeners.test.log(Status.FAIL,"\t Expected Input/Edit Field Did Not Cleared");
 			log.info("\t Expected Input/Edit Field Did Not Cleared");
 		}
 	}
@@ -497,12 +501,7 @@ public class BaseClass {
 	* ***************************************************************************************************************/
 	
 	public static void selectByJs(WebElement expElement,String ExpValue){
-		Reporter.log("****************************************** Select By Js Strated ******************************************");
-		System.out.println("****************************************** select By Js Strated ******************************************************");
-			
 		jse.executeScript("arguments[0].setAttribute('value','"+ExpValue+"');", expElement);
-		Reporter.log("****************************************** Select By Js Ended ******************************************");
-		System.out.println("****************************************** Select By Js Ended ******************************************************");
 	}
 	
 	/****************************************************************************************************************
@@ -513,9 +512,6 @@ public class BaseClass {
 	* 
 	* ***************************************************************************************************************/
 	public static void setObjectByText(String expText, String expSearchLocator) {
-		
-		Reporter.log("******************************************Auto Suggest Drop Down Started******************************************");
-		System.out.println("******************************************Auto Suggest Drop Down Started*************************************");
 		String getSearchValue;
 		List<WebElement> objElements=driver.findElements(By.xpath(expSearchLocator));
 		int totalEl=objElements.size();
@@ -529,15 +525,9 @@ public class BaseClass {
 				break;
 			}
 		}
-		
-		Reporter.log("******************************************Auto Suggest Drop Down Ended******************************************");
-		System.out.println("******************************************Auto Suggest Drop Down Ended****************************************");
 	}
 	
 	public static void setObjectByText(String expText, List<WebElement> expEle) {
-		
-		Reporter.log("******************************************Auto Suggest Drop Down Started******************************************");
-		System.out.println("******************************************Auto Suggest Drop Down Started*************************************");
 		String actualValue="";
 		int totalEl=expEle.size();
 		for(int i = 0;i<totalEl;i++)
@@ -549,9 +539,6 @@ public class BaseClass {
 				break;
 			}
 		}
-		
-		Reporter.log("******************************************Auto Suggest Drop Down Ended******************************************");
-		System.out.println("******************************************Auto Suggest Drop Down Ended****************************************");
 	}
 
 	public static void selectDropDown(WebElement expElement,String expValue) {
@@ -652,10 +639,10 @@ public class BaseClass {
 					break;
 				}
 			}
-			TestListener.test.log(Status.PASS,"\t Expected Date Selected");
+			TestListeners.test.log(Status.PASS,"\t Expected Date Selected");
 			log.info("\t Expected Date Selected");
 		}catch(Exception e) {
-			TestListener.test.log(Status.FAIL,"\t Expected Date Did Not Selected");
+			TestListeners.test.log(Status.FAIL,"\t Expected Date Did Not Selected");
 			log.info("\t Expected Date Did Not Selected");
 		}
 		}
@@ -814,13 +801,13 @@ public class BaseClass {
 		expDisableElement=expElement.getText().trim();
 		if (checkDisable(expElement)==true){
 				Assert.assertTrue(true,"Expected ==> "+expDisableElement+" <==Disabled And Passed");
-				TestListener.test.log(Status.PASS,"Expected ==> "+expDisableElement+" <==Disabled And Passed");
+				TestListeners.test.log(Status.PASS,"Expected ==> "+expDisableElement+" <==Disabled And Passed");
 				log.info("Expected ==> "+expDisableElement+" <==Disabled And Passed");
 			}
 		else
 			{
 			Assert.assertTrue(true,"\tExpected ==> "+expDisableElement+" <==Enabled And Failed");
-			TestListener.test.log(Status.PASS,"\tExpected ==> "+expDisableElement+" <==Enabled And Failed");
+			TestListeners.test.log(Status.PASS,"\tExpected ==> "+expDisableElement+" <==Enabled And Failed");
 			log.info("\tExpected ==> "+expDisableElement+" <==Enabled And Failed");
 			takeScreenShot("ValidateTitle",".png");
 		}
@@ -1732,8 +1719,8 @@ public class BaseClass {
 		Reporter.log("******************************************Expected Browser Closed ******************************************");
 		System.out.println("****************************************** Expected Browser Closed ******************************************");
 	}
-	@AfterClass
-	public static void tearDown() {
+	
+	public static void tearDown1() {
 		
 		Reporter.log("****************************************** Expected Browser Close Started ******************************************");
 		System.out.println("****************************************** Expected Browser Close Started ***********************************");
