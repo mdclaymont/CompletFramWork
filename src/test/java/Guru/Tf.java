@@ -3,7 +3,7 @@ package Guru;
 import java.io.IOException;
 
 import Common.BaseClass;
-import PageObject.LogInPage;
+import PageObject.LogInPage1;
 import Utilities.TestListeners;
 
 public class Tf extends BaseClass {

@@ -6,22 +6,13 @@
   </listeners>
   <test thread-count="5" name="Test(failed)">
     <classes>
-      <class name="Practice.SecuinceTestNg">
+      <class name="CrigList.PostList">
         <methods>
-          <include name="postIphone2"/>
-          <include name="bClass"/>
-          <include name="closeBrowser"/>
-          <include name="postIphone"/>
-          <include name="logIn"/>
-          <include name="aclass"/>
-          <include name="beforeSuite"/>
           <include name="Testc"/>
-          <include name="postIphone3"/>
-          <include name="afterSuite"/>
+          <include name="setUp"/>
           <include name="afterMethod"/>
-          <include name="beforMethod"/>
         </methods>
-      </class> <!-- Practice.SecuinceTestNg -->
+      </class> <!-- CrigList.PostList -->
     </classes>
   </test> <!-- Test(failed) -->
 </suite> <!-- Failed suite [Suite] -->

@@ -1,46 +1,39 @@
 package PageObject;
 import java.io.IOException;
 
-import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.PageFactory;
 import Common.BaseClass;
 
-public class LogInPage extends BaseClass {
-	WebDriver ldriver;
-	public LogInPage(WebDriver rdriver)
-	{
-		ldriver=rdriver;
-		PageFactory.initElements(rdriver, this);
-	}
-	@FindBy(xpath="//*[@name='inputEmailHandle']") WebElement inputid ;
-	@FindBy(xpath="//*[@name='inputPassword']" ) WebElement UiPassword  ;
-	@FindBy(xpath= "//*[@name='login']") WebElement login   ;
-	@FindBy(xpath= "//a[text()='Log out']") WebElement logout   ;
+public class LogInPage1 extends BaseClass {
+	private By inputid=By.xpath("//*[@name='inputEmailHandle']");
+	private By UiPassword=By.xpath("//*[@name='inputPassword']");
+	private By login=By.xpath("//*[contains(@id,'login')]");
+	private By logout=By.xpath("//a[text()='Log out']");
+	
 	
 	/****************************************************************************************************/	
 	public WebElement Inputid()
 		{
-			return inputid;
+			return driver.findElement(inputid);
 		}
 	/****************************************************************************************************/	
 	public WebElement InputPassword()
 	
 		{
-			return UiPassword;
+			return driver.findElement(UiPassword);
 		}
 	/****************************************************************************************************/	
     public WebElement LogInButton()
 	
 		{
-			return login;
+			return driver.findElement(login);
 		}
     /****************************************************************************************************/	
     public WebElement LogOutButton()
 	
 		{
-			return logout;
+			return driver.findElement(logout);
 		}
     /**
      * @return 
@@ -52,7 +45,7 @@ public class LogInPage extends BaseClass {
     	writeText(InputPassword(),userPassword);
        	click(LogInButton());
        	Thread.sleep(3000);
-       	validateClick(login,"submit");
+       	//validateClick(login,"submit");
     	//return new DescriptionPage(); 
     	
     }

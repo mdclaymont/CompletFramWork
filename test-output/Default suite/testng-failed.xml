@@ -5,16 +5,7 @@
     <classes>
       <class name="Practice.SecuinceTestNg">
         <methods>
-          <include name="postIphone2"/>
-          <include name="bClass"/>
-          <include name="closeBrowser"/>
-          <include name="postIphone"/>
-          <include name="logIn"/>
-          <include name="aclass"/>
-          <include name="beforeSuite"/>
           <include name="Testc"/>
-          <include name="postIphone3"/>
-          <include name="afterSuite"/>
           <include name="afterMethod"/>
           <include name="beforMethod"/>
         </methods>

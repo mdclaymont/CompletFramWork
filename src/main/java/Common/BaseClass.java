@@ -50,6 +50,7 @@ import com.aventstack.extentreports.Status;
 import PageObject.CommonField;
 import PageObject.LandingPage;
 import PageObject.LogInPage;
+import PageObject.LogInPage1;
 import ru.yandex.qatools.ashot.AShot;
 import ru.yandex.qatools.ashot.Screenshot;
 import Utilities.TestListeners;
@@ -84,7 +85,7 @@ public class BaseClass {
 	public static Logger log=LogManager.getLogger(BaseClass.class.getName());	
 	public static CommonField cf=new CommonField();
 	public static LandingPage lp=new LandingPage();
-	public static LogInPage lip=new LogInPage(driver);
+	public static LogInPage1 lip=new LogInPage1();
 	
 	
 	public	BaseClass() {

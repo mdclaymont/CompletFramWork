@@ -3,11 +3,11 @@ import java.io.IOException;
 
 import org.testng.annotations.Test;
 import Common.BaseClass;
-import PageObject.LogInPage;
+import PageObject.LogInPage1;
 
 public class TC_001_LogInTest extends BaseClass{
 	
-	public static LogInPage lip;
+	public static LogInPage1 lip;
 	@Test
 	public void loginTest() throws IOException, InterruptedException
 	{

@@ -1,0 +1,10 @@
+21:22:02.811 [main] INFO  Common.BaseClass - 	 Expected Url ' https://delaware.craigslist.org/ ' Opend Or Lunch
+21:22:05.851 [main] INFO  Common.BaseClass - 	 Expected ' my account ' Element Clicked
+21:22:10.133 [main] INFO  Common.BaseClass - 	 Expected Browser ' Google Chrome ' Opend Successfully
+21:22:11.401 [main] INFO  Common.BaseClass - 	 Expected Url ' https://delaware.craigslist.org/ ' Opend Or Lunch
+21:22:14.195 [main] INFO  Common.BaseClass - 	 Expected ' my account ' Element Clicked
+21:25:47.725 [main] INFO  Common.BaseClass - 	 Expected Browser ' Google Chrome ' Opend Successfully
+21:25:52.219 [main] INFO  Common.BaseClass - 	 Expected Url ' https://delaware.craigslist.org/ ' Opend Or Lunch
+21:25:52.952 [main] INFO  Common.BaseClass - 	 Expected ' my account ' Element Clicked
+21:25:53.036 [main] ERROR Common.BaseClass - 	 Expected ' iphonepnt@gmail.com ' Element Does Not Set Input/Edit Field
+21:25:53.037 [main] ERROR Common.BaseClass - 	 Expected ' Tester@7453 ' Element Does Not Set Input/Edit Field

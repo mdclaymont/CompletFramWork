@@ -17,13 +17,15 @@ public class PostList extends BaseClass {
 		lip.LogIn();
 	}
 	@Test
-	public void Testc() {
+	public void Post() {
+		
 	System.out.println("Test");
 	//TestListener.test.log(Status.FAIL,"Exptest Test Pass Failed");	
 	}
+	/*
 	@AfterMethod
 	public void afterMethod() {
 		closeBrowser("");
 	}
-	
+	*/
 }
