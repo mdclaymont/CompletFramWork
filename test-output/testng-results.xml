@@ -7,19 +7,13 @@
     <line>
       <![CDATA[******************************************Url Open Strated******************************************]]>
     </line>
-    <line>
-      <![CDATA[****************************************** Expected Browser Close Started ******************************************]]>
-    </line>
-    <line>
-      <![CDATA[******************************************Expected Browser Closed ******************************************]]>
-    </line>
   </reporter-output>
-  <suite started-at="2020-12-28T19:19:02 EST" name="Suite" finished-at="2020-12-28T19:19:24 EST" duration-ms="22332">
+  <suite started-at="2020-12-31T20:51:42 EST" name="Suite" finished-at="2020-12-31T20:52:10 EST" duration-ms="27416">
     <groups>
     </groups>
-    <test started-at="2020-12-28T19:19:02 EST" name="Test" finished-at="2020-12-28T19:19:24 EST" duration-ms="22332">
+    <test started-at="2020-12-31T20:51:42 EST" name="Test" finished-at="2020-12-31T20:52:10 EST" duration-ms="27416">
       <class name="CrigList.PostList">
-        <test-method is-config="true" signature="setUp()[pri:0, instance:CrigList.PostList@10650953]" started-at="2020-12-28T19:19:02 EST" name="setUp" finished-at="2020-12-28T19:19:23 EST" duration-ms="21541" status="PASS">
+        <test-method is-config="true" signature="setUp()[pri:0, instance:CrigList.PostList@2488b073]" started-at="2020-12-31T20:51:42 EST" name="setUp" finished-at="2020-12-31T20:52:01 EST" duration-ms="19039" status="PASS">
           <reporter-output>
             <line>
               <![CDATA[**************************************** initilize Driver MEthod Started ******************************************]]>
@@ -29,18 +23,12 @@
             </line>
           </reporter-output>
         </test-method> <!-- setUp -->
-        <test-method signature="Testc()[pri:0, instance:CrigList.PostList@10650953]" started-at="2020-12-28T19:19:23 EST" name="Testc" finished-at="2020-12-28T19:19:23 EST" duration-ms="5" status="PASS">
+        <test-method signature="Post()[pri:0, instance:CrigList.PostList@2488b073]" started-at="2020-12-31T20:52:01 EST" name="Post" finished-at="2020-12-31T20:52:09 EST" duration-ms="7664" status="PASS">
           <reporter-output>
           </reporter-output>
-        </test-method> <!-- Testc -->
-        <test-method is-config="true" signature="afterMethod()[pri:0, instance:CrigList.PostList@10650953]" started-at="2020-12-28T19:19:23 EST" name="afterMethod" finished-at="2020-12-28T19:19:24 EST" duration-ms="677" status="PASS">
+        </test-method> <!-- Post -->
+        <test-method is-config="true" signature="afterMethod()[pri:0, instance:CrigList.PostList@2488b073]" started-at="2020-12-31T20:52:09 EST" name="afterMethod" finished-at="2020-12-31T20:52:10 EST" duration-ms="669" status="PASS">
           <reporter-output>
-            <line>
-              <![CDATA[****************************************** Expected Browser Close Started ******************************************]]>
-            </line>
-            <line>
-              <![CDATA[******************************************Expected Browser Closed ******************************************]]>
-            </line>
           </reporter-output>
         </test-method> <!-- afterMethod -->
       </class> <!-- CrigList.PostList -->

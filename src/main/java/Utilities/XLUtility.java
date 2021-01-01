@@ -216,7 +216,7 @@ public class XLUtility {
 			else{
 				cellValue= " ";
 			}
-			eachRowData.put(eachRowData.get(j),cellValue);
+			eachRowData.put(expHeader.get(j),cellValue);
 		}
 		
 		return eachRowData;
@@ -232,22 +232,24 @@ public class XLUtility {
 		String expTc = null, TcValue = "";
 		// List<String>excelHeaderName=new ArrayList<String>();
 		String[] expDataSrc = expTcData.split(",");
+		String TcName=expDataSrc[0];
+		String TCID=expDataSrc[1];
 		xls_Reader(expPath, expSheetName);
 		List<LinkedHashMap<String, String>> allexcelData = new ArrayList<LinkedHashMap<String, String>>();
 		row = sheet.getRow(0);
 		totalrowNum = sheet.getLastRowNum() + 1; // Get total Row number
 		totalColNum = row.getLastCellNum();	
-		for (int i = 0; i < totalrowNum; i++) {
+		for (int i =0; i < totalrowNum; i++) {
 			try {
 				row = sheet.getRow(i);
 				cell = sheet.getRow(i).getCell(0);
 				totalColNum = row.getLastCellNum();
 				if (row != null && cell != null) {
 					TcValue = sheet.getRow(i).getCell(0).getStringCellValue();
-					if (expTcData.replaceAll(" ", "").equalsIgnoreCase(TcValue.replaceAll(" ", ""))) {
-						excelHeaderNames = getHeader(i, totalColNum);
-						rStart = i + 1;
-						break; // if expected Test case Find Exit From loop
+					if (TcName.replaceAll(" ", "").equalsIgnoreCase(TcValue.replaceAll(" ", ""))) {
+						excelHeaderNames = getHeader(i,totalColNum);
+						rStart=i+1;
+						break;
 					}
 				}
 
@@ -260,8 +262,8 @@ public class XLUtility {
 			try {
 				row = sheet.getRow(i);
 				if (row != null && cell != null) {
-					TcValue=sheet.getRow(i).getCell(0).getStringCellValue();
-					if (TcValue.replaceAll(" ", "").equalsIgnoreCase(expTcData.replaceAll(" ", ""))) {
+					TcValue=sheet.getRow(i).getCell(1).getStringCellValue();
+					if (TcValue.replaceAll(" ", "").equalsIgnoreCase(TCID.replaceAll(" ", ""))) {
 						LinkedHashMap<String,String>eachRowData=getRowValue(i,totalColNum,excelHeaderNames);
 						allexcelData.add(eachRowData);
 						break; // if expected Test case Find Exit From loop

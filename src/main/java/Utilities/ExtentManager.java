@@ -19,12 +19,7 @@ public class ExtentManager extends BaseClass {
 		String directory=System.getProperty("user.dir") + "/Report/";
 		new File(directory).mkdirs();
 		String reportPath=directory+fileName;
-		System.out.println(reportPath);
 		ExtentHtmlReporter htmlReporter = new ExtentHtmlReporter(reportPath);
-		//htmlReporter=new ExtentHtmlReporter("./Report/"+fileName+".html");
-	//	htmlReporter.config().setTestViewChartLocation(ChartLocation.BOTTOM);
-	//	htmlReporter.config().setChartVisibilityOnOpen(true);
-		
 		htmlReporter.config().setDocumentTitle("Automation Test Report");
 		htmlReporter.config().setEncoding("utf-8");
 		htmlReporter.config().setReportName("Automation Test Result");

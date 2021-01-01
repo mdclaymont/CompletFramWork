@@ -8,9 +8,8 @@
     <classes>
       <class name="CrigList.PostList">
         <methods>
-          <include name="Testc"/>
           <include name="setUp"/>
-          <include name="afterMethod"/>
+          <include name="Post"/>
         </methods>
       </class> <!-- CrigList.PostList -->
     </classes>

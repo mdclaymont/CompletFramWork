@@ -47,13 +47,16 @@ import org.testng.asserts.SoftAssert;
 
 import com.aventstack.extentreports.Status;
 
+import PageObject.AccountPage2;
 import PageObject.CommonField;
+import PageObject.DescriptionPage;
 import PageObject.LandingPage;
 import PageObject.LogInPage;
 import PageObject.LogInPage1;
 import ru.yandex.qatools.ashot.AShot;
 import ru.yandex.qatools.ashot.Screenshot;
 import Utilities.TestListeners;
+import Utilities.XLUtility;
 
 //********************************************************************   Test Base Class    ************************************************************************  
 
@@ -81,12 +84,13 @@ public class BaseClass {
 	public static SoftAssert soft=new SoftAssert();
 	public static String downloadPath=System.getProperty("user.dir")+File.separator+"downloads";
 	public static JavascriptExecutor jse;
-	
+	public static List<LinkedHashMap<String, String>>	TcData;
 	public static Logger log=LogManager.getLogger(BaseClass.class.getName());	
 	public static CommonField cf=new CommonField();
 	public static LandingPage lp=new LandingPage();
 	public static LogInPage1 lip=new LogInPage1();
-	
+	public static AccountPage2 acp=new AccountPage2();
+	public static DescriptionPage dp=new DescriptionPage();
 	
 	public	BaseClass() {
 		readProperties("");
@@ -198,7 +202,9 @@ public class BaseClass {
 	 * FunctionOutPut: It will Return User Defined Data From Properties File
 	 * **************************************************************************************************************
 	 */
-	public static void getData() throws IOException {
+	public static void getData(String expTest) throws IOException {
+		TcData=XLUtility.getTcData("","Detailpage",expTest);
+		/*
 		Reporter.log("******************************************Get Data Imported Staretd******************************************");
 		System.out.println("******************************************Get Data Imported Staretd******************************************");
 		File src=new File("./Configuration/Config.properties");
@@ -239,6 +245,7 @@ public class BaseClass {
 			}
 		Reporter.log("******************************************Get Data Imported Ended******************************************");
 		System.out.println("******************************************Get Data Imported Ended********************************************");
+	*/
 	}
 
 	/****************************************************************************************************************
@@ -250,7 +257,7 @@ public class BaseClass {
 	* ***************************************************************************************************************/
 	public static WebDriver initilizeDriver() throws IOException {
 		try {
-			//getData();
+			
 			Reporter.log("**************************************** initilize Driver MEthod Started ******************************************");
 			System.out.println(browserName);
 			String mavenBrowserName=System.getProperty("Browser");// check if maven send any browser
@@ -1706,21 +1713,21 @@ public class BaseClass {
 	* ***************************************************************************************************************/
 	
 	public static void closeBrowser(String expCloseBrowser) {
-		
-		Reporter.log("****************************************** Expected Browser Close Started ******************************************");
-		System.out.println("****************************************** Expected Browser Close Started ***********************************");
-		if((expCloseBrowser.toLowerCase()).contains("current"))
-		{
-			driver.close();
+		try {
+			if ((expCloseBrowser.toLowerCase()).contains("current")) {
+				driver.close();
+			} else {
+				driver.quit();
+			}
+
+			driver = null;
+			TestListeners.test.log(Status.PASS, "\t Expected Browser Closed Successfully");
+			log.info("\t Expected Browser Closed Successfully");
+
+		} catch (Exception e) {
+			TestListeners.test.log(Status.FAIL, "\t Expected Browser ' " + browserName + " ' Failed To Close");
+			log.error("\t Expected Browser ' " + browserName + " ' Failed To Close");
 		}
-		else
-		{
-			driver.quit();
-		}
-		
-		driver=null;
-		Reporter.log("******************************************Expected Browser Closed ******************************************");
-		System.out.println("****************************************** Expected Browser Closed ******************************************");
 	}
 	
 	public static void tearDown1() {

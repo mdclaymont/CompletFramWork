@@ -21,7 +21,7 @@ public class DescriptionPage extends BaseClass{
 	private By continueclick=By.xpath("//*[text()='continue']");
 	private By addimage=By.xpath("//*[text()='Add Images']");
 	private By doneimage=By.xpath("//*[text()='done with images']");
-	private By publish=By.xpath("//*[text()='publish']");
+	
 	
 	
 	/****************************************************************************************************/	
@@ -107,9 +107,6 @@ public class DescriptionPage extends BaseClass{
 		return driver.findElement(doneimage);
 	}
 	/****************************************************************************************************/	
-	public WebElement publish()
-	{
-		return driver.findElement(publish);
-	}
+	
 
 }
