@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.codehaus.plexus.util.Base64;
@@ -26,6 +27,8 @@ import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -92,7 +95,7 @@ public class BaseClass {
 	public static AccountPage2 acp=new AccountPage2();
 	public static DescriptionPage dp=new DescriptionPage();
 	
-	public	BaseClass() {
+	public	BaseClass(){
 		readProperties("");
 	} 
 
@@ -153,8 +156,13 @@ public class BaseClass {
 		return new String(dencodedStr);
 	}
 	
-	public static void softassert() {
-		
+	public static SoftAssert softAssert() {
+		SoftAssert softAssert=new SoftAssert();
+		return softAssert;
+	}
+	
+	public static void assertAll() {
+		softAssert().assertAll("Assert All");
 	}
 	
 	
@@ -330,11 +338,13 @@ public class BaseClass {
 			driver.manage().timeouts().implicitlyWait(IMPLICIT_WAIT,TimeUnit.SECONDS);
 			TestListeners.test.log(Status.PASS,"\t Expected Browser  Opend Successfully");
 			log.info("\t Expected Browser ' "+browserName+" ' Opend Successfully");
+			softAssert().assertEquals(true,"\t Expected Browser  Opend Successfully");
 			
 		}catch(Exception e) {
 			Reporter.log("\t Expected Browser ' "+browserName+" ' Opend Successfully");
 			TestListeners.test.log(Status.FAIL,"\t Expected Browser ' "+browserName+" ' Failed To Opend");
 			log.error("\t Expected Browser ' "+browserName+" ' Failed To Open");
+			softAssert().assertEquals(false,"\t Expected Browser  Opend Successfully");
 		}	
 		return driver;
 	}
@@ -407,9 +417,11 @@ public class BaseClass {
 			expElement.click();
 			TestListeners.test.log(Status.PASS,"\t Expected ' "+expClickElement+" ' Element Clicked");
 			log.info("\t Expected ' "+expClickElement+" ' Element Clicked");
+			softAssert().assertEquals(true, true,"\t Expected ' "+expClickElement+" ' Element Clicked");
 		}catch(Exception e) {
 			TestListeners.test.log(Status.FAIL,"\t Expected ' "+expClickElement+" ' Not Found or Able To Clicked");
 			log.error("\t Expected ' "+expClickElement+" ' Not Found or Able To Clicked");
+			softAssert().assertEquals(false, true,"\t Expected ' "+expClickElement+" ' Not Found or Able To Clicked");
 		}
 	}
 	/****************************************************************************************************************
@@ -1674,18 +1686,25 @@ public class BaseClass {
 	 * @return 
 	* 
 	***************************************************************************************************************/
-		
 	public static String takeScreenShot(String expScName,String expScShotType) throws IOException {
+		String filePath = null;
 		if(expScName==null||expScName.length()<1) {
-			expScName="Screen";
+			expScName="";
 		}
 		if(expScShotType==null||expScShotType.length()<1) {
-			expScName=".png";
+			expScShotType=".png";
 		}
-		String UName=uniqueName("Test");
-		String filePath=System.getProperty("user.dir")+"//Screenshots//"+expScName+UName+expScShotType;
-		Screenshot objsc=new AShot().takeScreenshot(driver);
-		ImageIO.write(objsc.getImage(),"PNG",new File(filePath));
+		try {
+		String UName=uniqueName(expScName);	
+		filePath=System.getProperty("user.dir")+"\\ScreenShots\\"+UName+expScShotType;
+		System.out.println(filePath);
+		File srcFile=((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
+		FileUtils.copyFile(srcFile,new File(filePath));
+	//	Screenshot objsc=new AShot().takeScreenshot(driver);
+	//	ImageIO.write(objsc.getImage(),"PNG",new File(filePath));
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 		return filePath;
 	}
 	

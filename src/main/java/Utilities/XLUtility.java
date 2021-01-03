@@ -29,199 +29,148 @@ public class XLUtility {
 	private static XSSFSheet sheet;
 	private static XSSFRow row;
 	private static XSSFCell cell;
-	private static String currentDirectory=System.getProperty("user.dir");
-	public static String downloadPath=System.getProperty("user.dir")+File.separator+"downloads";
-	
-	public static void main(String[] args){
-		new BaseClass();
+	private static String currentDirectory = System.getProperty("user.dir");
+	public static String downloadPath = System.getProperty("user.dir") + File.separator + "downloads";
+
+	/*
+	 * public XLUtility(String expPath, String expSheetName) {
+	 * xls_Reader(expPath,expSheetName); }
+	 */
+	public static void main(String[] args) {
+		// new BaseClass();
 	}
-	
-	
-	
+
 	/****************************************************************************************************************
-	 * Author: Md Rezaul Karim 
-	 * Function Name: xls_Reader
-	 * Function Arg: String expPath,String expSheetName
-	 * expPath==> 		Expected Path where we can get data or default download file path with current directory
-	 * expSheetName==>	Expected Sheet Name if user provide and if does not provide default will be first sheet
-	 * FunctionOutPut: It will Return xls_Reader
-	 * @throws IOException 
-	 * ***************************************************************************************************************/
-	public static void xls_Reader(String expPath,String expSheetName) {
+	 * Author: Md Rezaul Karim Function Name: xls_Reader Function Arg: String
+	 * expPath,String expSheetName expPath==> Expected Path where we can get data or
+	 * default download file path with current directory expSheetName==> Expected
+	 * Sheet Name if user provide and if does not provide default will be first
+	 * sheet FunctionOutPut: It will Return xls_Reader
+	 * 
+	 * @throws IOException
+	 ***************************************************************************************************************/
+	public static void xls_Reader(String expPath, String expSheetName) {
 		String actualSheetName;
 		try {
-			if(expPath.isEmpty() || expPath.length()<2){
-				expPath=currentDirectory +"/src/main/java/TestData/Controller.xlsx";// Get System Dir
+			if (expPath.isEmpty() || expPath.length() < 2) {
+				expPath = currentDirectory + "/src/main/java/TestData/Controller.xlsx";// Get System Dir
 			}
-			fis=new FileInputStream(expPath);
-			workbook=new XSSFWorkbook(fis);
-			if (!expSheetName.isEmpty() || expSheetName.length()>1){					///Check if user provide sheet name if not then default sheet will be first one
-				int TotalSheet = workbook.getNumberOfSheets();				/// Total Sheet Number
-				for (int i = 0; i <= TotalSheet; i++){
+			fis = new FileInputStream(expPath);
+			workbook = new XSSFWorkbook(fis);
+			if (!expSheetName.isEmpty() || expSheetName.length() > 1) { /// Check if user provide sheet name if not then
+																		/// default sheet will be first one
+				int TotalSheet = workbook.getNumberOfSheets(); /// Total Sheet Number
+				for (int i = 0; i <= TotalSheet; i++) {
 					actualSheetName = workbook.getSheetName(i);
-					if(expSheetName.replaceAll(" ","").equalsIgnoreCase(actualSheetName.replaceAll(" ",""))){
-						sheet=workbook.getSheetAt(i);
+					if (expSheetName.replaceAll(" ", "").equalsIgnoreCase(actualSheetName.replaceAll(" ", ""))) {
+						sheet = workbook.getSheetAt(i);
 						break;
 					}
 				}
-			}
-			else {
-				sheet=workbook.getSheetAt(0);
+			} else {
+				sheet = workbook.getSheetAt(0);
 			}
 			fis.close();
-		}catch(Exception e) {
+		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
 		}
 	}
-	/****************************************************************************************************************
-	 * Author: Md Rezaul Karim 
-	 * Function Name: getRowCount
-	 * Function Arg: String expPath,String expSheetName
-	 * expPath==> 		Expected Path where we can get data or default download file path with current directory
-	 * expSheetName==>	Expected Sheet Name if user provide and if does not provide default will be first sheet
-	 * FunctionOutPut: It will Return User Total Row Count
-	 * @throws IOException 
-	 * ***************************************************************************************************************/
 
-	public static int getRowCount(String expPath,String expSheetName) throws IOException
-	{
-		xls_Reader(expPath,expSheetName);
-		int rowcount=sheet.getLastRowNum();
+	/****************************************************************************************************************
+	 * Author: Md Rezaul Karim Function Name: getRowCount Function Arg: String
+	 * expPath,String expSheetName expPath==> Expected Path where we can get data or
+	 * default download file path with current directory expSheetName==> Expected
+	 * Sheet Name if user provide and if does not provide default will be first
+	 * sheet FunctionOutPut: It will Return User Total Row Count
+	 * 
+	 * @throws IOException
+	 ***************************************************************************************************************/
+
+	public static int getRowCount(String expPath, String expSheetName) throws IOException {
+		xls_Reader(expPath, expSheetName);
+		int rowcount = sheet.getPhysicalNumberOfRows();
 		return rowcount;
 	}
-	/****************************************************************************************************************
-	 * Author: Md Rezaul Karim 
-	 * Function Name: getColCount
-	 * Function Arg: String expPath,String expSheetName
-	 * expPath==> 		Expected Path where we can get data or default download file path with current directory
-	 * expSheetName==>	Expected Sheet Name if user provide and if does not provide default will be first sheet
-	 * FunctionOutPut: It will Return User Total Col Count
-	 * @throws IOException 
-	 * ***************************************************************************************************************/
 
-	public static int getColCount(String expPath,String expSheetName) throws IOException{
-		xls_Reader(expPath,expSheetName);
-		int totalColNum =row.getLastCellNum();
+	/****************************************************************************************************************
+	 * Author: Md Rezaul Karim Function Name: getColCount Function Arg: String
+	 * expPath,String expSheetName expPath==> Expected Path where we can get data or
+	 * default download file path with current directory expSheetName==> Expected
+	 * Sheet Name if user provide and if does not provide default will be first
+	 * sheet FunctionOutPut: It will Return User Total Col Count
+	 * 
+	 * @throws IOException
+	 ***************************************************************************************************************/
+
+	public static int getColCount(String expPath, String expSheetName) throws IOException {
+		xls_Reader(expPath, expSheetName);
+		int totalColNum = sheet.getRow(0).getPhysicalNumberOfCells();
 		return totalColNum;
 	}
-	/****************************************************************************************************************
-	 * Author: Md Rezaul Karim 
-	 * Function Name: getHeader
-	 * Function Arg: int rowNum,int totalColNum
-	 * rowNum==> 		Expected Row that need data
-	 * totalColNum==>	Expected Total Column Number
-	 * FunctionOutPut: It will Return User Header Name
-	 * @return 
-	 * @throws IOException 
-	 * ***************************************************************************************************************/
 
-	public static List<String> getHeader(int rowNum,int totalColNum) {
-		List<String> excelHeader=new ArrayList<String>();
-		for(int i=0;i<totalColNum;i++) {
+	public static String getCellValue(int rowNum, int colNum) {
+		String cellValue = "";
+		Cell CkCell = sheet.getRow(rowNum).getCell(colNum);
+		if (CkCell != null) { // Validate if cell value is empty
+			switch (CkCell.getCellType()) {
+			case BOOLEAN:
+				Boolean BCell = CkCell.getBooleanCellValue();
+				cellValue = Boolean.toString(BCell).trim();
+				break;
+			case STRING:
+				cellValue = CkCell.getRichStringCellValue().getString().trim();
+				break;
+			case NUMERIC:
+				if (DateUtil.isCellDateFormatted(CkCell)) {
+					Date DCell = CkCell.getDateCellValue();
+					SimpleDateFormat objformat = new SimpleDateFormat("MM/dd/yyyy");
+					cellValue = objformat.format(DCell).toString();
+				} else {
+					cellValue = NumberToTextConverter.toText(CkCell.getNumericCellValue()).toString();
+				}
+				break;
+			case FORMULA:
+				cellValue = CkCell.getRichStringCellValue().toString().trim();
+				break;
+			case BLANK:
+				cellValue = "";
+				break;
+			default:
+				System.out.print("There is no value");
+				cellValue = " ";
+			}
+		} else {
+			cellValue = " ";
+		}
+		return cellValue;
+	}
+
+	/****************************************************************************************************************
+	 * Author: Md Rezaul Karim Function Name: getHeader Function Arg: int rowNum,int
+	 * totalColNum rowNum==> Expected Row that need data totalColNum==> Expected
+	 * Total Column Number FunctionOutPut: It will Return User Header Name
+	 * 
+	 * @return
+	 * @throws IOException
+	 ***************************************************************************************************************/
+
+	public static List<String> getHeader(int rowNum, int totalColNum) {
+		List<String> excelHeader = new ArrayList<String>();
+		for (int i = 0; i < totalColNum; i++) {
 			try {
 				String headerName = null;
-				Cell CkCell =sheet.getRow(rowNum).getCell(i);
-				if(CkCell!=null) {
-					headerName=sheet.getRow(rowNum).getCell(i).getStringCellValue();
-				}	
+				Cell CkCell = sheet.getRow(rowNum).getCell(i);
+				if (CkCell != null) {
+					headerName = sheet.getRow(rowNum).getCell(i).getStringCellValue();
+				}
 				excelHeader.add(headerName);
-			}catch(Exception e) {
+			} catch (Exception e) {
 			}
 		}
 		return excelHeader;
 	}
-	
-	public LinkedHashMap<String,String> getCellValue(int rowNum,int ColStart,int totalColNum,List<String> expHeader) {
-		String cellValue="";
-		LinkedHashMap<String,String> eachRowData=new LinkedHashMap<>();
-		for (int j=ColStart; j < totalColNum; j++){
-			Cell CkCell = sheet.getRow(j).getCell(j);
-			if (CkCell != null) // Validate if cell value is empty
-			{
-				switch (CkCell.getCellType()){
-				case BOOLEAN:
-					Boolean BCell = CkCell.getBooleanCellValue();
-					cellValue= Boolean.toString(BCell);
-					break;
-				case STRING:
-					cellValue= CkCell.getRichStringCellValue().getString();
-					break;
-				case NUMERIC:
-					if (DateUtil.isCellDateFormatted(CkCell)){
-						Date DCell = CkCell.getDateCellValue();
-						cellValue= DCell.toString();
-					}
-					else{
-						cellValue = NumberToTextConverter.toText(CkCell.getNumericCellValue());
-					}
-					break;
-				case FORMULA:
-					cellValue= CkCell.getCellFormula().toString();
-					break;
-				case BLANK:
-					System.out.print("");
-					break;
-				default:
-					System.out.print("There is no value");
-					cellValue= " ";
-				}
-			}
-			else{
-				cellValue= " ";
-			}
-			eachRowData.put(eachRowData.get(j),cellValue);
-		}
-		
-		return eachRowData;
-	}
-	public static LinkedHashMap<String,String> getRowValue(int rowNum,int totalColNum,List<String> expHeader) {
-		String cellValue="";
-		LinkedHashMap<String,String> eachRowData=new LinkedHashMap<>();
-		int count=0;
-		for (int j=0; j<totalColNum; j++){
-			Cell CkCell = sheet.getRow(rowNum).getCell(j);
-			if (CkCell != null) // Validate if cell value is empty
-			{
-				switch (CkCell.getCellType()){
-				case BOOLEAN:
-					Boolean BCell = CkCell.getBooleanCellValue();
-					cellValue= Boolean.toString(BCell).trim();
-					break;
-				case STRING:
-					cellValue= CkCell.getRichStringCellValue().getString().trim();
-					break;
-				case NUMERIC:
-					if (DateUtil.isCellDateFormatted(CkCell)){
-						Date DCell = CkCell.getDateCellValue();
-						SimpleDateFormat objformat=new SimpleDateFormat("MM/dd/yyyy");
-						cellValue=objformat.format(DCell);
-					}
-					else{
-						cellValue = NumberToTextConverter.toText(CkCell.getNumericCellValue());
-					}
-					break;
-				case FORMULA:
-					cellValue= CkCell.getRichStringCellValue().toString().trim();
-					break;
-				case BLANK:
-					cellValue="";
-					count++;
-					break;
-				default:
-					System.out.print("There is no value");
-					cellValue= " ";
-				}
-			}
-			else{
-				cellValue= " ";
-			}
-			eachRowData.put(expHeader.get(j),cellValue);
-		}
-		
-		return eachRowData;
-	}
-	
+
 	// expTcData it will Pass Following Information TcName,TCID
 	public static List<LinkedHashMap<String, String>> getTcData(String expPath, String expSheetName, String expTcData)
 			throws IOException {
@@ -232,14 +181,14 @@ public class XLUtility {
 		String expTc = null, TcValue = "";
 		// List<String>excelHeaderName=new ArrayList<String>();
 		String[] expDataSrc = expTcData.split(",");
-		String TcName=expDataSrc[0];
-		String TCID=expDataSrc[1];
+		String TcName = expDataSrc[0];
+		String TCID = expDataSrc[1];
 		xls_Reader(expPath, expSheetName);
 		List<LinkedHashMap<String, String>> allexcelData = new ArrayList<LinkedHashMap<String, String>>();
 		row = sheet.getRow(0);
-		totalrowNum = sheet.getLastRowNum() + 1; // Get total Row number
-		totalColNum = row.getLastCellNum();	
-		for (int i =0; i < totalrowNum; i++) {
+		totalrowNum = sheet.getPhysicalNumberOfRows(); // Get total Row number
+		totalColNum = row.getLastCellNum();
+		for (int i = 0; i < totalrowNum; i++) {
 			try {
 				row = sheet.getRow(i);
 				cell = sheet.getRow(i).getCell(0);
@@ -247,8 +196,8 @@ public class XLUtility {
 				if (row != null && cell != null) {
 					TcValue = sheet.getRow(i).getCell(0).getStringCellValue();
 					if (TcName.replaceAll(" ", "").equalsIgnoreCase(TcValue.replaceAll(" ", ""))) {
-						excelHeaderNames = getHeader(i,totalColNum);
-						rStart=i+1;
+						excelHeaderNames = getHeader(i, totalColNum);
+						rStart = i + 1;
 						break;
 					}
 				}
@@ -257,171 +206,272 @@ public class XLUtility {
 
 			}
 		}
-		TcValue ="";			//Reset Test Value
-		for (int i=rStart;i<totalrowNum;i++) {
+		TcValue = ""; // Reset Test Value
+		for (int i = rStart; i < totalrowNum; i++) {
 			try {
 				row = sheet.getRow(i);
 				if (row != null && cell != null) {
-					TcValue=sheet.getRow(i).getCell(1).getStringCellValue();
+					TcValue = sheet.getRow(i).getCell(1).getStringCellValue();
 					if (TcValue.replaceAll(" ", "").equalsIgnoreCase(TCID.replaceAll(" ", ""))) {
-						LinkedHashMap<String,String>eachRowData=getRowValue(i,totalColNum,excelHeaderNames);
+						LinkedHashMap<String, String> eachRowData = getRowValue(i, totalColNum, excelHeaderNames);
 						allexcelData.add(eachRowData);
 						break; // if expected Test case Find Exit From loop
 					}
 				}
-				
+
 			} catch (Exception e) {
 
 			}
 		}
 		return allexcelData;
 	}
-	
-	/****************************************************************************************************************
-	 * Author: Md Rezaul Karim 
-	 * Function Name: getCellData
-	 * Function Arg: String expPath,String expSheetName,int rowNum,int colNum
-	 * expPath==> 		Expected Path where we can get data or default download file path with current directory
-	 * expSheetName==>	Expected Sheet Name if user provide and if does not provide default will be first sheet
-	 * FunctionOutPut: It will Return User Total Row Count
-	 * @throws IOException 
-	 * ***************************************************************************************************************/
-	
-	
-	public static String getCellData(String expPath,String expSheetName,int rowNum,int colNum) throws IOException
-	{
-		if (expPath.isEmpty())						 // Check If File Path Is Empty
-		{
-			expPath= currentDirectory +"/src/main/java/Data/controller.xlsx";// Get System Dir
-		}
-		fis=new FileInputStream(expPath);
-		workbook=new XSSFWorkbook(fis);
-		int TotalSheet = workbook.getNumberOfSheets();				/// Total Sheet Number
-		for (int i = 0; i <= TotalSheet; i++){
-			String ActualSheetName =workbook.getSheetName(i);
-			if (expSheetName.isEmpty())					///Check if user provide sheet name if not then default sheet will be first one
-			{
-				expSheetName= ActualSheetName;
-				break;
+
+	public static Object[][] getDataForDataProvider(String expPath, String expSheetName, String expTcData)
+			throws IOException {
+		int rowCount = 0;
+		int colCount = 0;
+		xls_Reader(expPath, expSheetName);
+		rowCount = sheet.getPhysicalNumberOfRows(); // Get total Row number
+		colCount = sheet.getRow(0).getPhysicalNumberOfCells();// Get total column number
+		Object data[][] = new Object[rowCount - 1][colCount];
+		for (int i = 1; i < rowCount; i++) {
+			for (int j = 0; j < colCount; j++) {
+				data[i - 1][j] = getCellValue(i, j);
 			}
-			else if (ActualSheetName.equalsIgnoreCase(expSheetName)){
+		}
+		return data;
+	}
+
+	public LinkedHashMap<String, String> getCellValue(int rowNum, int ColStart, int totalColNum,
+			List<String> expHeader) {
+		String cellValue = "";
+		LinkedHashMap<String, String> eachRowData = new LinkedHashMap<>();
+		for (int j = ColStart; j < totalColNum; j++) {
+			Cell CkCell = sheet.getRow(j).getCell(j);
+			if (CkCell != null) // Validate if cell value is empty
+			{
+				switch (CkCell.getCellType()) {
+				case BOOLEAN:
+					Boolean BCell = CkCell.getBooleanCellValue();
+					cellValue = Boolean.toString(BCell);
+					break;
+				case STRING:
+					cellValue = CkCell.getRichStringCellValue().getString();
+					break;
+				case NUMERIC:
+					if (DateUtil.isCellDateFormatted(CkCell)) {
+						Date DCell = CkCell.getDateCellValue();
+						cellValue = DCell.toString();
+					} else {
+						cellValue = NumberToTextConverter.toText(CkCell.getNumericCellValue());
+					}
+					break;
+				case FORMULA:
+					cellValue = CkCell.getCellFormula().toString();
+					break;
+				case BLANK:
+					System.out.print("");
+					break;
+				default:
+					System.out.print("There is no value");
+					cellValue = " ";
+				}
+			} else {
+				cellValue = " ";
+			}
+			eachRowData.put(eachRowData.get(j), cellValue);
+		}
+
+		return eachRowData;
+	}
+
+	public static LinkedHashMap<String, String> getRowValue(int rowNum, int totalColNum, List<String> expHeader) {
+		String cellValue = "";
+		LinkedHashMap<String, String> eachRowData = new LinkedHashMap<>();
+		int count = 0;
+		for (int j = 0; j < totalColNum; j++) {
+			Cell CkCell = sheet.getRow(rowNum).getCell(j);
+			if (CkCell != null) // Validate if cell value is empty
+			{
+				switch (CkCell.getCellType()) {
+				case BOOLEAN:
+					Boolean BCell = CkCell.getBooleanCellValue();
+					cellValue = Boolean.toString(BCell).trim();
+					break;
+				case STRING:
+					cellValue = CkCell.getRichStringCellValue().getString().trim();
+					break;
+				case NUMERIC:
+					if (DateUtil.isCellDateFormatted(CkCell)) {
+						Date DCell = CkCell.getDateCellValue();
+						SimpleDateFormat objformat = new SimpleDateFormat("MM/dd/yyyy");
+						cellValue = objformat.format(DCell);
+					} else {
+						cellValue = NumberToTextConverter.toText(CkCell.getNumericCellValue());
+					}
+					break;
+				case FORMULA:
+					cellValue = CkCell.getRichStringCellValue().toString().trim();
+					break;
+				case BLANK:
+					cellValue = "";
+					count++;
+					break;
+				default:
+					System.out.print("There is no value");
+					cellValue = " ";
+				}
+			} else {
+				cellValue = " ";
+			}
+			eachRowData.put(expHeader.get(j), cellValue);
+		}
+
+		return eachRowData;
+	}
+
+	/****************************************************************************************************************
+	 * Author: Md Rezaul Karim Function Name: getCellData Function Arg: String
+	 * expPath,String expSheetName,int rowNum,int colNum expPath==> Expected Path
+	 * where we can get data or default download file path with current directory
+	 * expSheetName==> Expected Sheet Name if user provide and if does not provide
+	 * default will be first sheet FunctionOutPut: It will Return User Total Row
+	 * Count
+	 * 
+	 * @throws IOException
+	 ***************************************************************************************************************/
+
+	public static String getCellData(String expPath, String expSheetName, int rowNum, int colNum) throws IOException {
+		if (expPath.isEmpty()) // Check If File Path Is Empty
+		{
+			expPath = currentDirectory + "/src/main/java/Data/controller.xlsx";// Get System Dir
+		}
+		fis = new FileInputStream(expPath);
+		workbook = new XSSFWorkbook(fis);
+		int TotalSheet = workbook.getNumberOfSheets(); /// Total Sheet Number
+		for (int i = 0; i <= TotalSheet; i++) {
+			String ActualSheetName = workbook.getSheetName(i);
+			if (expSheetName.isEmpty()) /// Check if user provide sheet name if not then default sheet will be first one
+			{
+				expSheetName = ActualSheetName;
+				break;
+			} else if (ActualSheetName.equalsIgnoreCase(expSheetName)) {
 				expSheetName = ActualSheetName;
 				break;
 			}
 		}
-		sheet=workbook.getSheet(expSheetName);
-		row=sheet.getRow(rowNum);
-		cell=row.getCell(colNum);
+		sheet = workbook.getSheet(expSheetName);
+		row = sheet.getRow(rowNum);
+		cell = row.getCell(colNum);
 		String data;
 		try {
-			DataFormatter formatter=new DataFormatter();
-			String cellData=formatter.formatCellValue(cell);
+			DataFormatter formatter = new DataFormatter();
+			String cellData = formatter.formatCellValue(cell);
 			return cellData;
-		}
-		catch(Exception e)
-		{
-			data="";
+		} catch (Exception e) {
+			data = "";
 		}
 		workbook.close();
 		fis.close();
 		return data;
 	}
-	
-	public static void setCellData(String expPath,String expSheetName,int rowNum,int colNum,String data) throws IOException
-	{
-		if (expPath.isEmpty())						 // Check If File Path Is Empty
+
+	public static void setCellData(String expPath, String expSheetName, int rowNum, int colNum, String data)
+			throws IOException {
+		if (expPath.isEmpty()) // Check If File Path Is Empty
 		{
-			expPath= currentDirectory +"/src/main/java/Data/controller.xlsx";// Get System Dir
+			expPath = currentDirectory + "/src/main/java/Data/controller.xlsx";// Get System Dir
 		}
-		fis=new FileInputStream(expPath);
-		workbook=new XSSFWorkbook(fis);
-		int TotalSheet =workbook.getNumberOfSheets();				/// Total Sheet Number
-		for (int i = 0; i <= TotalSheet; i++){
-			String ActualSheetName =workbook.getSheetName(i);
-			if (expSheetName.isEmpty())					///Check if user provide sheet name if not then default sheet will be first one
+		fis = new FileInputStream(expPath);
+		workbook = new XSSFWorkbook(fis);
+		int TotalSheet = workbook.getNumberOfSheets(); /// Total Sheet Number
+		for (int i = 0; i <= TotalSheet; i++) {
+			String ActualSheetName = workbook.getSheetName(i);
+			if (expSheetName.isEmpty()) /// Check if user provide sheet name if not then default sheet will be first one
 			{
-				expSheetName= ActualSheetName;
+				expSheetName = ActualSheetName;
 				break;
-			}
-			else if (ActualSheetName.equalsIgnoreCase(expSheetName)){
+			} else if (ActualSheetName.equalsIgnoreCase(expSheetName)) {
 				expSheetName = ActualSheetName;
 				break;
 			}
 		}
-		sheet=workbook.getSheet(expSheetName);
-		row=sheet.getRow(rowNum);
-		cell=row.getCell(colNum);
+		sheet = workbook.getSheet(expSheetName);
+		row = sheet.getRow(rowNum);
+		cell = row.getCell(colNum);
 		cell.setCellValue(data);
-		fileOut=new FileOutputStream(expPath);
+		fileOut = new FileOutputStream(expPath);
 		workbook.write(fileOut);
 		workbook.close();
 		fis.close();
 		fileOut.close();
 	}
-	
+
 	public static Object[][] getExcelData1(String expectedSheetName, String excellFilePath, String expectedTestCaseData)
-		throws IOException {
-		Reporter.log("******************************************Get Data From Excel Started******************************************");
-		System.out.println("******************************************Get Data From Excel Started****************************************");
-		int RowStart = 1,r = 0,ColStart =2,c = 0,TotalrowNum = 0, TotalcolNum = 0, FinalFlag = 0, AllTC = 0,AcTCID = 0; 
-		int	ExTCFlagColStart = 0, RowArraySize = 0, ColArraySize = 0;
-		List<String>excelHeaderName=new ArrayList<String>();
+			throws IOException {
+		Reporter.log(
+				"******************************************Get Data From Excel Started******************************************");
+		System.out.println(
+				"******************************************Get Data From Excel Started****************************************");
+		int RowStart = 1, r = 0, ColStart = 2, c = 0, TotalrowNum = 0, TotalcolNum = 0, FinalFlag = 0, AllTC = 0,
+				AcTCID = 0;
+		int ExTCFlagColStart = 0, RowArraySize = 0, ColArraySize = 0;
+		List<String> excelHeaderName = new ArrayList<String>();
 		double ExTCId = 0;
 		String AcTCFlag = "", ExColData = "";
-		Object[][] CellValue;								//Store Value to an two dimetion array
-		String[] ExpTestCase = null; 						 // Declare Array Variable
-		if (excellFilePath.isEmpty())						 // Check If File Path Is Empty
+		Object[][] CellValue; // Store Value to an two dimetion array
+		String[] ExpTestCase = null; // Declare Array Variable
+		if (excellFilePath.isEmpty()) // Check If File Path Is Empty
 		{
 			String CurrentPath = System.getProperty("user.dir");
-			//	excellFilePath = "/" + CurrentPath + "/src/DataFile/controller.xlsx";						// Get System Dir
-			excellFilePath =CurrentPath +"/src/main/java/TestData/controller.xlsx";
+			// excellFilePath = "/" + CurrentPath + "/src/DataFile/controller.xlsx"; // Get
+			// System Dir
+			excellFilePath = CurrentPath + "/src/main/java/TestData/controller.xlsx";
 		}
 		FileInputStream objFile = new FileInputStream(excellFilePath);
 		XSSFWorkbook WorkBook = new XSSFWorkbook(objFile);
-		int TotalSheet = WorkBook.getNumberOfSheets();				/// Total Sheet Number
-		for (int i = 0; i <= TotalSheet; i++){
+		int TotalSheet = WorkBook.getNumberOfSheets(); /// Total Sheet Number
+		for (int i = 0; i <= TotalSheet; i++) {
 			String ActualSheetName = WorkBook.getSheetName(i);
-			if (expectedSheetName.isEmpty())					///Check if user provide sheet name if not then default sheet will be first one
+			if (expectedSheetName.isEmpty()) /// Check if user provide sheet name if not then default sheet will be
+												/// first one
 			{
 				expectedSheetName = ActualSheetName;
 				break;
-			}
-			else if (ActualSheetName.equalsIgnoreCase(expectedSheetName)){
+			} else if (ActualSheetName.equalsIgnoreCase(expectedSheetName)) {
 				expectedSheetName = ActualSheetName;
 				break;
 			}
 		}
 		XSSFSheet objsheet = WorkBook.getSheet(expectedSheetName);
 		XSSFRow row = objsheet.getRow(0);
-		TotalrowNum = objsheet.getLastRowNum() + 1;				//Get total Row number
-		TotalcolNum = row.getLastCellNum();						//Get total column number
-		if (!(expectedTestCaseData.isEmpty()))					//Check user provide Expected Test Case Data
+		TotalrowNum = objsheet.getLastRowNum() + 1; // Get total Row number
+		TotalcolNum = row.getLastCellNum(); // Get total column number
+		if (!(expectedTestCaseData.isEmpty())) // Check user provide Expected Test Case Data
 		{
 			ExpTestCase = expectedTestCaseData.split(",");
 			if (ExpTestCase.length < 2) // If User Provide Number Of Test Case from first that User Want Data
 			{
 				RowArraySize = Integer.parseInt(ExpTestCase[0]);/// Define The Array Size
 				FinalFlag = 1;
-				TotalrowNum=RowArraySize+RowStart;
-			}
-			else if (ExpTestCase.length == 2){
-				for (int i = 0; i < TotalcolNum; i++){
-					ExColData = objsheet.getRow(0).getCell(i).getStringCellValue();        // Find the Expected Column Test
-					if (ExpTestCase[0].toLowerCase().contains(ExColData.toLowerCase())){
-						if (ExColData.toLowerCase().contains(("tcid"))){
+				TotalrowNum = RowArraySize + RowStart;
+			} else if (ExpTestCase.length == 2) {
+				for (int i = 0; i < TotalcolNum; i++) {
+					ExColData = objsheet.getRow(0).getCell(i).getStringCellValue(); // Find the Expected Column Test
+					if (ExpTestCase[0].toLowerCase().contains(ExColData.toLowerCase())) {
+						if (ExColData.toLowerCase().contains(("tcid"))) {
 							ExTCId = Integer.parseInt(ExpTestCase[1]);
 							AllTC = 1;
 							RowStart = 1;
 							ExTCFlagColStart = i;
 							RowArraySize = 1; /// Define The Array Size
 							break;
-						}
-						else{
+						} else {
 							AllTC = 2;
 							ExTCFlagColStart = i;
-							for (int j = 0; j < TotalrowNum; j++){
+							for (int j = 0; j < TotalrowNum; j++) {
 								ExColData = objsheet.getRow(j).getCell(ExTCFlagColStart).getStringCellValue();
-								if (ExpTestCase[1].toLowerCase().contains(ExColData.toLowerCase())){
+								if (ExpTestCase[1].toLowerCase().contains(ExColData.toLowerCase())) {
 									RowArraySize = RowArraySize + 1;
 								}
 							}
@@ -430,35 +480,33 @@ public class XLUtility {
 					}
 				}
 			}
-		} 
-		else{
+		} else {
 			FinalFlag = 1;
 			RowArraySize = TotalrowNum - RowStart;
 		}
 		ColArraySize = TotalcolNum - ColStart;
 		CellValue = new Object[RowArraySize][ColArraySize];
-		for (int j = RowStart; j < TotalrowNum; j++){
+		for (int j = RowStart; j < TotalrowNum; j++) {
 			Cell CkCellEmpty = objsheet.getRow(j).getCell(ExTCFlagColStart);
 			if (AllTC == 1 && CkCellEmpty != null) // check if user TCID provide then
 			{
 				AcTCID = (int) CkCellEmpty.getNumericCellValue();
-				if (AcTCID == ExTCId){
+				if (AcTCID == ExTCId) {
 					FinalFlag = 1;// If Flag value 1 then get data
 				}
-			}
-			else if (AllTC == 2 && CkCellEmpty != null){
+			} else if (AllTC == 2 && CkCellEmpty != null) {
 				AcTCFlag = CkCellEmpty.getStringCellValue();
-				if (AcTCFlag.toLowerCase().contains(ExpTestCase[1].toLowerCase())){
+				if (AcTCFlag.toLowerCase().contains(ExpTestCase[1].toLowerCase())) {
 					FinalFlag = 1;
 				}
 			}
-			if (FinalFlag == 1){
+			if (FinalFlag == 1) {
 				c = 0;
-				for (int k = ColStart; k < TotalcolNum; k++){
+				for (int k = ColStart; k < TotalcolNum; k++) {
 					Cell CkCell = objsheet.getRow(j).getCell(k);
 					if (CkCell != null) // Validate if cell value is empty
 					{
-						switch (CkCell.getCellType()){
+						switch (CkCell.getCellType()) {
 						case BOOLEAN:
 							Boolean BCell = CkCell.getBooleanCellValue();
 							CellValue[r][c] = Boolean.toString(BCell);
@@ -467,11 +515,10 @@ public class XLUtility {
 							CellValue[r][c] = CkCell.getRichStringCellValue().getString();
 							break;
 						case NUMERIC:
-							if (DateUtil.isCellDateFormatted(CkCell)){
+							if (DateUtil.isCellDateFormatted(CkCell)) {
 								Date DCell = CkCell.getDateCellValue();
 								CellValue[r][c] = DCell.toString();
-							}
-							else{
+							} else {
 								CellValue[r][c] = NumberToTextConverter.toText(CkCell.getNumericCellValue());
 							}
 							break;
@@ -485,371 +532,190 @@ public class XLUtility {
 							System.out.print("There is no value");
 							CellValue[r][c] = " ";
 						}
-					}
-					else{
+					} else {
 						CellValue[r][c] = " ";
 					}
 					if ((c + ColStart) != TotalcolNum) // if col does not start from begaining
 					{
-						c = c + 1;   		////Increase column
+						c = c + 1; //// Increase column
 					}
 				}
 			}
 			if (FinalFlag == 1 && (r + RowStart) != TotalrowNum) // if row does not strat from begaining
 			{
-				r = r + 1;			////Increase row
+				r = r + 1; //// Increase row
 			}
-			if (AllTC == 1 && FinalFlag == 1)		//if only one row data need then break loop
+			if (AllTC == 1 && FinalFlag == 1) // if only one row data need then break loop
 			{
 				break;
 			}
-			if (AllTC == 2)
-			{
+			if (AllTC == 2) {
 				FinalFlag = 0;
 			}
 		}
-		Reporter.log("******************************************Get Data From Excel Ended******************************************");
-		System.out.println("******************************************Get Data From Excel Ended****************************************");
+		Reporter.log(
+				"******************************************Get Data From Excel Ended******************************************");
+		System.out.println(
+				"******************************************Get Data From Excel Ended****************************************");
 		WorkBook.close();
 		return CellValue;
-	}	
-	
+	}
+
 	/****************************************************************************************************************
-	*  Author: Md Rezaul Karim 
-	*  Function Name: getExcelDataForTestNG
-	*  Function Arg: String expectedSheetName, String excellFilePath,String expectedTestCaseData(User Can Get Number of Data Or Using TCID Or TCFlag)
-	*  FunctionOutPut: It will Return User Defind Data From Excell Or All Data From Excell
-	* 
-	* ***************************************************************************************************************/
-	
-	public static Object[] getExcelDataForTestNG(String expectedSheetName, String excellFilePath,String expectedTestCaseData) throws IOException {
-		Reporter.log("******************************************Get Data From Excel Started******************************************");
-		System.out.println("******************************************Get Data From Excel Started****************************************");
-		int TotalrowNum=0,TotalcolNum=0,FinalFlag=0,AllTC=0,ColStrat=2,ExRowStart=0,ExTCFlagColStart=0,AcTCID=0,AllCellDataLenth=0,AllCellDataArrayLenth=0 ;
-		double ExTCId=0;
-		String AcTCFlag="",AllRowValue="",ExColData="";
-		Object CellValue="";
-		String [] ExpTestCase = null;	//Declar Array Variable
-		Object[]AllCellData;
-		if (excellFilePath.isEmpty())																		//Check If File Path Is Empty 
+	 * Author: Md Rezaul Karim Function Name: getExcelDataForTestNG Function Arg:
+	 * String expectedSheetName, String excellFilePath,String
+	 * expectedTestCaseData(User Can Get Number of Data Or Using TCID Or TCFlag)
+	 * FunctionOutPut: It will Return User Defind Data From Excell Or All Data From
+	 * Excell
+	 * 
+	 ***************************************************************************************************************/
+
+	public static Object[] getExcelDataForTestNG(String expectedSheetName, String excellFilePath,
+			String expectedTestCaseData) throws IOException {
+		Reporter.log(
+				"******************************************Get Data From Excel Started******************************************");
+		System.out.println(
+				"******************************************Get Data From Excel Started****************************************");
+		int TotalrowNum = 0, TotalcolNum = 0, FinalFlag = 0, AllTC = 0, ColStrat = 2, ExRowStart = 0,
+				ExTCFlagColStart = 0, AcTCID = 0, AllCellDataLenth = 0, AllCellDataArrayLenth = 0;
+		double ExTCId = 0;
+		String AcTCFlag = "", AllRowValue = "", ExColData = "";
+		Object CellValue = "";
+		String[] ExpTestCase = null; // Declar Array Variable
+		Object[] AllCellData;
+		if (excellFilePath.isEmpty()) // Check If File Path Is Empty
 		{
-			String CurrentPath=System.getProperty("user.dir");
-			//excellFilePath = "/"+ CurrentPath +"/src/DataFile/controller.xlsx";//Get System Dir
-			excellFilePath = CurrentPath +"/src/main/java/TestData/controller.xlsx";
+			String CurrentPath = System.getProperty("user.dir");
+			// excellFilePath = "/"+ CurrentPath +"/src/DataFile/controller.xlsx";//Get
+			// System Dir
+			excellFilePath = CurrentPath + "/src/main/java/TestData/controller.xlsx";
 		}
 		FileInputStream objFile = new FileInputStream(excellFilePath);
 		XSSFWorkbook WorkBook = new XSSFWorkbook(objFile);
 		/// Find Sheet Name
 		int TotalSheet = WorkBook.getNumberOfSheets();
-		for (int i = 0; i <= TotalSheet; i++)
-		{
-			String ActualSheetName =WorkBook.getSheetName(i); 
-			if (expectedSheetName.isEmpty())
-			{
-				expectedSheetName=ActualSheetName;
+		for (int i = 0; i <= TotalSheet; i++) {
+			String ActualSheetName = WorkBook.getSheetName(i);
+			if (expectedSheetName.isEmpty()) {
+				expectedSheetName = ActualSheetName;
 				break;
-			}
-			else if (ActualSheetName.equalsIgnoreCase(expectedSheetName))
-			{
-				expectedSheetName=ActualSheetName;
+			} else if (ActualSheetName.equalsIgnoreCase(expectedSheetName)) {
+				expectedSheetName = ActualSheetName;
 				break;
 			}
 		}
 		XSSFSheet objsheet = WorkBook.getSheet(expectedSheetName);
-		XSSFRow row=objsheet.getRow(0);
+		XSSFRow row = objsheet.getRow(0);
 		TotalrowNum = objsheet.getLastRowNum();
 		TotalcolNum = row.getLastCellNum();
-		if(!(expectedTestCaseData.isEmpty()))
-		{
-			ExpTestCase=expectedTestCaseData.split(",");
-			
-			if (ExpTestCase.length<2)																		//If User Provide Number Of Test Case from first  that User  Want Data
+		if (!(expectedTestCaseData.isEmpty())) {
+			ExpTestCase = expectedTestCaseData.split(",");
+
+			if (ExpTestCase.length < 2) // If User Provide Number Of Test Case from first that User Want Data
 			{
-				TotalrowNum=Integer.parseInt(ExpTestCase[0]);
-				AllCellDataLenth=TotalrowNum;///Define The Array Size
-				FinalFlag=1;
-			}
-			else if (ExpTestCase.length==2)
-			{
-				for(int i=0;i<TotalcolNum;i++)
-				{
-					ExColData=objsheet.getRow(0).getCell(i).getStringCellValue();
-					if(ExpTestCase[0].toLowerCase().contains(ExColData.toLowerCase()))
-					{
-						if(ExColData.toLowerCase().contains(("tcid")))
-						{
-							ExTCId=Integer.parseInt(ExpTestCase[1]);
-							AllTC=1;
-							ExTCFlagColStart=i;
-							ExRowStart=1;
-							AllCellDataLenth=1; ///Define The Array Size
+				TotalrowNum = Integer.parseInt(ExpTestCase[0]);
+				AllCellDataLenth = TotalrowNum;/// Define The Array Size
+				FinalFlag = 1;
+			} else if (ExpTestCase.length == 2) {
+				for (int i = 0; i < TotalcolNum; i++) {
+					ExColData = objsheet.getRow(0).getCell(i).getStringCellValue();
+					if (ExpTestCase[0].toLowerCase().contains(ExColData.toLowerCase())) {
+						if (ExColData.toLowerCase().contains(("tcid"))) {
+							ExTCId = Integer.parseInt(ExpTestCase[1]);
+							AllTC = 1;
+							ExTCFlagColStart = i;
+							ExRowStart = 1;
+							AllCellDataLenth = 1; /// Define The Array Size
 							break;
-						}
-						else
-						{
-							AllTC=2;
-							ExTCFlagColStart=i;
-							for(int j=0;j<TotalrowNum;j++)
-							{	
-								ExColData=objsheet.getRow(j).getCell(ExTCFlagColStart).getStringCellValue();
-								if(ExpTestCase[1].toLowerCase().contains(ExColData.toLowerCase()))
-								{
-									AllCellDataLenth=AllCellDataLenth+1;
+						} else {
+							AllTC = 2;
+							ExTCFlagColStart = i;
+							for (int j = 0; j < TotalrowNum; j++) {
+								ExColData = objsheet.getRow(j).getCell(ExTCFlagColStart).getStringCellValue();
+								if (ExpTestCase[1].toLowerCase().contains(ExColData.toLowerCase())) {
+									AllCellDataLenth = AllCellDataLenth + 1;
 								}
 							}
 							break;
-						}	
+						}
 					}
 				}
 			}
-		}
-		else
-		{
-			FinalFlag=1;
-			AllCellDataLenth=TotalrowNum+1;
+		} else {
+			FinalFlag = 1;
+			AllCellDataLenth = TotalrowNum + 1;
 		}
 		AllCellData = new Object[AllCellDataLenth];
-		for (int j =ExRowStart; j <=TotalrowNum-1; j++)
-		{
-			CellValue="";
-			AllRowValue="";
-			Cell CkCellEmpty=objsheet.getRow(j).getCell(ExTCFlagColStart);
-			if(AllTC==1 && CkCellEmpty!=null)
-			{
-				AcTCID=(int) CkCellEmpty.getNumericCellValue();
-				if(AcTCID==ExTCId)
-				{
-					FinalFlag=1;//If Flag value 1 then get data
+		for (int j = ExRowStart; j <= TotalrowNum - 1; j++) {
+			CellValue = "";
+			AllRowValue = "";
+			Cell CkCellEmpty = objsheet.getRow(j).getCell(ExTCFlagColStart);
+			if (AllTC == 1 && CkCellEmpty != null) {
+				AcTCID = (int) CkCellEmpty.getNumericCellValue();
+				if (AcTCID == ExTCId) {
+					FinalFlag = 1;// If Flag value 1 then get data
+				}
+			} else if (AllTC == 2 && CkCellEmpty != null) {
+				AcTCFlag = CkCellEmpty.getStringCellValue();
+
+				if (AcTCFlag.toLowerCase().contains(ExpTestCase[1].toLowerCase())) {
+					FinalFlag = 1;
 				}
 			}
-			else if(AllTC==2 && CkCellEmpty!=null)
-			{
-				AcTCFlag=CkCellEmpty.getStringCellValue();
-				
-				if(AcTCFlag.toLowerCase().contains(ExpTestCase[1].toLowerCase()))
-				{
-					FinalFlag=1;
-				}
-			}	
-			if(FinalFlag==1)
-			{	
-				for (int k =ColStrat; k<=TotalcolNum-1; k++)
-				{
-					Cell CkCell=objsheet.getRow(j).getCell(k);
-					if(CkCell!=null)														//Validate if cell value is empty
-					{	
-						switch (CkCell.getCellType())
-						{
-							case BOOLEAN:
-								CellValue=CkCell.getBooleanCellValue();
-								break;
-							case STRING:
-								CellValue=CkCell.getRichStringCellValue();
-								break;
-							case NUMERIC:
-								if (DateUtil.isCellDateFormatted(CkCell))
-								{
-									CellValue=CkCell.getDateCellValue();
-								} 
-								else 
-								{
-									CellValue=CkCell.getNumericCellValue();
-								}
-								break;
-							case FORMULA:
-								CellValue=CkCell.getCellFormula();
-								break;
-							case BLANK:
-								System.out.print("");
-								break;
-							default:
-								System.out.print("There is no value");
-								CellValue=" ";
-						}
-					}
-					else
+			if (FinalFlag == 1) {
+				for (int k = ColStrat; k <= TotalcolNum - 1; k++) {
+					Cell CkCell = objsheet.getRow(j).getCell(k);
+					if (CkCell != null) // Validate if cell value is empty
 					{
-						CellValue=" ,";
+						switch (CkCell.getCellType()) {
+						case BOOLEAN:
+							CellValue = CkCell.getBooleanCellValue();
+							break;
+						case STRING:
+							CellValue = CkCell.getRichStringCellValue();
+							break;
+						case NUMERIC:
+							if (DateUtil.isCellDateFormatted(CkCell)) {
+								CellValue = CkCell.getDateCellValue();
+							} else {
+								CellValue = CkCell.getNumericCellValue();
+							}
+							break;
+						case FORMULA:
+							CellValue = CkCell.getCellFormula();
+							break;
+						case BLANK:
+							System.out.print("");
+							break;
+						default:
+							System.out.print("There is no value");
+							CellValue = " ";
+						}
+					} else {
+						CellValue = " ,";
 					}
-					AllRowValue=AllRowValue+CellValue+",";
+					AllRowValue = AllRowValue + CellValue + ",";
 				}
 			}
-			if(FinalFlag==1)											///Check if only one data retrieve or multiple 
+			if (FinalFlag == 1) /// Check if only one data retrieve or multiple
 			{
-				AllRowValue=AllRowValue.substring(0,AllRowValue.length()-1);   //Remove last comma
-				AllCellData[AllCellDataArrayLenth]=AllRowValue;
+				AllRowValue = AllRowValue.substring(0, AllRowValue.length() - 1); // Remove last comma
+				AllCellData[AllCellDataArrayLenth] = AllRowValue;
 				System.out.println(AllCellData[AllCellDataArrayLenth]);
-				AllCellDataArrayLenth=AllCellDataArrayLenth+1;
+				AllCellDataArrayLenth = AllCellDataArrayLenth + 1;
 			}
-			if(AllTC==1 && FinalFlag==1 )
-			{
+			if (AllTC == 1 && FinalFlag == 1) {
 				break;
 			}
-			if(AllTC==2)
-			{
-				FinalFlag=0;
+			if (AllTC == 2) {
+				FinalFlag = 0;
 			}
 		}
-		Reporter.log("******************************************Get Data From Excel Ended******************************************");
-		System.out.println("******************************************Get Data From Excel Ended****************************************");
+		Reporter.log(
+				"******************************************Get Data From Excel Ended******************************************");
+		System.out.println(
+				"******************************************Get Data From Excel Ended****************************************");
 		return AllCellData;
 	}
-	public static Object[][] getExcelDatabACK(String excellFilePath,String expectedSheetName,String expectedTestCaseData)
-			throws IOException {
-			Reporter.log("******************************************Get Data From Excel Started******************************************");
-			System.out.println("******************************************Get Data From Excel Started****************************************");
-			int RowStart = 1,r = 0,ColStart =2,c = 0,TotalrowNum = 0, TotalcolNum = 0, FinalFlag = 0, AllTC = 0,AcTCID = 0; 
-			int	ExTCFlagColStart = 0, RowArraySize = 0, ColArraySize = 0;
-			double ExTCId = 0;
-			String AcTCFlag = "", ExColData = "";
-			Object[][] CellValue;								//Store Value to an two dimetion array
-			String[] ExpTestCase = null; 						 // Declare Array Variable
-			if (excellFilePath.isEmpty())						 // Check If File Path Is Empty
-			{
-				String CurrentPath = System.getProperty("user.dir");
-				//	excellFilePath = "/" + CurrentPath + "/src/DataFile/controller.xlsx";						// Get System Dir
-				excellFilePath =CurrentPath +"/src/main/java/TestData/controller.xlsx";
-			}
-			FileInputStream objFile = new FileInputStream(excellFilePath);
-			XSSFWorkbook WorkBook = new XSSFWorkbook(objFile);
-			int TotalSheet = WorkBook.getNumberOfSheets();				/// Total Sheet Number
-			for (int i = 0; i <= TotalSheet; i++){
-				String ActualSheetName = WorkBook.getSheetName(i);
-				if (expectedSheetName.isEmpty())					///Check if user provide sheet name if not then default sheet will be first one
-				{
-					expectedSheetName = ActualSheetName;
-					break;
-				}
-				else if (ActualSheetName.equalsIgnoreCase(expectedSheetName)){
-					expectedSheetName = ActualSheetName;
-					break;
-				}
-			}
-			XSSFSheet objsheet = WorkBook.getSheet(expectedSheetName);
-			XSSFRow row = objsheet.getRow(0);
-			TotalrowNum = objsheet.getLastRowNum() + 1;				//Get total Row number
-			TotalcolNum = row.getLastCellNum();						//Get total column number
-			if (!(expectedTestCaseData.isEmpty()))					//Check user provide Expected Test Case Data
-			{
-				ExpTestCase = expectedTestCaseData.split(",");
-				if (ExpTestCase.length < 2) // If User Provide Number Of Test Case from first that User Want Data
-				{
-					RowArraySize = Integer.parseInt(ExpTestCase[0]);/// Define The Array Size
-					FinalFlag = 1;
-					TotalrowNum=RowArraySize+RowStart;
-				}
-				else if (ExpTestCase.length == 2){
-					for (int i = 0; i < TotalcolNum; i++){
-						ExColData = objsheet.getRow(0).getCell(i).getStringCellValue();        // Find the Expected Column Test
-						if (ExpTestCase[0].toLowerCase().contains(ExColData.toLowerCase())){
-							if (ExColData.toLowerCase().contains(("tcid"))){
-								ExTCId = Integer.parseInt(ExpTestCase[1]);
-								AllTC = 1;
-								RowStart = 1;
-								ExTCFlagColStart = i;
-								RowArraySize = 1; /// Define The Array Size
-								break;
-							}
-							else{
-								AllTC = 2;
-								ExTCFlagColStart = i;
-								for (int j = 0; j < TotalrowNum; j++){
-									ExColData = objsheet.getRow(j).getCell(ExTCFlagColStart).getStringCellValue();
-									if (ExpTestCase[1].toLowerCase().contains(ExColData.toLowerCase())){
-										RowArraySize = RowArraySize + 1;
-									}
-								}
-								break;
-							}
-						}
-					}
-				}
-			} 
-			else{
-				FinalFlag = 1;
-				RowArraySize = TotalrowNum - RowStart;
-			}
-			ColArraySize = TotalcolNum - ColStart;
-			CellValue = new Object[RowArraySize][ColArraySize];
-			for (int j = RowStart; j < TotalrowNum; j++){
-				Cell CkCellEmpty = objsheet.getRow(j).getCell(ExTCFlagColStart);
-				if (AllTC == 1 && CkCellEmpty != null) // check if user TCID provide then
-				{
-					AcTCID = (int) CkCellEmpty.getNumericCellValue();
-					if (AcTCID == ExTCId){
-						FinalFlag = 1;// If Flag value 1 then get data
-					}
-				}
-				else if (AllTC == 2 && CkCellEmpty != null){
-					AcTCFlag = CkCellEmpty.getStringCellValue();
-					if (AcTCFlag.toLowerCase().contains(ExpTestCase[1].toLowerCase())){
-						FinalFlag = 1;
-					}
-				}
-				if (FinalFlag == 1){
-					c = 0;
-					for (int k = ColStart; k < TotalcolNum; k++){
-						Cell CkCell = objsheet.getRow(j).getCell(k);
-						if (CkCell != null) // Validate if cell value is empty
-						{
-							switch (CkCell.getCellType()){
-							case BOOLEAN:
-								Boolean BCell = CkCell.getBooleanCellValue();
-								CellValue[r][c] = Boolean.toString(BCell);
-								break;
-							case STRING:
-								CellValue[r][c] = CkCell.getRichStringCellValue().getString();
-								break;
-							case NUMERIC:
-								if (DateUtil.isCellDateFormatted(CkCell)){
-									Date DCell = CkCell.getDateCellValue();
-									CellValue[r][c] = DCell.toString();
-								}
-								else{
-									CellValue[r][c] = NumberToTextConverter.toText(CkCell.getNumericCellValue());
-								}
-								break;
-							case FORMULA:
-								CellValue[r][c] = CkCell.getCellFormula().toString();
-								break;
-							case BLANK:
-								System.out.print("");
-								break;
-							default:
-								System.out.print("There is no value");
-								CellValue[r][c] = " ";
-							}
-						}
-						else{
-							CellValue[r][c] = " ";
-						}
-						if ((c + ColStart) != TotalcolNum) // if col does not start from begaining
-						{
-							c = c + 1;   		////Increase column
-						}
-					}
-				}
-				if (FinalFlag == 1 && (r + RowStart) != TotalrowNum) // if row does not strat from begaining
-				{
-					r = r + 1;			////Increase row
-				}
-				if (AllTC == 1 && FinalFlag == 1)		//if only one row data need then break loop
-				{
-					break;
-				}
-				if (AllTC == 2)
-				{
-					FinalFlag = 0;
-				}
-			}
-			Reporter.log("******************************************Get Data From Excel Ended******************************************");
-			System.out.println("******************************************Get Data From Excel Ended****************************************");
-			WorkBook.close();
-			return CellValue;
-		}	
-	
-	
-	
-	
 
 }

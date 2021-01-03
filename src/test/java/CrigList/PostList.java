@@ -1,12 +1,18 @@
 package CrigList;
 
 import java.io.IOException;
+
+import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
 import Common.BaseClass;
-
+import Utilities.TestListeners;
+import Utilities.XLUtility;
+@Listeners(TestListeners.class)
 public class PostList extends BaseClass {
 	@BeforeMethod
 	public void setUp() throws IOException, InterruptedException {
@@ -16,7 +22,29 @@ public class PostList extends BaseClass {
 		click(lp.myAccount());
 		lip.LogIn();
 	}
-	@Test
+	@Test(dataProvider="getData")
+	public void PostData(String Title,String Description,String Price,String PostalCode,String PhoneNumber ) {
+		/*
+		click(acp.Go());
+		click(acp.SellBy());
+		click(acp.SellCatagory());
+		writeText(dp.postingTitle(),Title);
+		writeText(dp.description(),Description);
+		writeText(dp.price(),Price);
+		writeText(dp.postalCode(),PostalCode);
+		writeText(dp.phoneNumber(),PhoneNumber);
+		click(dp.mobileOsClick());
+		setObjectByText("apple iOS",dp.mobileOs());
+		click(cf.Continue());
+		click(cf.Continue());
+		click(dp.doneImage());
+		click(cf.Publish());
+		*/
+		Assert.assertEquals(false, true);
+	}
+	
+	/*
+	@Test()
 	public void Post() {
 		click(acp.Go());
 		click(acp.SellBy());
@@ -32,9 +60,17 @@ public class PostList extends BaseClass {
 		click(dp.doneImage());
 		click(cf.Publish());
 	}
+	*/
+	@DataProvider
+	public Object[][] getData() throws IOException {
+		Object[][]testData=XLUtility.getDataForDataProvider("","Crig","");
+		return testData;
+	}
+	
 	@AfterMethod
 	public void afterMethod() {
 		closeBrowser("");
+		softAssert().assertAll("All Result");
 	}
 	
 }

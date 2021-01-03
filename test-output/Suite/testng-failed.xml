@@ -8,8 +8,8 @@
     <classes>
       <class name="CrigList.PostList">
         <methods>
+          <include name="PostData"/>
           <include name="setUp"/>
-          <include name="Post"/>
         </methods>
       </class> <!-- CrigList.PostList -->
     </classes>

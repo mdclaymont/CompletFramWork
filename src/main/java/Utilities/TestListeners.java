@@ -53,6 +53,7 @@ public class TestListeners extends BaseClass implements ITestListener {
 
 	public void onTestFailure(ITestResult result) {
 		expMethodName =result.getMethod().getMethodName().trim();
+		System.out.println(expMethodName);
 		String logText = "<b>Test Method " + expMethodName + "Failed</b>";
 		String exceptionMsg = Arrays.toString(result.getThrowable().getStackTrace());
 		String extLog = "<details><summary><b><font color=red>" + "Exception Occured,Click To see Details:"

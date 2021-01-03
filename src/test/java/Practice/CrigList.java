@@ -2,6 +2,7 @@ package Practice;
 
 import java.io.IOException;
 
+import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterSuite;
@@ -10,10 +11,12 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
 import Common.BaseClass;
-
+import Utilities.TestListeners;
+@Listeners(TestListeners.class)
 public class CrigList extends BaseClass {
 	@BeforeMethod
 	public void setUp() throws IOException {
@@ -23,7 +26,7 @@ public class CrigList extends BaseClass {
 	@Test
 	public void Testc() {
 		System.out.println("Test");
-		//TestListener.test.log(Status.FAIL,"Exptest Test Pass Failed");	
+		softAssert().assertEquals(false,true);
 	}
 	
 	@Test
@@ -34,6 +37,7 @@ public class CrigList extends BaseClass {
 	@AfterMethod
 	public void tearDown() {
 		closeBrowser("");
+		softAssert().assertAll("All Result");
 	}
 
 }
