@@ -27,12 +27,14 @@ public class TestListeners extends BaseClass implements ITestListener {
 		expMethodName = objBc.getClass().getName().toString().trim();
 		test = extent.createTest(expMethodName); // This will be Create Pass Failed all Other log To Extent Report
 		extentTest.set(test); // Make Thread safe
+		log.info(expMethodName+"\t On Start Test ");
 		Reporter.log("****** Test case Started And Details Are " + expMethodName + " Strated **************");
 	}
 	public void onStart(ITestContext context) {
 		expMethodName = context.getName().toString().trim();
 		test = extent.createTest(expMethodName); // This will be Create Pass Failed all Other log To Extent Report
 		extentTest.set(test); // Make Thread safe
+		log.info(expMethodName+"\t On Start Test ");
 	}
 
 	public void onTestStart(ITestResult result) {
@@ -40,6 +42,7 @@ public class TestListeners extends BaseClass implements ITestListener {
 		expClassName = result.getTestClass().getName().toString().trim();
 		test = extent.createTest(expClassName + " :: " + expMethodName); // This will be Create Pass Failed all Other
 		extentTest.set(test);																	// log To Extent Report
+		log.info(expMethodName+"\t On Test Start");
 	}
 
 	public void onTestSuccess(ITestResult result) {
@@ -49,6 +52,7 @@ public class TestListeners extends BaseClass implements ITestListener {
 		String logText = "<b>Test Method " + expMethodName + "Successful</b>";
 		Markup m = MarkupHelper.createLabel(logText, ExtentColor.GREEN);
 		extentTest.get().log(Status.PASS, m);
+		log.info(expMethodName+"\t Test Successfully ");
 	}
 
 	public void onTestFailure(ITestResult result) {
@@ -67,6 +71,7 @@ public class TestListeners extends BaseClass implements ITestListener {
 		}
 		Markup m = MarkupHelper.createLabel(logText, ExtentColor.RED);
 		extentTest.get().log(Status.FAIL, m);
+		log.error(expMethodName+"\t Test Failed ");
 	}
 
 	public void onFinish(ITestContext context) {

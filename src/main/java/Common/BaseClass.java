@@ -71,7 +71,7 @@ public class BaseClass {
 	public static FileInputStream objFile;
 	public static Properties appProperties;
 	public static Properties objprop;
-	public static String browserName=appProperties.getProperty("browserName");
+	public static String browserName;
 	public static String DomainName=appProperties.getProperty("userDomainName");
 	public static int explicit_Wait=Integer.parseInt(appProperties.getProperty("explicitWait"));
 	public static int PAGE_LOAD_TIME=Integer.parseInt(appProperties.getProperty("pageLoadTime"));
@@ -97,6 +97,7 @@ public class BaseClass {
 	
 	public	BaseClass(){
 		readProperties("");
+		softAssert();
 	} 
 
 	public static void readProperties(String expFilePath) {
@@ -263,16 +264,21 @@ public class BaseClass {
 	*  FunctionOutPut: It will initilize Driver
 	* 
 	* ***************************************************************************************************************/
-	public static WebDriver initilizeDriver() throws IOException {
+	public static WebDriver initilizeDriver(String expBrowser) throws IOException {
 		try {
 			
 			Reporter.log("**************************************** initilize Driver MEthod Started ******************************************");
-			System.out.println(browserName);
-			String mavenBrowserName=System.getProperty("Browser");// check if maven send any browser
+			String mavenBrowserName=System.getProperty("Browser");// check if maven send any browser Name
 			String driverPath=System.getProperty("user.dir")+"\\Drivers";
 			if(mavenBrowserName!= null)
 			{
 				browserName=mavenBrowserName;
+			}
+			else if(expBrowser.length()>1 || !expBrowser.isEmpty()) { //If User Provied From Parameter Or Function
+				browserName=expBrowser;
+			}
+			else {
+				browserName=appProperties.getProperty("browserName");//if User Did Not Provied Any Browser Then Get From Property File
 			}
 			if(browserName.toLowerCase().contains("ie") || browserName.contains("internet"))
 			{

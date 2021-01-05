@@ -1,0 +1,13 @@
+21:16:28.937 [TestNG-tests-1] INFO  Common.BaseClass - postIphone	 On Test Start
+21:16:28.943 [TestNG-tests-1] INFO  Common.BaseClass - postIphone	 Test Successfully 
+21:16:28.946 [TestNG-tests-1] INFO  Common.BaseClass - postIphone1	 On Test Start
+21:16:28.948 [TestNG-tests-1] INFO  Common.BaseClass - postIphone1	 Test Successfully 
+21:16:39.023 [main] INFO  Common.BaseClass - Default test	 On Start Test 
+21:16:48.338 [main] INFO  Common.BaseClass - 	 Expected Browser ' FireFox ' Opend Successfully
+21:16:51.554 [main] INFO  Common.BaseClass - 	 Expected Url ' https://delaware.craigslist.org/ ' Opend Or Lunch
+21:16:51.580 [main] INFO  Common.BaseClass - Testc	 On Test Start
+21:16:51.593 [main] INFO  Common.BaseClass - Testc	 Test Successfully 
+21:16:51.608 [main] INFO  Common.BaseClass - Testc1	 On Test Start
+21:16:51.610 [main] INFO  Common.BaseClass - Testc1	 Test Successfully 
+21:16:51.612 [main] INFO  Common.BaseClass - postIphone	 On Test Start
+21:16:51.614 [main] INFO  Common.BaseClass - postIphone	 Test Successfully 
