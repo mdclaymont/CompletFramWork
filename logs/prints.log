@@ -1,13 +1,3 @@
-21:16:51.617 [main] INFO  Common.BaseClass - postIphone1	 On Test Start
-21:16:51.626 [main] INFO  Common.BaseClass - postIphone1	 Test Successfully 
-21:17:16.343 [main] INFO  Common.BaseClass - Default test	 On Start Test 
-21:17:20.998 [main] INFO  Common.BaseClass - 	 Expected Browser ' Google Chrome ' Opend Successfully
-21:17:22.126 [main] INFO  Common.BaseClass - 	 Expected Url ' https://delaware.craigslist.org/ ' Opend Or Lunch
-21:17:22.147 [main] INFO  Common.BaseClass - Testc	 On Test Start
-21:17:22.155 [main] INFO  Common.BaseClass - Testc	 Test Successfully 
-21:17:22.158 [main] INFO  Common.BaseClass - Testc1	 On Test Start
-21:17:22.161 [main] INFO  Common.BaseClass - Testc1	 Test Successfully 
-21:17:22.163 [main] INFO  Common.BaseClass - postIphone	 On Test Start
-21:17:22.166 [main] INFO  Common.BaseClass - postIphone	 Test Successfully 
-21:17:22.167 [main] INFO  Common.BaseClass - postIphone1	 On Test Start
-21:17:22.169 [main] INFO  Common.BaseClass - postIphone1	 Test Successfully 
+12:46:02.761 [main] INFO  Common.BaseClass - Test	 Test Successfully 
+12:46:02.831 [main] INFO  Common.BaseClass - Testc	 On Test Start
+12:46:02.833 [main] INFO  Common.BaseClass - Testc	 Test Successfully 

@@ -35,7 +35,7 @@
 					<version>2.22.2</version>
 					<configuration>
 						<suiteXmlFiles>
-							<suiteXmlFile>testng.xml</suiteXmlFile>
+							<suiteXmlFile>Sequince.xml</suiteXmlFile>
 						</suiteXmlFiles>
 					</configuration>
 				</plugin>
@@ -165,16 +165,6 @@
 			<version>7.3.0</version>
 			<scope>test</scope>
 		</dependency>
-
-
-		<!--Testng -->
-		<dependency>
-			<groupId>org.testng</groupId>
-			<artifactId>testng</artifactId>
-			<version>7.0.0</version>
-			<scope>compile</scope>
-		</dependency>
-
 		<!-- Extent Reports -->
 
 		<!-- https://mvnrepository.com/artifact/com.aventstack/extentreports -->

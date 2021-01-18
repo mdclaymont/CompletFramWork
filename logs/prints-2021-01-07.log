@@ -1,0 +1,12 @@
+19:45:15.945 [main] ERROR Common.BaseClass - 	 Expected ' my account ' Not Found or Able To Clicked
+19:45:18.914 [main] INFO  Common.BaseClass - 	 Expected ' iphonepnt@gmail.com ' Element Set Input/Edit Field
+19:45:19.036 [main] INFO  Common.BaseClass - 	 Expected ' Tester@7453 ' Element Set Input/Edit Field
+19:45:26.868 [main] INFO  Common.BaseClass - 	 Expected ' Log in ' Element Clicked
+19:45:29.886 [main] INFO  Common.BaseClass - test	 On Test Start
+19:45:29.895 [main] INFO  Common.BaseClass - test	 Test Successfully 
+19:45:29.897 [main] INFO  Common.BaseClass - test1	 On Test Start
+19:45:29.899 [main] INFO  Common.BaseClass - test1	 Test Successfully 
+19:45:30.603 [main] INFO  Common.BaseClass - 	 Expected Browser Closed Successfully
+20:04:16.835 [main] INFO  Common.BaseClass - Default test	 On Start Test 
+20:04:23.988 [main] INFO  Common.BaseClass - 	 Expected Browser ' Google Chrome ' Opend Successfully
+20:04:25.376 [main] INFO  Common.BaseClass - 	 Expected Url ' https://delaware.craigslist.org/ ' Opend Or Lunch

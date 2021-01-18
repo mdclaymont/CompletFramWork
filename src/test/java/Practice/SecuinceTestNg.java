@@ -18,37 +18,46 @@ import Common.BaseClass;
 import Utilities.TestListeners;
 
 public class SecuinceTestNg extends BaseClass {
+	@BeforeSuite
+	public void beforSuite() throws IOException {
+		System.out.println("Before Suite");
+	}
+	@BeforeTest
+	public void beforTest() throws IOException {
+		System.out.println("Before Test");
+	}
+	@BeforeClass
+	public void beforClass() throws IOException {
+		System.out.println("Before Class");
+	}
 	@BeforeMethod
 	public void beforMethod() throws IOException {
-		initilizeDriver();
-		openUrl("");
-		click(lp.myAccount());
+		System.out.println("Before Method");
 	}
 	@Test
 	public void Testc() {
-		System.out.println("postIphone(");
+		System.out.println("Test Case ");
 
 	}
-	/*
-	@Test(groups= {"Smoke","Sanity"})
-	public void postIphone() {
-	
-	//TestListener.test.log(Status.FAIL,"Exptest Test Pass Failed");	
+	@Test
+	public void Test() {
+		System.out.println("Test Case 2 ");
 	}
-	@Test(groups={"Smoke","Sanity"})
-	public void postIphone2() {
-	System.out.println("postIphone 2 ");
-	//TestListener.test.log(Status.FAIL,"Exptest Test Pass Failed");	
-	}
-	@Test(groups={"Smoke"})
-	public void postIphone3() {
-	System.out.println("postIphone 3 ");
-	//TestListener.test.log(Status.FAIL,"Exptest Test Pass Failed");	
-	}
-	*/
 	@AfterMethod
 	public void afterMethod() {
-		closeBrowser("");
+		System.out.println("After Method Method");
 	}
 	
+	@AfterClass
+	public void AfterClass() throws IOException {
+		System.out.println("After Class");
+	}
+	@AfterTest
+	public void AfterTest() throws IOException {
+		System.out.println("After Test");
+	}
+	@AfterSuite
+	public void AfterSuite() throws IOException {
+		System.out.println("After Suite");
+	}
 }

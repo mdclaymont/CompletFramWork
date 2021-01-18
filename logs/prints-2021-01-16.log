@@ -1,0 +1,13 @@
+20:35:11.697 [TestNG-tests-2] INFO  Common.BaseClass - Test	 On Start Test 
+20:35:11.697 [TestNG-tests-1] INFO  Common.BaseClass - Test	 On Start Test 
+20:35:11.849 [TestNG-tests-1] INFO  Common.BaseClass - Description	 On Test Start
+20:35:11.849 [TestNG-tests-2] INFO  Common.BaseClass - Description	 On Test Start
+20:35:11.865 [TestNG-tests-1] INFO  Common.BaseClass - Description	 Test Successfully 
+20:35:11.867 [TestNG-tests-2] INFO  Common.BaseClass - Description	 Test Successfully 
+20:35:11.882 [TestNG-tests-1] ERROR Common.BaseClass - Parameter	 Test Failed 
+20:35:11.884 [TestNG-tests-2] ERROR Common.BaseClass - Parameter	 Test Failed 
+20:35:11.885 [TestNG-tests-1] INFO  Common.BaseClass - Testc1	 On Test Start
+20:35:11.886 [TestNG-tests-2] INFO  Common.BaseClass - Testc1	 On Test Start
+20:35:11.891 [TestNG-tests-2] INFO  Common.BaseClass - Testc1	 Test Successfully 
+20:35:11.892 [TestNG-tests-1] INFO  Common.BaseClass - Testc1	 Test Successfully 
+20:35:11.894 [TestNG-tests-2] INFO  Common.BaseClass - postIphone1	 On Test Start

@@ -1,0 +1,13 @@
+20:04:30.596 [main] INFO  Common.BaseClass - 	 Expected ' my account ' Element Clicked
+20:04:30.711 [main] INFO  Common.BaseClass - 	 Expected ' iphonepnt@gmail.com ' Element Set Input/Edit Field
+20:04:30.814 [main] INFO  Common.BaseClass - 	 Expected ' Tester@7453 ' Element Set Input/Edit Field
+20:04:32.317 [main] INFO  Common.BaseClass - 	 Expected ' Log in ' Element Clicked
+20:04:35.363 [main] INFO  Common.BaseClass - test	 On Test Start
+20:05:28.701 [main] INFO  Common.BaseClass - test	 Test Successfully 
+22:47:21.481 [main] INFO  Common.BaseClass - Default test	 On Start Test 
+22:47:21.517 [main] INFO  Common.BaseClass - Testc	 On Test Start
+22:47:21.595 [main] INFO  Common.BaseClass - Testc	 Test Successfully 
+22:47:21.616 [main] INFO  Common.BaseClass - Testc1	 On Test Start
+22:47:21.624 [main] INFO  Common.BaseClass - Testc1	 Test Successfully 
+22:47:21.626 [main] INFO  Common.BaseClass - postIphone	 On Test Start
+22:47:21.628 [main] INFO  Common.BaseClass - postIphone	 Test Successfully 

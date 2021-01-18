@@ -10,7 +10,7 @@ public class Tf extends BaseClass {
 
 	public static void main(String[] args) throws IOException, InterruptedException{
 		//TestListeners.onStart();
-		initilizeDriver();
+		initilizeDriver("");
 		System.out.println(appProperties.getProperty("GuruUrl"));
 		openUrl(appProperties.getProperty("GuruUrl"));
 		validateUrl();

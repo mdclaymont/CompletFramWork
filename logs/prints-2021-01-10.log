@@ -1,0 +1,12 @@
+12:50:53.324 [main] INFO  Common.BaseClass - 	 Expected ' Brand New LCD Screen I have Other Model also If You Buy More Then 1 I will Do Some Discount ' Element Set Input/Edit Field
+12:50:53.419 [main] INFO  Common.BaseClass - 	 Expected ' 19 ' Element Set Input/Edit Field
+12:50:53.536 [main] INFO  Common.BaseClass - 	 Expected ' 19703 ' Element Set Input/Edit Field
+12:50:53.538 [main] INFO  Common.BaseClass - UpToDetails	 Test Successfully 
+12:50:54.252 [main] INFO  Common.BaseClass - 	 Expected Browser Closed Successfully
+14:21:47.294 [main] INFO  Common.BaseClass - Default test	 On Start Test 
+14:21:47.330 [main] INFO  Common.BaseClass - Description	 On Test Start
+14:21:47.343 [main] INFO  Common.BaseClass - Description	 Test Successfully 
+14:21:47.346 [main] INFO  Common.BaseClass - Parameter	 On Test Start
+14:21:47.349 [main] INFO  Common.BaseClass - Parameter	 Test Successfully 
+14:21:47.351 [main] INFO  Common.BaseClass - Testc1	 On Test Start
+14:21:47.357 [main] INFO  Common.BaseClass - Testc1	 Test Successfully 
