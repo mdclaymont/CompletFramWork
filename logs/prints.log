@@ -1,4 +1,10 @@
-19:32:02.877 [main] INFO  Common.BaseClass - Test	 On Test Start
-19:32:02.891 [main] INFO  Common.BaseClass - Test	 Test Successfully 
-19:32:02.894 [main] INFO  Common.BaseClass - Testc	 On Test Start
-19:32:02.896 [main] INFO  Common.BaseClass - Testc	 Test Successfully 
+19:43:34.433 [main] INFO  Common.BaseClass - Testc1	 Test Successfully 
+19:43:34.439 [main] INFO  Common.BaseClass - postIphone1	 On Test Start
+19:43:34.441 [main] INFO  Common.BaseClass - postIphone1	 Test Successfully 
+19:43:34.448 [main] INFO  Common.BaseClass - Test	 On Test Start
+19:43:34.449 [main] INFO  Common.BaseClass - Test	 Test Successfully 
+19:43:34.451 [main] INFO  Common.BaseClass - Testc	 On Test Start
+19:43:34.452 [main] INFO  Common.BaseClass - Testc	 Test Successfully 
+19:43:34.870 [main] INFO  Common.BaseClass - Parameter	 On Start Test 
+19:43:34.874 [main] INFO  Common.BaseClass - Demo	 On Test Start
+19:43:34.875 [main] INFO  Common.BaseClass - Demo	 Test Successfully 

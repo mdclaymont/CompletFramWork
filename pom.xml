@@ -35,7 +35,7 @@
 					<version>2.22.2</version>
 					<configuration>
 						<suiteXmlFiles>
-							<suiteXmlFile>Sequince.xml</suiteXmlFile>
+							<suiteXmlFile>testng.xml</suiteXmlFile>
 						</suiteXmlFiles>
 					</configuration>
 				</plugin>

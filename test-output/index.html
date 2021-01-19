@@ -51,12 +51,12 @@
               <ul>
                 <li>
                   <a href="#" panel-name="test-xml-Suite" class="navigator-link ">
-                    <span>I:\Selenium Poject\CompletFramWork\PackageLevel.xml</span>
+                    <span>I:\Selenium Poject\CompletFramWork\testng.xml</span>
                   </a> <!-- navigator-link  -->
                 </li>
                 <li>
                   <a href="#" panel-name="testlist-Suite" class="navigator-link ">
-                    <span class="test-stats">1 test</span>
+                    <span class="test-stats">2 tests</span>
                   </a> <!-- navigator-link  -->
                 </li>
                 <li>
@@ -157,28 +157,6 @@
           <div class="suite-Suite-class-passed">
             <div class="main-panel-header rounded-window-top">
               <img src="passed.png"/>
-              <span class="class-name">TestNgProblemSlove.SecuinceTestNg</span>
-            </div> <!-- main-panel-header rounded-window-top -->
-            <div class="main-panel-content rounded-window-bottom">
-              <div class="method">
-                <div class="method-content">
-                  <a name="Test">
-                  </a> <!-- Test -->
-                  <span class="method-name">Test</span>
-                </div> <!-- method-content -->
-              </div> <!-- method -->
-              <div class="method">
-                <div class="method-content">
-                  <a name="Testc">
-                  </a> <!-- Testc -->
-                  <span class="method-name">Testc</span>
-                </div> <!-- method-content -->
-              </div> <!-- method -->
-            </div> <!-- main-panel-content rounded-window-bottom -->
-          </div> <!-- suite-Suite-class-passed -->
-          <div class="suite-Suite-class-passed">
-            <div class="main-panel-header rounded-window-top">
-              <img src="passed.png"/>
               <span class="class-name">TestNgProblemSlove.DescriptionAnotation</span>
             </div> <!-- main-panel-header rounded-window-top -->
             <div class="main-panel-content rounded-window-bottom">
@@ -240,10 +218,32 @@
               </div> <!-- method -->
             </div> <!-- main-panel-content rounded-window-bottom -->
           </div> <!-- suite-Suite-class-passed -->
+          <div class="suite-Suite-class-passed">
+            <div class="main-panel-header rounded-window-top">
+              <img src="passed.png"/>
+              <span class="class-name">TestNgProblemSlove.SecuinceTestNg</span>
+            </div> <!-- main-panel-header rounded-window-top -->
+            <div class="main-panel-content rounded-window-bottom">
+              <div class="method">
+                <div class="method-content">
+                  <a name="Test">
+                  </a> <!-- Test -->
+                  <span class="method-name">Test</span>
+                </div> <!-- method-content -->
+              </div> <!-- method -->
+              <div class="method">
+                <div class="method-content">
+                  <a name="Testc">
+                  </a> <!-- Testc -->
+                  <span class="method-name">Testc</span>
+                </div> <!-- method-content -->
+              </div> <!-- method -->
+            </div> <!-- main-panel-content rounded-window-bottom -->
+          </div> <!-- suite-Suite-class-passed -->
         </div> <!-- panel Suite -->
         <div panel-name="test-xml-Suite" class="panel">
           <div class="main-panel-header rounded-window-top">
-            <span class="header-content">I:\Selenium Poject\CompletFramWork\PackageLevel.xml</span>
+            <span class="header-content">I:\Selenium Poject\CompletFramWork\testng.xml</span>
           </div> <!-- main-panel-header rounded-window-top -->
           <div class="main-panel-content rounded-window-bottom">
             <pre>
@@ -256,15 +256,16 @@
     &lt;listener class-name=&quot;Utilities.TestListeners&quot;/&gt;
   &lt;/listeners&gt;
   &lt;test thread-count=&quot;5&quot; name=&quot;Test&quot;&gt;
-    &lt;packages&gt;
-      &lt;package name=&quot;TestNgProblemSlove&quot;/&gt;
-    &lt;/packages&gt;
     &lt;classes&gt;
       &lt;class name=&quot;TestNgProblemSlove.DescriptionAnotation&quot;/&gt;
-      &lt;class name=&quot;TestNgProblemSlove.Parameteranotation&quot;/&gt;
       &lt;class name=&quot;TestNgProblemSlove.SecuinceTestNg&quot;/&gt;
     &lt;/classes&gt;
   &lt;/test&gt; &lt;!-- Test --&gt;
+  &lt;test thread-count=&quot;5&quot; name=&quot;Parameter&quot;&gt;
+    &lt;classes&gt;
+      &lt;class name=&quot;TestNgProblemSlove.Parameteranotation&quot;/&gt;
+    &lt;/classes&gt;
+  &lt;/test&gt; &lt;!-- Parameter --&gt;
 &lt;/suite&gt; &lt;!-- Suite --&gt;
             </pre>
           </div> <!-- main-panel-content rounded-window-bottom -->
@@ -276,7 +277,10 @@
           <div class="main-panel-content rounded-window-bottom">
             <ul>
               <li>
-                <span class="test-name">Test (3 classes)</span>
+                <span class="test-name">Test (2 classes)</span>
+              </li>
+              <li>
+                <span class="test-name">Parameter (1 class)</span>
               </li>
             </ul>
           </div> <!-- main-panel-content rounded-window-bottom -->
@@ -314,40 +318,40 @@ data.addRows(8);
 data.setCell(0, 0, 0)
 data.setCell(0, 1, 'Test')
 data.setCell(0, 2, 'TestNgProblemSlove.SecuinceTestNg')
-data.setCell(0, 3, 13);
+data.setCell(0, 3, 10);
 data.setCell(1, 0, 1)
 data.setCell(1, 1, 'Description')
 data.setCell(1, 2, 'TestNgProblemSlove.DescriptionAnotation')
-data.setCell(1, 3, 9);
+data.setCell(1, 3, 7);
 data.setCell(2, 0, 2)
-data.setCell(2, 1, 'Testc1')
+data.setCell(2, 1, 'Parameter')
 data.setCell(2, 2, 'TestNgProblemSlove.DescriptionAnotation')
-data.setCell(2, 3, 5);
+data.setCell(2, 3, 3);
 data.setCell(3, 0, 3)
-data.setCell(3, 1, 'postIphone1')
+data.setCell(3, 1, 'Testc1')
 data.setCell(3, 2, 'TestNgProblemSlove.DescriptionAnotation')
-data.setCell(3, 3, 4);
+data.setCell(3, 3, 2);
 data.setCell(4, 0, 4)
-data.setCell(4, 1, 'Parameter')
-data.setCell(4, 2, 'TestNgProblemSlove.DescriptionAnotation')
-data.setCell(4, 3, 3);
+data.setCell(4, 1, 'Testc')
+data.setCell(4, 2, 'TestNgProblemSlove.SecuinceTestNg')
+data.setCell(4, 3, 2);
 data.setCell(5, 0, 5)
 data.setCell(5, 1, 'exclude')
 data.setCell(5, 2, 'TestNgProblemSlove.Parameteranotation')
-data.setCell(5, 3, 3);
+data.setCell(5, 3, 2);
 data.setCell(6, 0, 6)
-data.setCell(6, 1, 'Demo')
-data.setCell(6, 2, 'TestNgProblemSlove.Parameteranotation')
-data.setCell(6, 3, 2);
+data.setCell(6, 1, 'postIphone1')
+data.setCell(6, 2, 'TestNgProblemSlove.DescriptionAnotation')
+data.setCell(6, 3, 1);
 data.setCell(7, 0, 7)
-data.setCell(7, 1, 'Testc')
-data.setCell(7, 2, 'TestNgProblemSlove.SecuinceTestNg')
-data.setCell(7, 3, 2);
+data.setCell(7, 1, 'Demo')
+data.setCell(7, 2, 'TestNgProblemSlove.Parameteranotation')
+data.setCell(7, 3, 1);
 window.suiteTableData['Suite']= { tableData: data, tableDiv: 'times-div-Suite'}
 return data;
 }
               </script>
-              <span class="suite-total-time">Total running time: 41 ms</span>
+              <span class="suite-total-time">Total running time: 28 ms</span>
               <div id="times-div-Suite">
               </div> <!-- times-div-Suite -->
             </div> <!-- times-div -->
@@ -383,113 +387,116 @@ return data;
               <div class="chronological-class-name">TestNgProblemSlove.DescriptionAnotation</div> <!-- chronological-class-name -->
               <div class="configuration-test before">
                 <span class="method-name">setUp</span>
-                <span class="method-start">30 ms</span>
+                <span class="method-start">24 ms</span>
               </div> <!-- configuration-test before -->
             </div> <!-- chronological-class -->
             <div class="chronological-class">
               <div class="chronological-class-name">TestNgProblemSlove.SecuinceTestNg</div> <!-- chronological-class-name -->
               <div class="configuration-test before">
                 <span class="method-name">beforTest</span>
-                <span class="method-start">31 ms</span>
+                <span class="method-start">24 ms</span>
               </div> <!-- configuration-test before -->
             </div> <!-- chronological-class -->
             <div class="chronological-class">
               <div class="chronological-class-name">TestNgProblemSlove.DescriptionAnotation</div> <!-- chronological-class-name -->
               <div class="test-method">
                 <span class="method-name">Description</span>
-                <span class="method-start">66 ms</span>
+                <span class="method-start">46 ms</span>
               </div> <!-- test-method -->
               <div class="test-method">
                 <span class="method-name">Parameter(Chrome, Www.google.com)</span>
-                <span class="method-start">88 ms</span>
+                <span class="method-start">67 ms</span>
               </div> <!-- test-method -->
               <div class="test-method">
                 <span class="method-name">Testc1</span>
-                <span class="method-start">95 ms</span>
+                <span class="method-start">118 ms</span>
               </div> <!-- test-method -->
               <div class="test-method">
                 <span class="method-name">postIphone1</span>
-                <span class="method-start">103 ms</span>
-              </div> <!-- test-method -->
-            </div> <!-- chronological-class -->
-            <div class="chronological-class">
-              <div class="chronological-class-name">TestNgProblemSlove.Parameteranotation</div> <!-- chronological-class-name -->
-              <div class="configuration-method before">
-                <span class="method-name">beforMethod</span>
-                <span class="method-start">114 ms</span>
-              </div> <!-- configuration-method before -->
-              <div class="test-method">
-                <span class="method-name">Demo(Chrome, Www.google.com)</span>
-                <span class="method-start">116 ms</span>
-              </div> <!-- test-method -->
-              <div class="configuration-method after">
-                <span class="method-name">afterMethod</span>
-                <span class="method-start">120 ms</span>
-              </div> <!-- configuration-method after -->
-              <div class="configuration-method before">
-                <span class="method-name">beforMethod</span>
-                <span class="method-start">122 ms</span>
-              </div> <!-- configuration-method before -->
-              <div class="test-method">
-                <span class="method-name">exclude</span>
                 <span class="method-start">122 ms</span>
               </div> <!-- test-method -->
-              <div class="configuration-method after">
-                <span class="method-name">afterMethod</span>
-                <span class="method-start">128 ms</span>
-              </div> <!-- configuration-method after -->
             </div> <!-- chronological-class -->
             <div class="chronological-class">
               <div class="chronological-class-name">TestNgProblemSlove.SecuinceTestNg</div> <!-- chronological-class-name -->
               <div class="configuration-class before">
                 <span class="method-name">beforClass</span>
-                <span class="method-start">129 ms</span>
+                <span class="method-start">127 ms</span>
               </div> <!-- configuration-class before -->
               <div class="configuration-method before">
                 <span class="method-name">beforMethod</span>
-                <span class="method-start">130 ms</span>
+                <span class="method-start">128 ms</span>
               </div> <!-- configuration-method before -->
               <div class="test-method">
                 <span class="method-name">Test</span>
-                <span class="method-start">131 ms</span>
+                <span class="method-start">129 ms</span>
               </div> <!-- test-method -->
               <div class="configuration-method after">
                 <span class="method-name">afterMethod</span>
-                <span class="method-start">146 ms</span>
+                <span class="method-start">142 ms</span>
               </div> <!-- configuration-method after -->
               <div class="configuration-method before">
                 <span class="method-name">beforMethod</span>
-                <span class="method-start">147 ms</span>
+                <span class="method-start">143 ms</span>
               </div> <!-- configuration-method before -->
               <div class="test-method">
                 <span class="method-name">Testc</span>
-                <span class="method-start">148 ms</span>
+                <span class="method-start">143 ms</span>
               </div> <!-- test-method -->
               <div class="configuration-method after">
                 <span class="method-name">afterMethod</span>
-                <span class="method-start">152 ms</span>
+                <span class="method-start">148 ms</span>
               </div> <!-- configuration-method after -->
               <div class="configuration-class after">
                 <span class="method-name">AfterClass</span>
-                <span class="method-start">153 ms</span>
+                <span class="method-start">149 ms</span>
               </div> <!-- configuration-class after -->
             </div> <!-- chronological-class -->
             <div class="chronological-class">
               <div class="chronological-class-name">TestNgProblemSlove.DescriptionAnotation</div> <!-- chronological-class-name -->
               <div class="configuration-test after">
                 <span class="method-name">tearDown</span>
-                <span class="method-start">154 ms</span>
+                <span class="method-start">150 ms</span>
               </div> <!-- configuration-test after -->
             </div> <!-- chronological-class -->
             <div class="chronological-class">
               <div class="chronological-class-name">TestNgProblemSlove.SecuinceTestNg</div> <!-- chronological-class-name -->
               <div class="configuration-test after">
                 <span class="method-name">AfterTest</span>
-                <span class="method-start">155 ms</span>
+                <span class="method-start">151 ms</span>
               </div> <!-- configuration-test after -->
+            </div> <!-- chronological-class -->
+            <div class="chronological-class">
+              <div class="chronological-class-name">TestNgProblemSlove.Parameteranotation</div> <!-- chronological-class-name -->
+              <div class="configuration-method before">
+                <span class="method-name">beforMethod</span>
+                <span class="method-start">554 ms</span>
+              </div> <!-- configuration-method before -->
+              <div class="test-method">
+                <span class="method-name">Demo(Chrome, Www.google.com)</span>
+                <span class="method-start">555 ms</span>
+              </div> <!-- test-method -->
+              <div class="configuration-method after">
+                <span class="method-name">afterMethod</span>
+                <span class="method-start">559 ms</span>
+              </div> <!-- configuration-method after -->
+              <div class="configuration-method before">
+                <span class="method-name">beforMethod</span>
+                <span class="method-start">559 ms</span>
+              </div> <!-- configuration-method before -->
+              <div class="test-method">
+                <span class="method-name">exclude</span>
+                <span class="method-start">560 ms</span>
+              </div> <!-- test-method -->
+              <div class="configuration-method after">
+                <span class="method-name">afterMethod</span>
+                <span class="method-start">565 ms</span>
+              </div> <!-- configuration-method after -->
+            </div> <!-- chronological-class -->
+            <div class="chronological-class">
+              <div class="chronological-class-name">TestNgProblemSlove.SecuinceTestNg</div> <!-- chronological-class-name -->
               <div class="configuration-suite after">
                 <span class="method-name">AfterSuite</span>
-                <span class="method-start">562 ms</span>
+                <span class="method-start">673 ms</span>
               </div> <!-- configuration-suite after -->
           </div> <!-- main-panel-content rounded-window-bottom -->
         </div> <!-- panel -->
