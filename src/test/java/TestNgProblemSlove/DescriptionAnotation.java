@@ -1,4 +1,4 @@
-package Practice;
+package TestNgProblemSlove;
 
 import java.io.IOException;
 
@@ -16,7 +16,7 @@ import org.testng.annotations.Test;
 import Common.BaseClass;
 import Utilities.TestListeners;
 @Listeners(TestListeners.class)
-public class CrigList extends BaseClass {
+public class DescriptionAnotation extends BaseClass {
 	@BeforeTest
 	//@Parameters("browserName")
 	public void setUp() throws IOException {
@@ -31,7 +31,7 @@ public class CrigList extends BaseClass {
 	public void Description() {
 	
 	//	softAssert().assertEquals(false,true);
-		System.out.println("Call Another Test");
+		System.out.println("This Is Description Method");
 	}
 	
 	@Test(description="This Is Parameter Test")

@@ -1,4 +1,4 @@
-package Practice;
+package TestNgProblemSlove;
 
 import java.io.IOException;
 

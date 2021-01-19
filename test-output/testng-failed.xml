@@ -1,28 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<suite thread-count="2" parallel="tests" name="Failed suite [Suite]" guice-stage="DEVELOPMENT">
-  <test thread-count="2" parallel="tests" name="Test1(failed)">
-    <parameter name="browserName" value="firefox"/>
+<suite name="Failed suite [Suite]" guice-stage="DEVELOPMENT">
+  <test thread-count="5" name="Test(failed)">
     <classes>
-      <class name="Practice.CrigList">
+      <class name="TestNgProblemSlove.DescriptionAnotation">
         <methods>
+          <include name="Parameter"/>
           <include name="setUp"/>
           <include name="tearDown"/>
-          <include name="Parameter"/>
         </methods>
-      </class> <!-- Practice.CrigList -->
-    </classes>
-  </test> <!-- Test1(failed) -->
-  <test thread-count="2" parallel="tests" name="Test(failed)">
-    <parameter name="browserName" value="chrome"/>
-    <classes>
-      <class name="Practice.CrigList">
-        <methods>
-          <include name="setUp"/>
-          <include name="tearDown"/>
-          <include name="Parameter"/>
-        </methods>
-      </class> <!-- Practice.CrigList -->
+      </class> <!-- TestNgProblemSlove.DescriptionAnotation -->
     </classes>
   </test> <!-- Test(failed) -->
 </suite> <!-- Failed suite [Suite] -->

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Suite">
+	<listeners>
+		<listener class-name="Utilities.TestListeners" />						 <!-- Declar Listeners -->
+	</listeners>
+	<parameter name="browser" value="Chrome" />										 <!-- Declar Parameter -->
+	<parameter name="Url" value="Www.google.com" />
+	<test thread-count="5" name="Test">
+		<packages>
+			<package name="TestNgProblemSlove"/>								 <!-- Declar Regular expression .* -->
+		</packages>
+	</test>
+</suite> 

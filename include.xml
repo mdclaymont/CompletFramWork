@@ -16,8 +16,8 @@
 		<classes>
 			<class name="TestNgProblemSlove.Parameteranotation">
 				<methods>
-					<exclude name="exclude" />												 <!-- If User want exclude Some Method provide that inside class -->
-				</methods>
+					<include name="exclude" />												 <!-- If User want exclude Some Method provide that inside class -->
+				</methods>																	 <!-- If User want Start With Some Test Case Exclude Then Use That keyword.* -->
 			</class>
 		</classes>
 	</test>
