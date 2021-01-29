@@ -5,37 +5,30 @@ import java.util.Scanner;
 public class AramstrongNumber {
 
 	public static void main(String[] args) {
-		String expType;
-		Scanner sc=new Scanner(System.in);
+		long expNum = 0;
+		System.out.println("For exist Please Enter '-99'");
+		System.out.println("Please Enter Your Number For Check If Its Amstrong Number:\n");
+		Scanner sc = new Scanner(System.in);
 		do {
-			System.out.println("Please enter Your Number ");
-			int expNum=sc.nextInt();
-			int actualNum=expNum;
-			double result=0;
-			while(actualNum!=0) {
-				int n=expNum%10;
-				result=result+Math.pow(n,3);
-				actualNum=actualNum/10;
-			}
-			if(result==expNum) {
-				System.out.println(expNum+" is Aramstrong Number");
-			}
-			else {
-				System.out.println(expNum+"is Not Aramstrong Number");
-			}
-			result=0;
-			System.out.println("To Continue press any char and Enter To exit Enter 'No' ");
-			expType=sc.next();
-		}while(!expType.toLowerCase().contains("no"));
-		
-		
-		
+			expNum = sc.nextLong();
+			amstringNumber(expNum);
+
+		} while (expNum != -99);
 		sc.close();
 	}
 
-	private static double Math(int n, int i) {
-		// TODO Auto-generated method stub
-		return 0;
+	public static void amstringNumber(long expNum) {
+		long temp = expNum;
+		double result = 0;
+		while (expNum != 0) {
+			long n = expNum % 10;
+			result = result + Math.pow(n, 3);
+			expNum = expNum / 10;
+		}
+		if (temp == result) {
+			System.out.println("Expected Number Is amstrong Number '" + temp);
+		} else {
+			System.out.println("Expected Number Ins Not an amstrong Number " + temp);
+		}
 	}
-
 }
