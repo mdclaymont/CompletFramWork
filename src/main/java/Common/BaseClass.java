@@ -555,7 +555,26 @@ public class BaseClass {
 		}
 	}
 	
-	public static void setObjectByText(String expText, List<WebElement> expEle) {
+	public static void setObjectByText(List<WebElement> expElementList,String ... expText) {
+		if(!expText[0].equalsIgnoreCase("all")) {
+			for(String epText:expText) {
+				for(WebElement list:expElementList) {
+					if((list.getText()).equals(epText)) {
+						list.click();
+						break;
+					}	
+				}
+			}
+		}
+		else {
+			for(WebElement list:expElementList) {
+				list.click();
+			}
+		}
+		
+	}
+	
+	public static void setObjectByText1(String expText, List<WebElement> expEle) {
 		String actualValue="";
 		int totalEl=expEle.size();
 		for(int i = 0;i<totalEl;i++)
@@ -568,7 +587,8 @@ public class BaseClass {
 			}
 		}
 	}
-
+	
+	
 	public static void selectDropDown(WebElement expElement,String expValue) {
 		Select objd=new Select(expElement);
 		objd.selectByVisibleText(expValue);
@@ -1163,6 +1183,34 @@ public class BaseClass {
 		Reporter.log("******************************************Validate String Short Ended******************************************");
 		System.out.println("******************************************Validate String Short Ended****************************************");
 	}
+
+	/****************************************************************************************************************
+	*  Author: Md Rezaul Karim 
+	*  Function Name: ValidateStringShort
+	*  Function Arg: expectedEditElement Its Element sent from method,ActualEditValue=>The Value That Will Set on Input Field
+	*  FunctionOutPut: It will Validate Expected Input Value Set On Input Filed or Not
+	* ***************************************************************************************************************/
+	
+	public static void validateShorted(List<WebElement> expElements) {
+		
+		ArrayList<String> originalList = new ArrayList<String>();
+		ArrayList<String> tempList = new ArrayList<String>();
+		for (WebElement list:expElements){
+				originalList.add(list.getText());
+				tempList.add(list.getText());
+		}
+		Collections.sort(tempList);
+		if(originalList.equals(tempList)) {
+			TestListeners.test.log(Status.PASS,"\t Expected Value are Sorted");
+			log.info("\t Expected Value are Sorted");
+		}
+		else {
+			TestListeners.test.log(Status.FAIL,"\t Expected Value Does not Sorted");
+			log.info("\t Expected Value Does not Sorted");
+		}
+	}
+	
+	
 	
 	/****************************************************************************************************************
 	*  Author: Md Rezaul Karim 
