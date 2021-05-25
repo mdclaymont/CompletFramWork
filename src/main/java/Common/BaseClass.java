@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,6 +62,7 @@ import ru.yandex.qatools.ashot.AShot;
 import ru.yandex.qatools.ashot.Screenshot;
 import Utilities.TestListeners;
 import Utilities.XLUtility;
+import jdk.internal.org.jline.utils.Log;
 
 //********************************************************************   Test Base Class    ************************************************************************  
 
@@ -1220,7 +1223,51 @@ public class BaseClass {
 	* 
 	* ***************************************************************************************************************/
 
-	public static void validateBrookenLink(String Locator, int TotalLink) throws InterruptedException {
+	public static void validateBrokenLink(List<WebElement> expElement) throws InterruptedException {
+
+		Reporter.log("******************************************Validate Brooken Link Started ******************************************");
+		System.out.println("******************************************Validate Brooken Link Started *************************************");
+		int j=0;
+		
+		try{
+			for(WebElement listLink:expElement) {
+				String getActualLinkName=listLink.getAttribute("href");
+				if(getActualLinkName.isEmpty() || getActualLinkName==null) {
+					System.out.println("\t The Expected Link Is Null Or Empty");
+					log.info("\t The Expected Link Is Null Or Empty");
+				}
+				URL objLink=new URL(getActualLinkName);
+				HttpURLConnection objCon=(HttpURLConnection)objLink.openConnection();
+				int respondCode=objCon.getResponseCode();
+				if(respondCode>=400){
+					System.out.println(getActualLinkName + " This Link Is Broken Link");
+					Log.info(getActualLinkName + " This Link Is Broken Link");
+					j++;
+				}
+				else {
+					System.out.println(getActualLinkName + " This Link Is Valid Link");
+					Log.info(getActualLinkName + " This Link Is Valid Link");
+				}
+			}
+		System.out.println("Total Broken Link Is "+j);	
+			
+		}catch(Exception e) {}
+		
+		Reporter.log("******************************************Validate Brooken Link Ended******************************************");
+		System.out.println("******************************************Validate Brooken Link Ended****************************************");
+	}
+	
+
+	
+	/****************************************************************************************************************
+	*  Author: Md Rezaul Karim 
+	*  Function Name: ValidateBrookenLink
+	*  Function Arg: expectedEditElement Its Element sent from method,ActualEditValue=>The Value That Will Set on Input Field
+	*  FunctionOutPut: It will Validate Expected Input Value Set On Input Filed or Not
+	* 
+	* ***************************************************************************************************************/
+
+	public static void validateBrookenLink1(String Locator, int TotalLink) throws InterruptedException {
 
 		Reporter.log("******************************************Validate Brooken Link Started ******************************************");
 		System.out.println("******************************************Validate Brooken Link Started *************************************");
@@ -1251,6 +1298,11 @@ public class BaseClass {
 		Reporter.log("******************************************Validate Brooken Link Ended******************************************");
 		System.out.println("******************************************Validate Brooken Link Ended****************************************");
 	}
+	
+	
+	
+	
+	
 
 	public static void validateColor(String expColor,WebElement expColorEl) throws IOException {
 		//boolean colorResult=null;
