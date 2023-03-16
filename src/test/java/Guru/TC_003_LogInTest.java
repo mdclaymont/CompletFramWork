@@ -13,7 +13,7 @@ public class TC_003_LogInTest extends BaseClass{
 	{
 		openUrl("");
 		validateUrl();
-		LogInPage1 lip=new LogInPage1();
+		LogInPage1 lip=new LogInPage1(null);
 		lip.LogIn();
 		validateTitle("Guru99 Bank Manager HomePage");
 	}

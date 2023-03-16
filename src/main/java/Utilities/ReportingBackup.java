@@ -16,12 +16,12 @@ import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.markuputils.ExtentColor;
 import com.aventstack.extentreports.markuputils.MarkupHelper;
-import com.aventstack.extentreports.reporter.ExtentHtmlReporter;
+import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import com.aventstack.extentreports.reporter.configuration.Theme;
 
 public class ReportingBackup extends TestListenerAdapter
 {
-	public ExtentHtmlReporter htmlReporter;
+	public ExtentSparkReporter htmlReporter;
 	public ExtentReports extent;
 	public ExtentTest logger;
 	
@@ -31,8 +31,13 @@ public class ReportingBackup extends TestListenerAdapter
 		String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());//time stamp
 		String repName="Test-Report-"+timeStamp+".html";
 		
-		htmlReporter=new ExtentHtmlReporter(System.getProperty("user.dir")+ "/test-output/"+repName);//specify location of the report
-		htmlReporter.loadXMLConfig(System.getProperty("user.dir")+ "/extent-config.xml");
+		htmlReporter=new ExtentSparkReporter(System.getProperty("user.dir")+ "/test-output/"+repName);//specify location of the report
+		try {
+			htmlReporter.loadXMLConfig(System.getProperty("user.dir")+ "/extent-config.xml");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		extent=new ExtentReports();
 		
@@ -63,13 +68,7 @@ public class ReportingBackup extends TestListenerAdapter
 		
 		if(f.exists())
 		{
-		try {
-			logger.fail("Screenshot is below:" + logger.addScreenCaptureFromPath(screenshotPath));
-			} 
-		catch (IOException e) 
-				{
-				e.printStackTrace();
-				}
+		logger.fail("Screenshot is below:" + logger.addScreenCaptureFromPath(screenshotPath));
 		}
 		
 	}

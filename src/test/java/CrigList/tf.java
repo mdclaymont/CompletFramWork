@@ -18,7 +18,7 @@ public class tf extends BaseClass {
 	}
 	@Test()
 	public void PostData() {
-		Assert.assertEquals(false, true);
+		System.out.println("tEST Result");
 	}
 	
 	

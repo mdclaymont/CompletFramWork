@@ -3,13 +3,13 @@
 <suite name="Failed suite [Default suite]" guice-stage="DEVELOPMENT">
   <test thread-count="5" name="Default test(failed)">
     <classes>
-      <class name="Practice.parameter">
+      <class name="CrigList.PostList">
         <methods>
-          <include name="Demo"/>
-          <include name="beforMethod"/>
+          <include name="setUp"/>
           <include name="afterMethod"/>
+          <include name="Post"/>
         </methods>
-      </class> <!-- Practice.parameter -->
+      </class> <!-- CrigList.PostList -->
     </classes>
   </test> <!-- Default test(failed) -->
 </suite> <!-- Failed suite [Default suite] -->

@@ -1,10 +1,7 @@
-19:43:34.433 [main] INFO  Common.BaseClass - Testc1	 Test Successfully 
-19:43:34.439 [main] INFO  Common.BaseClass - postIphone1	 On Test Start
-19:43:34.441 [main] INFO  Common.BaseClass - postIphone1	 Test Successfully 
-19:43:34.448 [main] INFO  Common.BaseClass - Test	 On Test Start
-19:43:34.449 [main] INFO  Common.BaseClass - Test	 Test Successfully 
-19:43:34.451 [main] INFO  Common.BaseClass - Testc	 On Test Start
-19:43:34.452 [main] INFO  Common.BaseClass - Testc	 Test Successfully 
-19:43:34.870 [main] INFO  Common.BaseClass - Parameter	 On Start Test 
-19:43:34.874 [main] INFO  Common.BaseClass - Demo	 On Test Start
-19:43:34.875 [main] INFO  Common.BaseClass - Demo	 Test Successfully 
+11:24:43.302 [main] INFO  Common.BaseClass - 	 Expected ' continue ' Element Clicked
+11:24:43.996 [main] INFO  Common.BaseClass - 	 Expected ' continue ' Element Clicked
+11:24:44.646 [main] INFO  Common.BaseClass - 	 Expected ' done with images ' Element Clicked
+11:24:45.647 [main] INFO  Common.BaseClass - 	 Expected ' publish ' Element Clicked
+11:24:45.672 [main] INFO  Common.BaseClass - Post	 Test Successfully 
+11:24:45.701 [AsyncHttpClient-1-4] TRACE io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder - Encoding WebSocket Frame opCode=8 length=26
+11:24:46.060 [main] INFO  Common.BaseClass - 	 Expected Browser Closed Successfully

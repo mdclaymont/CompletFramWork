@@ -24,7 +24,7 @@ public class TestListeners extends BaseClass implements ITestListener {
 	public static ThreadLocal<ExtentTest> extentTest = new ThreadLocal<>();
 	
 	public static void onStart() {
-		expMethodName = objBc.getClass().getName().toString().trim();
+		expMethodName = bc.getClass().getName().toString().trim();
 		test = extent.createTest(expMethodName); // This will be Create Pass Failed all Other log To Extent Report
 		extentTest.set(test); // Make Thread safe
 		log.info(expMethodName+"\t On Start Test ");
@@ -80,7 +80,7 @@ public class TestListeners extends BaseClass implements ITestListener {
 		}
 	}
 	public static void onFinish() {
-		expMethodName = objBc.getClass().getName().toString().trim();
+		expMethodName = bc.getClass().getName().toString().trim();
 		if (extent != null) {
 			extent.flush();
 		}

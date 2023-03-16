@@ -1,0 +1,11 @@
+11:24:37.922 [main] INFO  Common.BaseClass - 	 Expected ' Tester@7453 ' Element Set Input/Edit Field
+11:24:39.335 [main] INFO  Common.BaseClass - 	 Expected ' Log in ' Element Clicked
+11:24:39.369 [main] INFO  Common.BaseClass - Post	 On Test Start
+11:24:40.495 [main] INFO  Common.BaseClass - 	 Expected ' go ' Element Clicked
+11:24:40.986 [main] INFO  Common.BaseClass - 	 Expected '  ' Element Clicked
+11:24:41.609 [main] INFO  Common.BaseClass - 	 Expected '  ' Element Clicked
+11:24:41.896 [main] INFO  Common.BaseClass - 	 Expected ' LCD Screen For Iphone 6s Plus Black/White ' Element Set Input/Edit Field
+11:24:42.168 [main] INFO  Common.BaseClass - 	 Expected ' Brand New LCD Screen I have Other Model also If You Buy More Then 1 I will Do Some Discount ' Element Set Input/Edit Field
+11:24:42.258 [main] INFO  Common.BaseClass - 	 Expected ' 19 ' Element Set Input/Edit Field
+11:24:42.354 [main] INFO  Common.BaseClass - 	 Expected ' 19703 ' Element Set Input/Edit Field
+11:24:42.497 [main] INFO  Common.BaseClass - 	 Expected ' - ' Element Clicked

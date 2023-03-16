@@ -3,13 +3,14 @@
 <suite name="Failed suite [Suite]" guice-stage="DEVELOPMENT">
   <test thread-count="5" name="Test(failed)">
     <classes>
-      <class name="TestNgProblemSlove.DescriptionAnotation">
+      <class name="Test.NewTest">
         <methods>
-          <include name="Parameter"/>
-          <include name="setUp"/>
-          <include name="tearDown"/>
+          <include name="beforeTest"/>
+          <include name="f1"/>
+          <include name="f2"/>
+          <include name="afterTest"/>
         </methods>
-      </class> <!-- TestNgProblemSlove.DescriptionAnotation -->
+      </class> <!-- Test.NewTest -->
     </classes>
   </test> <!-- Test(failed) -->
 </suite> <!-- Failed suite [Suite] -->

@@ -3,7 +3,7 @@ package ProblemSloved;
 public class CheckLipYear {
 
 	public static void main(String[] args) {
-		System.out.println(findlipYear(2000));
+		System.out.println(findlipYear(2001));
 	}
 	
 	public static boolean findlipYear(int expYear) {
@@ -21,6 +21,8 @@ public class CheckLipYear {
 				res=true;
 			}
 			
+		}else {
+			res=false;
 		}
 		return res;
 	}

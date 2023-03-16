@@ -1,144 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testng-results ignored="0" total="8" passed="8" failed="0" skipped="0">
+<testng-results ignored="0" total="1" passed="1" failed="0" skipped="0">
   <reporter-output>
+    <line>
+      <![CDATA[**************************************** initilize Driver MEthod Started ******************************************]]>
+    </line>
+    <line>
+      <![CDATA[******************************************Url Open Strated******************************************]]>
+    </line>
   </reporter-output>
-  <suite started-at="2021-01-18T19:42:38 EST" name="Suite" finished-at="2021-01-18T19:42:38 EST" duration-ms="556">
+  <suite started-at="2023-03-16T11:24:29 EDT" name="Suite" finished-at="2023-03-16T11:24:46 EDT" duration-ms="16481">
     <groups>
-      <group name="Save">
-        <method signature="DescriptionAnotation.Testc1()[pri:0, instance:TestNgProblemSlove.DescriptionAnotation@e72dba7]" name="Testc1" class="TestNgProblemSlove.DescriptionAnotation"/>
-      </group> <!-- Save -->
     </groups>
-    <test started-at="2021-01-18T19:42:38 EST" name="Test" finished-at="2021-01-18T19:42:38 EST" duration-ms="142">
-      <class name="TestNgProblemSlove.DescriptionAnotation">
-        <test-method is-config="true" signature="setUp()[pri:0, instance:TestNgProblemSlove.DescriptionAnotation@e72dba7]" started-at="2021-01-18T19:42:38 EST" name="setUp" finished-at="2021-01-18T19:42:38 EST" duration-ms="0" status="PASS">
+    <test started-at="2023-03-16T11:24:29 EDT" name="Test" finished-at="2023-03-16T11:24:46 EDT" duration-ms="16481">
+      <class name="CrigList.PostList">
+        <test-method is-config="true" signature="setUp()[pri:0, instance:CrigList.PostList@2bfeb1ef]" started-at="2023-03-16T11:24:29 EDT" name="setUp" finished-at="2023-03-16T11:24:39 EDT" duration-ms="9732" status="PASS">
           <reporter-output>
+            <line>
+              <![CDATA[**************************************** initilize Driver MEthod Started ******************************************]]>
+            </line>
+            <line>
+              <![CDATA[******************************************Url Open Strated******************************************]]>
+            </line>
           </reporter-output>
         </test-method> <!-- setUp -->
-        <test-method signature="Description()[pri:0, instance:TestNgProblemSlove.DescriptionAnotation@e72dba7]" started-at="2021-01-18T19:42:38 EST" name="Description" description="This Is Test For Description" finished-at="2021-01-18T19:42:38 EST" duration-ms="7" status="PASS">
+        <test-method signature="Post()[pri:0, instance:CrigList.PostList@2bfeb1ef]" started-at="2023-03-16T11:24:39 EDT" name="Post" finished-at="2023-03-16T11:24:45 EDT" duration-ms="6280" status="PASS">
           <reporter-output>
           </reporter-output>
-        </test-method> <!-- Description -->
-        <test-method signature="Parameter(java.lang.String, java.lang.String)[pri:0, instance:TestNgProblemSlove.DescriptionAnotation@e72dba7]" started-at="2021-01-18T19:42:38 EST" name="Parameter" description="This Is Parameter Test" finished-at="2021-01-18T19:42:38 EST" duration-ms="3" status="PASS">
-          <params>
-            <param index="0">
-              <value>
-                <![CDATA[Chrome]]>
-              </value>
-            </param>
-            <param index="1">
-              <value>
-                <![CDATA[Www.google.com]]>
-              </value>
-            </param>
-          </params>
-          <reporter-output>
-          </reporter-output>
-        </test-method> <!-- Parameter -->
-        <test-method signature="Testc1()[pri:0, instance:TestNgProblemSlove.DescriptionAnotation@e72dba7]" started-at="2021-01-18T19:42:38 EST" name="Testc1" finished-at="2021-01-18T19:42:38 EST" duration-ms="2" status="PASS">
-          <reporter-output>
-          </reporter-output>
-        </test-method> <!-- Testc1 -->
-        <test-method signature="postIphone1()[pri:0, instance:TestNgProblemSlove.DescriptionAnotation@e72dba7]" started-at="2021-01-18T19:42:38 EST" name="postIphone1" finished-at="2021-01-18T19:42:38 EST" duration-ms="1" status="PASS">
-          <reporter-output>
-          </reporter-output>
-        </test-method> <!-- postIphone1 -->
-        <test-method is-config="true" signature="tearDown()[pri:0, instance:TestNgProblemSlove.DescriptionAnotation@e72dba7]" started-at="2021-01-18T19:42:38 EST" name="tearDown" finished-at="2021-01-18T19:42:38 EST" duration-ms="1" status="PASS">
-          <reporter-output>
-          </reporter-output>
-        </test-method> <!-- tearDown -->
-      </class> <!-- TestNgProblemSlove.DescriptionAnotation -->
-      <class name="TestNgProblemSlove.SecuinceTestNg">
-        <test-method is-config="true" signature="beforTest()[pri:0, instance:TestNgProblemSlove.SecuinceTestNg@33a2499c]" started-at="2021-01-18T19:42:38 EST" name="beforTest" finished-at="2021-01-18T19:42:38 EST" duration-ms="1" status="PASS">
-          <reporter-output>
-          </reporter-output>
-        </test-method> <!-- beforTest -->
-        <test-method is-config="true" signature="beforClass()[pri:0, instance:TestNgProblemSlove.SecuinceTestNg@33a2499c]" started-at="2021-01-18T19:42:38 EST" name="beforClass" finished-at="2021-01-18T19:42:38 EST" duration-ms="1" status="PASS">
-          <reporter-output>
-          </reporter-output>
-        </test-method> <!-- beforClass -->
-        <test-method is-config="true" signature="beforMethod()[pri:0, instance:TestNgProblemSlove.SecuinceTestNg@33a2499c]" started-at="2021-01-18T19:42:38 EST" name="beforMethod" finished-at="2021-01-18T19:42:38 EST" duration-ms="1" status="PASS">
-          <reporter-output>
-          </reporter-output>
-        </test-method> <!-- beforMethod -->
-        <test-method signature="Test()[pri:0, instance:TestNgProblemSlove.SecuinceTestNg@33a2499c]" started-at="2021-01-18T19:42:38 EST" name="Test" finished-at="2021-01-18T19:42:38 EST" duration-ms="10" status="PASS">
-          <reporter-output>
-          </reporter-output>
-        </test-method> <!-- Test -->
-        <test-method is-config="true" signature="afterMethod()[pri:0, instance:TestNgProblemSlove.SecuinceTestNg@33a2499c]" started-at="2021-01-18T19:42:38 EST" name="afterMethod" finished-at="2021-01-18T19:42:38 EST" duration-ms="0" status="PASS">
+        </test-method> <!-- Post -->
+        <test-method is-config="true" signature="afterMethod()[pri:0, instance:CrigList.PostList@2bfeb1ef]" started-at="2023-03-16T11:24:45 EDT" name="afterMethod" finished-at="2023-03-16T11:24:46 EDT" duration-ms="375" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- afterMethod -->
-        <test-method signature="Testc()[pri:0, instance:TestNgProblemSlove.SecuinceTestNg@33a2499c]" started-at="2021-01-18T19:42:38 EST" name="Testc" finished-at="2021-01-18T19:42:38 EST" duration-ms="2" status="PASS">
-          <reporter-output>
-          </reporter-output>
-        </test-method> <!-- Testc -->
-        <test-method is-config="true" signature="beforMethod()[pri:0, instance:TestNgProblemSlove.SecuinceTestNg@33a2499c]" started-at="2021-01-18T19:42:38 EST" name="beforMethod" finished-at="2021-01-18T19:42:38 EST" duration-ms="0" status="PASS">
-          <reporter-output>
-          </reporter-output>
-        </test-method> <!-- beforMethod -->
-        <test-method is-config="true" signature="afterMethod()[pri:0, instance:TestNgProblemSlove.SecuinceTestNg@33a2499c]" started-at="2021-01-18T19:42:38 EST" name="afterMethod" finished-at="2021-01-18T19:42:38 EST" duration-ms="1" status="PASS">
-          <reporter-output>
-          </reporter-output>
-        </test-method> <!-- afterMethod -->
-        <test-method is-config="true" signature="AfterClass()[pri:0, instance:TestNgProblemSlove.SecuinceTestNg@33a2499c]" started-at="2021-01-18T19:42:38 EST" name="AfterClass" finished-at="2021-01-18T19:42:38 EST" duration-ms="1" status="PASS">
-          <reporter-output>
-          </reporter-output>
-        </test-method> <!-- AfterClass -->
-        <test-method is-config="true" signature="AfterTest()[pri:0, instance:TestNgProblemSlove.SecuinceTestNg@33a2499c]" started-at="2021-01-18T19:42:38 EST" name="AfterTest" finished-at="2021-01-18T19:42:38 EST" duration-ms="0" status="PASS">
-          <reporter-output>
-          </reporter-output>
-        </test-method> <!-- AfterTest -->
-      </class> <!-- TestNgProblemSlove.SecuinceTestNg -->
+      </class> <!-- CrigList.PostList -->
     </test> <!-- Test -->
-    <test started-at="2021-01-18T19:42:38 EST" name="Parameter" finished-at="2021-01-18T19:42:38 EST" duration-ms="12">
-      <class name="TestNgProblemSlove.Parameteranotation">
-        <test-method is-config="true" signature="beforMethod()[pri:0, instance:TestNgProblemSlove.Parameteranotation@10ad20cb]" started-at="2021-01-18T19:42:38 EST" name="beforMethod" finished-at="2021-01-18T19:42:38 EST" duration-ms="1" status="PASS">
-          <reporter-output>
-          </reporter-output>
-        </test-method> <!-- beforMethod -->
-        <test-method signature="Demo(java.lang.String, java.lang.String)[pri:0, instance:TestNgProblemSlove.Parameteranotation@10ad20cb]" started-at="2021-01-18T19:42:38 EST" name="Demo" finished-at="2021-01-18T19:42:38 EST" duration-ms="1" status="PASS">
-          <params>
-            <param index="0">
-              <value>
-                <![CDATA[Chrome]]>
-              </value>
-            </param>
-            <param index="1">
-              <value>
-                <![CDATA[Www.google.com]]>
-              </value>
-            </param>
-          </params>
-          <reporter-output>
-          </reporter-output>
-        </test-method> <!-- Demo -->
-        <test-method is-config="true" signature="beforMethod()[pri:0, instance:TestNgProblemSlove.Parameteranotation@10ad20cb]" started-at="2021-01-18T19:42:38 EST" name="beforMethod" finished-at="2021-01-18T19:42:38 EST" duration-ms="1" status="PASS">
-          <reporter-output>
-          </reporter-output>
-        </test-method> <!-- beforMethod -->
-        <test-method is-config="true" signature="afterMethod()[pri:0, instance:TestNgProblemSlove.Parameteranotation@10ad20cb]" started-at="2021-01-18T19:42:38 EST" name="afterMethod" finished-at="2021-01-18T19:42:38 EST" duration-ms="0" status="PASS">
-          <reporter-output>
-          </reporter-output>
-        </test-method> <!-- afterMethod -->
-        <test-method signature="exclude()[pri:0, instance:TestNgProblemSlove.Parameteranotation@10ad20cb]" started-at="2021-01-18T19:42:38 EST" name="exclude" finished-at="2021-01-18T19:42:38 EST" duration-ms="2" status="PASS">
-          <reporter-output>
-          </reporter-output>
-        </test-method> <!-- exclude -->
-        <test-method is-config="true" signature="afterMethod()[pri:0, instance:TestNgProblemSlove.Parameteranotation@10ad20cb]" started-at="2021-01-18T19:42:38 EST" name="afterMethod" finished-at="2021-01-18T19:42:38 EST" duration-ms="0" status="PASS">
-          <reporter-output>
-          </reporter-output>
-        </test-method> <!-- afterMethod -->
-      </class> <!-- TestNgProblemSlove.Parameteranotation -->
-      <class name="TestNgProblemSlove.SecuinceTestNg">
-        <test-method is-config="true" signature="beforSuite()[pri:0, instance:TestNgProblemSlove.SecuinceTestNg@33a2499c]" started-at="2021-01-18T19:42:38 EST" name="beforSuite" finished-at="2021-01-18T19:42:38 EST" duration-ms="9" status="PASS">
-          <reporter-output>
-          </reporter-output>
-        </test-method> <!-- beforSuite -->
-        <test-method is-config="true" signature="AfterSuite()[pri:0, instance:TestNgProblemSlove.SecuinceTestNg@33a2499c]" started-at="2021-01-18T19:42:39 EST" name="AfterSuite" finished-at="2021-01-18T19:42:39 EST" duration-ms="1" status="PASS">
-          <reporter-output>
-          </reporter-output>
-        </test-method> <!-- AfterSuite -->
-      </class> <!-- TestNgProblemSlove.SecuinceTestNg -->
-    </test> <!-- Parameter -->
   </suite> <!-- Suite -->
 </testng-results>

@@ -3,8 +3,10 @@ package CrigList;
 import java.io.IOException;
 
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
@@ -12,7 +14,7 @@ import Common.BaseClass;
 import Utilities.TestListeners;
 @Listeners(TestListeners.class)
 public class PostList extends BaseClass {
-	@BeforeMethod
+	@BeforeTest
 	public void setUp() throws IOException, InterruptedException {
 		getData("CrigList,4");
 		initilizeDriver("");
@@ -44,26 +46,8 @@ public class PostList extends BaseClass {
 		return testData;
 	}
 	
+	
 	@Test()
-	public void Post() {
-		click(acp.Go());
-		click(acp.SellBy());
-		click(acp.SellCatagory());
-		writeText(dp.postingTitle(),TcData.get(0).get("Title"));
-		writeText(dp.description(),TcData.get(0).get("Description"));
-		writeText(dp.price(),TcData.get(0).get("Price"));
-		writeText(dp.postalCode(),TcData.get(0).get("PostalCode"));
-		click(dp.mobileOsClick());
-		setObjectByText("apple iOS",dp.mobileOs());
-		click(cf.Continue());
-		click(cf.Continue());
-		click(dp.doneImage());
-		click(cf.Publish());
-	}
-	*/
-	@BeforeGroups("Des")
-	@Test()
-
 	public void UpToDetails() {
 		click(acp.Go());
 		click(acp.SellBy());
@@ -82,7 +66,24 @@ public class PostList extends BaseClass {
 		click(dp.doneImage());
 		click(cf.Publish());
 	}
-	@AfterMethod
+	*/
+	@Test()
+	public void Post() {
+		click(acp.Go());
+		click(acp.SellBy());
+		click(acp.SellCatagory());
+		writeText(dp.postingTitle(),TcData.get(0).get("Title"));
+		writeText(dp.description(),TcData.get(0).get("Description"));
+		writeText(dp.price(),TcData.get(0).get("Price"));
+		writeText(dp.postalCode(),TcData.get(0).get("PostalCode"));
+		click(dp.mobileOsClick());
+		setObjectByText("apple iOS",dp.mobileOs());
+		click(cf.Continue());
+		click(cf.Continue());
+		click(dp.doneImage());
+		click(cf.Publish());
+	}
+	@AfterTest
 	public void afterMethod() {
 		closeBrowser("");
 		softAssert().assertAll("All Result");

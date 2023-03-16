@@ -32,12 +32,15 @@ public class XLUtility {
 	private static String currentDirectory = System.getProperty("user.dir");
 	public static String downloadPath = System.getProperty("user.dir") + File.separator + "downloads";
 
-	/*
-	 * public XLUtility(String expPath, String expSheetName) {
-	 * xls_Reader(expPath,expSheetName); }
-	 */
-	public static void main(String[] args) {
-		// new BaseClass();
+
+	public XLUtility(String expPath, String expSheetName) {			//Constructor For Read Excel
+		try {
+			xls_Reader(expPath,expSheetName); 
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			System.out.println(e.getCause());
+			e.printStackTrace();
+		}
 	}
 
 	/****************************************************************************************************************
@@ -50,7 +53,7 @@ public class XLUtility {
 	 * @throws IOException
 	 ***************************************************************************************************************/
 	public static void xls_Reader(String expPath, String expSheetName) {
-		String actualSheetName;
+		String actualSheetName=null;
 		try {
 			if (expPath.isEmpty() || expPath.length() < 2) {
 				expPath = currentDirectory + "/src/main/java/TestData/Controller.xlsx";// Get System Dir
@@ -58,7 +61,7 @@ public class XLUtility {
 			fis = new FileInputStream(expPath);
 			workbook = new XSSFWorkbook(fis);
 			if (!expSheetName.isEmpty() || expSheetName.length() > 1) { /// Check if user provide sheet name if not then
-																		/// default sheet will be first one
+				/// default sheet will be first one
 				int TotalSheet = workbook.getNumberOfSheets(); /// Total Sheet Number
 				for (int i = 0; i <= TotalSheet; i++) {
 					actualSheetName = workbook.getSheetName(i);
@@ -72,7 +75,9 @@ public class XLUtility {
 			}
 			fis.close();
 		} catch (Exception e) {
+
 			System.out.println(e.getMessage());
+			System.out.println(e.getCause());
 			e.printStackTrace();
 		}
 	}
@@ -87,9 +92,16 @@ public class XLUtility {
 	 * @throws IOException
 	 ***************************************************************************************************************/
 
-	public static int getRowCount(String expPath, String expSheetName) throws IOException {
-		xls_Reader(expPath, expSheetName);
-		int rowcount = sheet.getPhysicalNumberOfRows();
+	public static int getRowCount()  {
+		int rowcount = 0; 
+		try {
+				rowcount = sheet.getPhysicalNumberOfRows();
+		}catch (Exception e) {
+
+			System.out.println(e.getMessage());
+			System.out.println(e.getCause());
+			e.printStackTrace();
+		}
 		return rowcount;
 	}
 
@@ -103,8 +115,7 @@ public class XLUtility {
 	 * @throws IOException
 	 ***************************************************************************************************************/
 
-	public static int getColCount(String expPath, String expSheetName) throws IOException {
-		xls_Reader(expPath, expSheetName);
+	public static int getColCount() throws IOException {
 		int totalColNum = sheet.getRow(0).getPhysicalNumberOfCells();
 		return totalColNum;
 	}
@@ -434,7 +445,7 @@ public class XLUtility {
 		for (int i = 0; i <= TotalSheet; i++) {
 			String ActualSheetName = WorkBook.getSheetName(i);
 			if (expectedSheetName.isEmpty()) /// Check if user provide sheet name if not then default sheet will be
-												/// first one
+				/// first one
 			{
 				expectedSheetName = ActualSheetName;
 				break;

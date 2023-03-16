@@ -1,39 +1,47 @@
 package PageObject;
 import java.io.IOException;
 
-import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+
 import Common.BaseClass;
 
 public class LogInPage1 extends BaseClass {
-	private By inputid=By.xpath("//*[@name='inputEmailHandle']");
-	private By UiPassword=By.xpath("//*[@name='inputPassword']");
-	private By login=By.xpath("//*[contains(@id,'login')]");
-	private By logout=By.xpath("//a[text()='Log out']");
-	
+	WebDriver ldriver;
+	public LogInPage1(WebDriver rdriver)
+	{
+		ldriver=rdriver;
+		PageFactory.initElements(rdriver, this);
+	}
+	@FindBy(xpath="//*[@name='inputEmailHandle']") WebElement inputid ;
+	@FindBy(xpath="//*[@name='inputPassword']" ) WebElement UiPassword  ;
+	@FindBy(xpath= "//*[@name='login']") WebElement login   ;
+	@FindBy(xpath= "//a[text()='Log out']") WebElement logout   ;
 	
 	/****************************************************************************************************/	
 	public WebElement Inputid()
 		{
-			return driver.findElement(inputid);
+			return inputid;
 		}
 	/****************************************************************************************************/	
 	public WebElement InputPassword()
 	
 		{
-			return driver.findElement(UiPassword);
+			return UiPassword;
 		}
 	/****************************************************************************************************/	
     public WebElement LogInButton()
 	
 		{
-			return driver.findElement(login);
+			return login;
 		}
     /****************************************************************************************************/	
     public WebElement LogOutButton()
 	
 		{
-			return driver.findElement(logout);
+			return logout;
 		}
     /**
      * @return 
@@ -45,7 +53,7 @@ public class LogInPage1 extends BaseClass {
     	writeText(InputPassword(),userPassword);
        	click(LogInButton());
        	Thread.sleep(3000);
-       	//validateClick(login,"submit");
+       	validateClick(login,"submit");
     	//return new DescriptionPage(); 
     	
     }

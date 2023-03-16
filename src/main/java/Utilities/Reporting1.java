@@ -13,7 +13,7 @@ import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.markuputils.ExtentColor;
 import com.aventstack.extentreports.markuputils.MarkupHelper;
-import com.aventstack.extentreports.reporter.ExtentHtmlReporter;
+import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import com.aventstack.extentreports.reporter.configuration.Theme;
 import Common.BaseClass;
 
@@ -22,7 +22,7 @@ public class Reporting1 extends TestListenerAdapter{
 	BaseClass tb=new BaseClass();
 	public String timeStamp;
 	public String reportName;
-	public ExtentHtmlReporter htmlReporter;
+	public ExtentSparkReporter htmlReporter;
 	public ExtentReports extent;
 	public ExtentTest logger;
 	public String currentDirectory=System.getProperty("user.dir");
@@ -35,9 +35,14 @@ public class Reporting1 extends TestListenerAdapter{
 		timeStamp=new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
 		reportName="Test-Report-"+ timeStamp + ".html";
 		System.out.println(reportName);
-		htmlReporter=new ExtentHtmlReporter(currentDirectory+ "/test-output/"+reportName);
+		htmlReporter=new ExtentSparkReporter(currentDirectory+ "/test-output/"+reportName);
 		System.out.println(currentDirectory+ "/test-output/"+reportName);
-		htmlReporter.loadXMLConfig(currentDirectory+ "/extent-config.xml");
+		try {
+			htmlReporter.loadXMLConfig(currentDirectory+ "/extent-config.xml");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		htmlReporter.config().setDocumentTitle("For Automation Test Project"); //Title of the reorts
 		htmlReporter.config().setReportName("Automation Test Report"); // Name of the report
 		htmlReporter.config().setTheme(Theme.DARK);
@@ -68,13 +73,7 @@ public class Reporting1 extends TestListenerAdapter{
 		File objFile=new File(screenShotPath);
 			if(objFile.exists())
 			{
-				try {
-					logger.fail("Screenshot is below: " + logger.addScreenCaptureFromPath(screenShotPath));
-					}
-				catch (IOException e) 
-					{
-					e.printStackTrace();
-					}
+				logger.fail("Screenshot is below: " + logger.addScreenCaptureFromPath(screenShotPath));
 			}
 		}
 	

@@ -3,8 +3,11 @@ package Common;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,14 +15,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
-import javax.imageio.ImageIO;
-
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.codehaus.plexus.util.Base64;
@@ -37,45 +38,53 @@ import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.remote.CapabilityType;
-import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
 import org.testng.Assert;
 import org.testng.Reporter;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
 import org.testng.asserts.SoftAssert;
 
 import com.aventstack.extentreports.Status;
 
-import PageObject.AccountPage2;
+import PageObject.AccountPage;
+import PageObject.AccountPage1;
 import PageObject.CommonField;
+import PageObject.CommonField1;
 import PageObject.DescriptionPage;
+import PageObject.DescriptionPage1;
 import PageObject.LandingPage;
+import PageObject.LandingPage1;
 import PageObject.LogInPage;
 import PageObject.LogInPage1;
-import ru.yandex.qatools.ashot.AShot;
-import ru.yandex.qatools.ashot.Screenshot;
 import Utilities.TestListeners;
 import Utilities.XLUtility;
 
 //********************************************************************   Test Base Class    ************************************************************************  
 
 public class BaseClass {
-	
-	public static BaseClass objBc=new BaseClass();
+
+	public static BaseClass bc=new BaseClass();
 	public static WebDriver driver;
+	//public static String currentDirectory = System.getProperty("user.dir");
 	public static WebDriverWait wait;
-	public static FileInputStream objFile;
-	public static Properties appProperties;
+	public static Wait<WebDriver> fluentWait;
+	public static FileInputStream fis;
+	public static Properties appProperties;		//For Avoid Null Exception Use Null
 	public static Properties objprop;
 	public static String browserName;
 	public static String DomainName=appProperties.getProperty("userDomainName");
-	public static int explicit_Wait=Integer.parseInt(appProperties.getProperty("explicitWait"));
-	public static int PAGE_LOAD_TIME=Integer.parseInt(appProperties.getProperty("pageLoadTime"));
-	public static int IMPLICIT_WAIT=Integer.parseInt(appProperties.getProperty("inplicitWait"));	
+	public static String runTestNG=appProperties.getProperty("runTestNG");
+
+	final public static int IMPLICIT_TIME_OUT=Integer.parseInt(appProperties.getProperty("inplicitWait"));
+	final public static int EXPLICIT_TIME_OUT=Integer.parseInt(appProperties.getProperty("explicitWait"));
+
+	final public static int PAGELOAD_TIME_OUT=Integer.parseInt(appProperties.getProperty("pageLoadWait"));
+	final public static int SCRIPT_TIME_OUT=Integer.parseInt(appProperties.getProperty("scriptWait"));
+	final public static int FLUENT_POLLING_TIME=Integer.parseInt(appProperties.getProperty("fluentPollingWait"));
 	public static String configFile;
 	public static String configPath;
 	public static String urlAddress=appProperties.getProperty(DomainName+"Url");
@@ -91,20 +100,36 @@ public class BaseClass {
 	public static Logger log=LogManager.getLogger(BaseClass.class.getName());	
 	public static CommonField cf=new CommonField();
 	public static LandingPage lp=new LandingPage();
-	public static LogInPage1 lip=new LogInPage1();
-	public static AccountPage2 acp=new AccountPage2();
+	public static LogInPage lip=new LogInPage();
+	public static AccountPage acp=new AccountPage();
 	public static DescriptionPage dp=new DescriptionPage();
-	
-	public	BaseClass(){
+	public static CommonField1 cf1=new CommonField1();
+	public static LandingPage1 lp1=new LandingPage1(driver);
+	public static LogInPage1 lip1=new LogInPage1(driver);
+	public static AccountPage1 acp1=new AccountPage1();
+	public static DescriptionPage1 dp1=new DescriptionPage1();
+
+	/*********************************  Test Base Constructor **********************************************************************************/
+	public	BaseClass(){							
 		readProperties("");
+		//explicitWait();
 		softAssert();
 	} 
+
+	/****************************************************************************************************************
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name: readProperties
+	 *  Function Arg: expFilePath(Expected File path)
+	 *  FunctionOutPut: It will Return All Properties
+	 * 
+	 * ***************************************************************************************************************/
 
 	public static void readProperties(String expFilePath) {
 		try {
 			appProperties = new Properties();
 			if (expFilePath.isEmpty() || expFilePath.length() < 1) {
-				expFilePath = "./Configuration/Config.properties";// If User provied Any properties File Path if Not use// Configuration folder
+				//expFilePath = "./Configuration/Config.properties";// If User Provide Any properties File Path if Not use// Configuration folder
+				expFilePath ="./src/main/resource/Config.properties";
 			}
 			File objsrc = new File(expFilePath);
 			FileInputStream objFile = new FileInputStream(objsrc);
@@ -112,24 +137,66 @@ public class BaseClass {
 			objprop.load(objFile);
 			appProperties.putAll(objprop);
 		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			System.out.println(e.getCause());
+			e.printStackTrace();
+		}
+	}
+
+	/****************************************************************************************************************
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name: setProperties
+	 *  Function Arg: expFilePath(Expected File path),expName,expValue
+	 *  FunctionOutPut: It Will Set New Properties or Update existing Properties
+	 * 
+	 * ***************************************************************************************************************/
+
+	public static void setProperties(String expFilePath,String expName,String expValue ) {
+		try {
+			if (expFilePath.isEmpty() || expFilePath.length() < 1) {
+				//expFilePath = "./Configuration\\Config.properties";// If User Provide Any properties File Path if Not use// Configuration folder
+				expFilePath ="./src/main/resources/Configuration/Config.properties";
+			}
+			OutputStream os=new FileOutputStream(expFilePath);
+			objprop.setProperty(expName, expValue);
+			objprop.store(os,null);
+
+		}catch (Exception e) {
+			System.out.println(e.getMessage());
+			System.out.println(e.getCause());
 			e.printStackTrace();
 		}
 	}
 	/****************************************************************************************************************
-	*  Author: Md Rezaul Karim 
-	*  Function Name: explicitWait
-	*  Function Arg: WebElement ExpwebElement,String ExPText,int timeOut
-	*  FunctionOutPut: It will wait until element visible 
-	* 
-	**************************************************************************************************************/
-	
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name: FluentWait
+	 *  Function Arg: WebElement ExpwebElement,String ExPText,int timeOut
+	 *  FunctionOutPut: It will wait until element visible 
+	 * 
+	 **************************************************************************************************************/
+
+	public static Wait<WebDriver> fluentWait(){
+
+		Wait<WebDriver> fluentWait=new FluentWait<WebDriver>(driver)
+				.withTimeout(Duration.ofSeconds(EXPLICIT_TIME_OUT))
+				.pollingEvery(Duration.ofSeconds(FLUENT_POLLING_TIME))
+				.ignoring(NoSuchElementException.class);
+		return fluentWait;
+	}
+
+	/****************************************************************************************************************
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name: explicitWait
+	 *  Function Arg: WebElement ExpwebElement,String ExPText,int timeOut
+	 *  FunctionOutPut: It will wait until element visible 
+	 * 
+	 **************************************************************************************************************/
+
 	public static WebDriverWait explicitWait(){
-		
-		wait=new WebDriverWait(driver,explicit_Wait);
+
+		wait=new WebDriverWait(driver,Duration.ofSeconds(EXPLICIT_TIME_OUT));
 		return wait;
 	}
-	/*********************************  Test Base Constractor **********************************************************************************/
-	
 
 	/****************************************************************************************************************
 	 * Author: Md Rezaul Karim 
@@ -143,37 +210,34 @@ public class BaseClass {
 		byte[] encodedStr=Base64.encodeBase64(expStr.getBytes());
 		return new String(encodedStr);
 	}
-	
+
 	/****************************************************************************************************************
 	 * Author: Md Rezaul Karim 
 	 * Function Name: dencodedStr
 	 * Function Arg: String expStr
 	 * FunctionOutPut: It will dencoded String
-	 * **************************************************************************************************************
-	 */
+	 * ****************************************************************************************/
 
 	public static String dencodedStr(String expStr) {
 		byte[] dencodedStr=Base64.decodeBase64(expStr.getBytes());
 		return new String(dencodedStr);
 	}
-	
+
 	public static SoftAssert softAssert() {
 		SoftAssert softAssert=new SoftAssert();
 		return softAssert;
 	}
-	
+
 	public static void assertAll() {
 		softAssert().assertAll("Assert All");
 	}
-	
-	
+
 	/****************************************************************************************************************
 	 * Author: Md Rezaul Karim 
 	 * Function Name: scrollUpdown
 	 * Function Arg: expScroll,WebElement expElement
-	 * FunctionOutPut: It will Scroll exptect
-	 * **************************************************************************************************************
-	 */
+	 * FunctionOutPut: It will Scroll expect
+	 * **************************************************************************************************************/
 
 	public static void scrollUpdown(String expScroll,WebElement expElement) {
 		jse=(JavascriptExecutor)driver;
@@ -190,20 +254,20 @@ public class BaseClass {
 			jse.executeScript("arguments[0].scrollIntoView();",expElement);
 		}
 	}
-	
+
 	/****************************************************************************************************************
 	 * Author: Md Rezaul Karim 
 	 * Function Name: fileInStream
 	 * Function Arg: String FileInStreamPath
 	 * FunctionOutPut: It will create a Object For File Input Stream
-	 * **************************************************************************************************************
-	 */
-	public static FileInputStream fileInStream(String FileInStreamPath ) throws FileNotFoundException
+	 * **************************************************************************************************************/
+
+	public static FileInputStream fileInStream(String expFileInPath ) throws FileNotFoundException
 	{
-		objFile=new FileInputStream(FileInStreamPath);
-		return objFile;
+		fis=new FileInputStream(expFileInPath);
+		return fis;
 	}
-			
+
 	/****************************************************************************************************************
 	 * Author: Md Rezaul Karim 
 	 * Function Name: getData()
@@ -254,19 +318,108 @@ public class BaseClass {
 			}
 		Reporter.log("******************************************Get Data Imported Ended******************************************");
 		System.out.println("******************************************Get Data Imported Ended********************************************");
-	*/
+		 */
 	}
 
 	/****************************************************************************************************************
-	*  Author: Md Rezaul Karim 
-	*  Function Name: initilizeDriver
-	*  Function Arg: Return WebDriver
-	*  FunctionOutPut: It will initilize Driver
-	* 
-	* ***************************************************************************************************************/
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name: initilizeDriver
+	 *  Function Arg: expBrowser(Expected Browser Default Will Be Pick From Properties File)
+	 *  FunctionOutPut: It will initialize Driver
+	 ****************************************************************************************************************/
 	public static WebDriver initilizeDriver(String expBrowser) throws IOException {
 		try {
-			
+			Reporter.log("**************************************** initilize Driver MEthod Started ******************************************");
+			String mavenBrowserName=System.getProperty("Browser");// check if maven send any browser Name
+			String driverPath=System.getProperty("user.dir")+"\\Drivers";
+			if(mavenBrowserName!= null){
+				browserName=mavenBrowserName;
+			}
+			else if(expBrowser.length()>1 || !expBrowser.isEmpty()) { //If User Provied From Parameter Or Function
+				browserName=expBrowser;
+			}
+			else {
+				browserName=appProperties.getProperty("browserName");//if User Did Not Provied Any Browser Then Get From Property File
+			}
+
+			if(browserName.toLowerCase().contains("ie") || browserName.contains("internet")){
+				driver=new InternetExplorerDriver();
+				browserName="Internet Explorer";
+			}
+			else if(browserName.toLowerCase().contains("edge")){
+				driver=new EdgeDriver();
+				browserName="Microsoft Edge";
+			}
+			else if(browserName.contains("firefox") || browserName.contains("ff")){
+				System.setProperty(FirefoxDriver.SystemProperty.BROWSER_LOGFILE,"null");
+				driver=new FirefoxDriver();
+				browserName="FireFox";
+			}
+			//if user want headless browser then you can use it 
+			else if(browserName.contains("chromeheadless") || browserName.contains("headless"))
+			{
+				System.setProperty("webdriver.chrome.silentOutput","true");//it will remove unnessary log
+				HashMap<String,Object> ohp=new HashMap<String,Object>();
+				ohp.put("profile.defult_content_settings.popups",0);
+				ohp.put("download.defult_directory",downloadPath);  //if download any file it will save to current user dir 
+				ChromeOptions objoption=new ChromeOptions();
+				objoption.addArguments("headless");
+				objoption.setExperimentalOption("useAutomationExtension",false);
+				driver=new ChromeDriver(objoption);
+				browserName="chrome";
+			}
+			/*	else if(browserName.contains("sslcertificatebrowser") || browserName.contains("securityalartbrowser"))
+			{
+				DesiredCapabilities objCap = DesiredCapabilities.chrome();
+				objCap.setCapability(CapabilityType.ACCEPT_INSECURE_CERTS, true);
+				objCap.setCapability(CapabilityType.ACCEPT_INSECURE_CERTS, true);
+				ChromeOptions objOption = new ChromeOptions();
+				objCap.merge(objOption);
+				System.setProperty("webdriver.chrome.driver",driverPath+"\\chromedriver.exe");
+				driver = new ChromeDriver(objOption);
+				browserName="Google Chrome";
+			} */
+			else
+			{
+				/*	System.setProperty("webdriver.chrome.whitelistedIps", "");
+				System.setProperty("webdriver.chrome.silentOutput","true");//it will remove unnessary log.
+				HashMap<String,Object> ohp=new HashMap<String,Object>();
+				ohp.put("profile.defult_content_settings.popups",0);
+				ohp.put("download.defult_directory",downloadPath);  //if download any file it will save to current user dir 
+				 */
+				System.setProperty("webdriver.chrome.silentOutput","true");//it will remove unnessary log.
+				ChromeOptions oco=new ChromeOptions();
+				oco.addArguments("--silent"); //it will remove unnessary log.
+				oco.addArguments("--log-level=OFF");
+				oco.addArguments("--remote-allow-origins=*");
+				oco.setExperimentalOption("useAutomationExtension",false);
+				driver = new ChromeDriver(oco);
+				browserName="Google Chrome";
+			}
+			driver.manage().deleteAllCookies();
+			driver.manage().window().maximize();
+			driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(IMPLICIT_TIME_OUT));
+			driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(PAGELOAD_TIME_OUT));
+			driver.manage().timeouts().scriptTimeout(Duration.ofMinutes(SCRIPT_TIME_OUT));
+			log.info("\t Expected Browser ' "+browserName+" ' Opend Successfully");
+			softAssert().assertEquals(true,"\t Expected Browser  Opend Successfully");
+			if(runTestNG.toLowerCase().contains("true")) {
+				TestListeners.test.log(Status.PASS,"\t Expected Browser  Opend Successfully");
+			}
+		}catch(Exception e) {
+			Reporter.log("\t Expected Browser ' "+browserName+" ' Opend Successfully");
+			log.error("\t Expected Browser ' "+browserName+" ' Failed To Open");
+			softAssert().assertEquals(false,"\t Expected Browser  Opend Successfully");
+			if(runTestNG.toLowerCase().contains("true")) {
+				TestListeners.test.log(Status.FAIL,"\t Expected Browser ' "+browserName+" ' Failed To Opend");
+			}
+		}	
+		return driver;
+	}
+
+	public static WebDriver initilizeDriverOldSelenium(String expBrowser) throws IOException {
+		try {
+
 			Reporter.log("**************************************** initilize Driver MEthod Started ******************************************");
 			String mavenBrowserName=System.getProperty("Browser");// check if maven send any browser Name
 			String driverPath=System.getProperty("user.dir")+"\\Drivers";
@@ -313,17 +466,17 @@ public class BaseClass {
 				driver=new ChromeDriver(objoption);
 				browserName="chrome";
 			}
-			else if(browserName.contains("sslcertificatebrowser") || browserName.contains("securityalartbrowser"))
+			/*	else if(browserName.contains("sslcertificatebrowser") || browserName.contains("securityalartbrowser"))
 			{
 				DesiredCapabilities objCap = DesiredCapabilities.chrome();
 				objCap.setCapability(CapabilityType.ACCEPT_INSECURE_CERTS, true);
-				objCap.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
+				objCap.setCapability(CapabilityType.ACCEPT_INSECURE_CERTS, true);
 				ChromeOptions objOption = new ChromeOptions();
 				objCap.merge(objOption);
 				System.setProperty("webdriver.chrome.driver",driverPath+"\\chromedriver.exe");
 				driver = new ChromeDriver(objOption);
 				browserName="Google Chrome";
-			}
+			}  */
 			else
 			{
 				System.setProperty("webdriver.chrome.driver","I:\\Selenium Poject\\CompletFramWork\\Drivers\\chromedriver.exe");
@@ -338,14 +491,15 @@ public class BaseClass {
 				driver = new ChromeDriver();
 				browserName="Google Chrome";
 			}
-			driver.manage().window().maximize();
 			driver.manage().deleteAllCookies();
-			driver.manage().timeouts().pageLoadTimeout(PAGE_LOAD_TIME,TimeUnit.SECONDS);
-			driver.manage().timeouts().implicitlyWait(IMPLICIT_WAIT,TimeUnit.SECONDS);
+			driver.manage().window().maximize();
+			driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(IMPLICIT_TIME_OUT));
+			driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(PAGELOAD_TIME_OUT));
+			driver.manage().timeouts().scriptTimeout(Duration.ofMinutes(SCRIPT_TIME_OUT));
 			TestListeners.test.log(Status.PASS,"\t Expected Browser  Opend Successfully");
 			log.info("\t Expected Browser ' "+browserName+" ' Opend Successfully");
 			softAssert().assertEquals(true,"\t Expected Browser  Opend Successfully");
-			
+
 		}catch(Exception e) {
 			Reporter.log("\t Expected Browser ' "+browserName+" ' Opend Successfully");
 			TestListeners.test.log(Status.FAIL,"\t Expected Browser ' "+browserName+" ' Failed To Opend");
@@ -354,17 +508,17 @@ public class BaseClass {
 		}	
 		return driver;
 	}
-	
+
 	/****************************************************************************************************************
-	*  Author: Md Rezaul Karim 
-	*  Function Name: RemoteGrid
-	*  Function Arg: BrowserName ==>Which Browser You want work for
-	*  FunctionOutPut: 
-	* 
-	* ***************************************************************************************************************/
-	
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name: RemoteGrid
+	 *  Function Arg: BrowserName ==>Which Browser You want work for
+	 *  FunctionOutPut: 
+	 * 
+	 * ***************************************************************************************************************/
+
 	/*public static void RemoteGrid(String BrowserName) throws MalformedURLException{
-		
+
 		DesiredCapabilities objRc=new DesiredCapabilities();
 		if(BrowserName.isEmpty())
 		{
@@ -377,117 +531,185 @@ public class BaseClass {
 		objRc.setPlatform(Platform.WINDOWS);
 		driver=new RemoteWebDriver(new URL("http://localhost:4546/wd/hub"),objRc);
 	}
-	*/
+	 */
 	/****************************************************************************************************************
-	*  Author: Md Rezaul Karim 
-	*  Function Name: OpenUrl
-	*  Function Arg: expectedUrl ==>Which Url Or Domain You want work for
-	*  FunctionOutPut: It will open Url That you want Automated
-	* 
-	* ***************************************************************************************************************/
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name: openUrl
+	 *  Function Arg: expUrl(Expected Url Or Domain Address
+	 *  FunctionOutPut: It will open Url That you want Automated
+	 *****************************************************************************************************************/
 	public static void openUrl(String expUrl){
 		String urlAdd = null;
 		try {
 			Reporter.log("******************************************Url Open Strated******************************************");
-			if(expUrl.isEmpty())
-				{
+			if(expUrl.isEmpty()){
 				urlAdd=urlAddress;
-				}
-			else
-				{
+			}
+			else{
 				urlAdd=expUrl;
-				}
+			}
 			driver.get(urlAdd);
 			log.info("\t Expected Url ' "+urlAdd+" ' Opend Or Lunch");
-			TestListeners.test.log(Status.PASS,"\t Expected Url ' "+urlAdd+" ' Opend Or Lunch");
+			if(runTestNG.toLowerCase().contains("true")) {
+				TestListeners.test.log(Status.PASS,"\t Expected Url ' "+urlAdd+" ' Opend Or Lunch");
+			}
 		}catch(Exception e) {
 			log.error("\t Expected Url ' "+urlAdd+" ' Did Not Opend Or Lunch");
-			TestListeners.test.log(Status.FAIL,"\t Expected Url ' "+urlAdd+" ' Did Not Opend Or Lunch");
+			if(runTestNG.toLowerCase().contains("true")) {
+				TestListeners.test.log(Status.FAIL,"\t Expected Url ' "+urlAdd+" ' Did Not Opend Or Lunch");
+			}
 		}	
 	}
+
 	//******************************   User Action Start   ******************************************************88
+
 	public static void waitVisibility(WebElement expElement) {
-		wait=new WebDriverWait(driver,explicit_Wait);
 		wait.until(ExpectedConditions.visibilityOf(expElement));
 	}
 	public static void waitVisibilityElements(List<WebElement> expElement) {
-		wait=new WebDriverWait(driver,explicit_Wait);
 		wait.until(ExpectedConditions.invisibilityOfAllElements(expElement));
 	}
-	
+
+	/*********************************		Click	***************************************************************
+
+
+	/****************************************************************************************************************
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name: click
+	 *  Function Arg: expElement(Expected Element
+	 *  FunctionOutPut: It will Clicked Expected Element
+	 *****************************************************************************************************************/
+
 	public static void click(WebElement expElement) {
 		String expClickElement=null;
 		try {
-			waitVisibility(expElement);
+			//waitVisibility(expElement);
 			expClickElement=expElement.getText().trim();
 			expElement.click();
-			TestListeners.test.log(Status.PASS,"\t Expected ' "+expClickElement+" ' Element Clicked");
 			log.info("\t Expected ' "+expClickElement+" ' Element Clicked");
+			if(runTestNG.toLowerCase().contains("true")) {
+				TestListeners.test.log(Status.PASS,"\t Expected ' "+expClickElement+" ' Element Clicked");
+			}
 			softAssert().assertEquals(true, true,"\t Expected ' "+expClickElement+" ' Element Clicked");
 		}catch(Exception e) {
-			TestListeners.test.log(Status.FAIL,"\t Expected ' "+expClickElement+" ' Not Found or Able To Clicked");
+
 			log.error("\t Expected ' "+expClickElement+" ' Not Found or Able To Clicked");
 			softAssert().assertEquals(false, true,"\t Expected ' "+expClickElement+" ' Not Found or Able To Clicked");
+			if(runTestNG.toLowerCase().contains("true")) {
+				TestListeners.test.log(Status.FAIL,"\t Expected ' "+expClickElement+" ' Not Found or Able To Clicked");
+			}
 		}
 	}
+
 	/****************************************************************************************************************
 	 *  Author: Md Rezaul Karim 
 	 *  Function Name:clickElementByJs
-	 *  Function Arg: ExpElement element locator
-	 *  FunctionOutPut: It will create a object for Action class
-	 * 
-	 * **************************************************************************************************************/
-	
+	 *  Function Arg: expElement(Expected Element locator)
+	 *  FunctionOutPut: It will Click An Element By Using JavaScript
+	 ***************************************************************************************************************/
+
 	public static void clickByJs(WebElement expElement){
 		try {
 			jse=(JavascriptExecutor)driver;
 			jse.executeScript("arguments[0].click();",expElement);
-			TestListeners.test.log(Status.PASS,"\t Expected Element Clicked");
 			log.info("\t Expected Element Clicked");
+			if(runTestNG.toLowerCase().contains("true")) {
+				TestListeners.test.log(Status.PASS,"\t Expected Element Clicked");
+			}
 		}catch(Exception e) {
-			TestListeners.test.log(Status.FAIL,"\t Expected Not Found or Able To Clicked");
 			log.error("\t Expected Not Found or Able To Clicked");
+			if(runTestNG.toLowerCase().contains("true")) {
+				TestListeners.test.log(Status.FAIL,"\t Expected Not Found or Able To Clicked");
+			}
 		}
 	}
-	
+
+	/*********************************		Set Value On Edit Or Input Field	********************************************************/
+
+	/****************************************************************************************************************
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name:writeText
+	 *  Function Arg: expElement(Expected Element locator),expText(Expected Edit Value)
+	 *  FunctionOutPut: It will Set Or Input Value On Set Or Input Field
+	 ***************************************************************************************************************/
+
 	public static void writeText(WebElement expElement,String expText) {
 		try {
-			waitVisibility(expElement);
+			//waitVisibility(expElement);
 			expElement.sendKeys(expText);
-			TestListeners.test.log(Status.PASS,"\t Expected ' "+expText+" ' Element Set Input/Edit Field");
 			log.info("\t Expected ' "+expText+" ' Element Set Input/Edit Field");
+			if(runTestNG.toLowerCase().contains("true")) {
+				TestListeners.test.log(Status.PASS,"\t Expected ' "+expText+" ' Element Set Input/Edit Field");
+			}
 		}catch(Exception e) {
-			TestListeners.test.log(Status.FAIL,"\t Expected ' "+expText+" ' Element Does Not Set Input/Edit Field");
 			log.error("\t Expected ' "+expText+" ' Element Does Not Set Input/Edit Field");
+			if(runTestNG.toLowerCase().contains("true")) {
+				TestListeners.test.log(Status.FAIL,"\t Expected ' "+expText+" ' Element Does Not Set Input/Edit Field");
+			}
 		}
 	}
+
+	/****************************************************************************************************************
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name:writeTextByJs
+	 *  Function Arg: expElement(Expected Element locator),expText(Expected Edit Value)
+	 *  FunctionOutPut: It will Set Or Input Value On Set Or Input Field
+	 ***************************************************************************************************************/
+
 	public static void writeTextByJs(WebElement expElement,String expText) {
 		try {
 			jse=(JavascriptExecutor)driver;
 			jse.executeScript("arguments[0].setAttribute('value','"+expText+"');",expElement);
 			Thread.sleep(1000);
 			String setValue=expElement.getAttribute("value").trim();
-			TestListeners.test.log(Status.PASS,"\t Expected ' "+setValue+" ' Element Set Input/Edit Field");
 			log.info("\t Expected ' "+setValue+" ' Element Set Input/Edit Field");
+			if(runTestNG.toLowerCase().contains("true")) {
+				TestListeners.test.log(Status.PASS,"\t Expected ' "+setValue+" ' Element Set Input/Edit Field");
+			}
+
 		}catch(Exception e) {
-			TestListeners.test.log(Status.FAIL,"\t Expected ' "+expText+" ' Element Does Not Set Input/Edit Field");
+
 			log.error("\t Expected ' "+expText+" ' Element Does Not Set Input/Edit Field");
+			if(runTestNG.toLowerCase().contains("true")) {
+				TestListeners.test.log(Status.FAIL,"\t Expected ' "+expText+" ' Element Does Not Set Input/Edit Field");
+			}
 		}
 	}
+
+	/****************************************************************************************************************
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name:clearFiled
+	 *  Function Arg: expElement(Expected Element locator)
+	 *  FunctionOutPut: It will Be Cleared Set Or Input Field
+	 ***************************************************************************************************************/
+
 	public static void clearFiled(WebElement expElement) {
 		try {
-			waitVisibility(expElement);
+			//waitVisibility(expElement);
 			expElement.clear();;
-			TestListeners.test.log(Status.PASS,"\t Expected Input/Edit Field Cleared");
+
 			log.info("\t Expected Input/Edit Field Cleared");
+			if(runTestNG.toLowerCase().contains("true")) {
+				TestListeners.test.log(Status.PASS,"\t Expected Input/Edit Field Cleared");
+			}
 		}catch(Exception e) {
-			TestListeners.test.log(Status.FAIL,"\t Expected Input/Edit Field Did Not Cleared");
 			log.info("\t Expected Input/Edit Field Did Not Cleared");
+			if(runTestNG.toLowerCase().contains("true")) {
+				TestListeners.test.log(Status.FAIL,"\t Expected Input/Edit Field Did Not Cleared");	
+			}
 		}
 	}
-	public static String readText(WebElement expElement) {
+
+	/****************************************************************************************************************
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name:getElementText
+	 *  Function Arg: expElement(Expected Element locator)
+	 *  FunctionOutPut: It will Be Cleared Set Or Input Field
+	 ***************************************************************************************************************/
+
+	public static String getElementText(WebElement expElement) {
 		String expReadElement=null;
-		waitVisibility(expElement);
+		//waitVisibility(expElement);
 		expReadElement=expElement.getText().trim();
 		return expReadElement;
 	}
@@ -495,74 +717,83 @@ public class BaseClass {
 	/****************************************************************************************************************
 	 *  Author: Md Rezaul Karim 
 	 *  Function Name:setSelect
-	 *  Function Arg: ExpSelect Expected Select Element Locator 
+	 *  Function Arg: ExpSelect(Expected Select Element Locator) 
 	 *  FunctionOutPut: It will create a object for select class
-	 * 
-	 * ***************************************************************************************************************/
-	
+	 ****************************************************************************************************************/
+
 	public static Select setSelect(WebElement ExpSelect){
-		
 		Select obs=new Select(ExpSelect);
 		return obs;
 	}
-	
-	
+
 	/****************************************************************************************************************
 	 *  Author: Md Rezaul Karim 
 	 *  Function Name:refreshByJs
 	 *  Function Arg: ExpElement element locator
 	 *  FunctionOutPut: It will create a object for Action class
-	 * 
-	 * **************************************************************************************************************/
-	
+	 ***************************************************************************************************************/
+
 	public static void refreshByJs(){
 		jse.executeScript("history.go(0)");
 	}
-	
 
 	/****************************************************************************************************************
-	*  Author: Md Rezaul Karim 
-	*  Function Name: selectByJs
-	*  Function Arg: WebElement expElement,String ExpValue
-	*  FunctionOutPut: It will Select value from drop down when drop down is not able to select by select tag
-	* 
-	* ***************************************************************************************************************/
-	
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name: selectByJs
+	 *  Function Arg: WebElement expElement,String ExpValue
+	 *  FunctionOutPut: It will Select value from drop down when drop down is not able to select by select tag
+	 * 
+	 * ***************************************************************************************************************/
+
 	public static void selectByJs(WebElement expElement,String ExpValue){
 		jse.executeScript("arguments[0].setAttribute('value','"+ExpValue+"');", expElement);
 	}
-	
+
 	/****************************************************************************************************************
-	*  Author: Md Rezaul Karim 
-	*  Function Name: AutoSuggestDropDown
-	*  Function Arg: String expSearchLocator  ==>Search Field Locator, String selectValue  ==> The Value user want from drop down 
-	*  FunctionOutPut: It will Select value from drop down when drop down is not able to select by select tag
-	* 
-	* ***************************************************************************************************************/
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name: AutoSuggestDropDown
+	 *  Function Arg: expSearchLocator(Search Field Locator),expText(Expected Text Value user want from drop down) 
+	 *  FunctionOutPut: It will Select value from drop down when drop down is not able to select by select tag
+	 ****************************************************************************************************************/
 	public static void setObjectByText(String expText, String expSearchLocator) {
 		String getSearchValue;
-		List<WebElement> objElements=driver.findElements(By.xpath(expSearchLocator));
-		int totalEl=objElements.size();
-		for(int i = 0;i<totalEl;i++)
-		{
-			getSearchValue=objElements.get(i).getText().trim();
-			if(getSearchValue.equalsIgnoreCase(expText))
-			{
-				objElements.get(i).click();
-				System.out.println(getSearchValue);
-				break;
+		try {
+			List<WebElement> objElements=driver.findElements(By.xpath(expSearchLocator));
+			int totalEl=objElements.size();
+			for(int i = 0;i<totalEl;i++){
+				getSearchValue=objElements.get(i).getText().trim();
+				if(getSearchValue.equalsIgnoreCase(expText)){
+					objElements.get(i).click();
+					log.info("\t Expected ' "+getSearchValue+" ' Element Clicked");
+					if(runTestNG.toLowerCase().contains("true")) {
+						TestListeners.test.log(Status.PASS,"\t Expected ' "+getSearchValue+" ' Element Clicked");
+					}
+					softAssert().assertEquals(true, true,"\t Expected ' "+getSearchValue+" ' Element Clicked");
+					break;
+				}
+			}
+		}catch(Exception e) {
+			log.error("\t Expected ' "+expText+" ' Not Found or Able To Clicked");
+			softAssert().assertEquals(false, true,"\t Expected ' "+expText+" ' Not Found or Able To Clicked");
+			if(runTestNG.toLowerCase().contains("true")) {
+				TestListeners.test.log(Status.FAIL,"\t Expected ' "+expText+" ' Not Found or Able To Clicked");
 			}
 		}
 	}
-	
+	/****************************************************************************************************************
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name: setObjectByText
+	 *  Function Arg: expSearchLocator(Search Field Locator),expText(Expected Text Value user want from drop down) 
+	 *  FunctionOutPut: It will Select value from drop down when drop down is not able to select by select tag
+	 ****************************************************************************************************************/
+
 	public static void setObjectByText(String expText, List<WebElement> expEle) {
 		String actualValue="";
 		int totalEl=expEle.size();
 		for(int i = 0;i<totalEl;i++)
 		{
 			actualValue=expEle.get(i).getText().trim();
-			if(actualValue.equalsIgnoreCase(expText))
-			{
+			if(actualValue.equalsIgnoreCase(expText)){
 				expEle.get(i).click();
 				break;
 			}
@@ -573,25 +804,23 @@ public class BaseClass {
 		Select objd=new Select(expElement);
 		objd.selectByVisibleText(expValue);
 	}
-	
+
 	public static String currentDate() {
 		SimpleDateFormat formatter=new SimpleDateFormat("MM/dd/yyyy");
 		Date date=new Date();
 		String expDate=formatter.format(date).toString();
 		return expDate;
 	}
-	
-	
+
 	/****************************************************************************************************************
-	*  Author: Md Rezaul Karim 
-	*  Function Name: SetClander
-	*  Function Arg: String dateLocator, String monthLocator, String yearLocator, String nextLocator,String expectedDate
-	*  FunctionOutPut: It will Select value from drop down when drop down is not able to select by select tag
-	* 
-	* ***************************************************************************************************************/
-	
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name: SetClander
+	 *  Function Arg: String dateLocator, String monthLocator, String yearLocator, String nextLocator,String expectedDate
+	 *  FunctionOutPut: It will Select value from drop down when drop down is not able to select by select tag
+	 * 
+	 * ***************************************************************************************************************/
+
 	public static void selectDate(String expDate) throws InterruptedException {
-		
 		try{
 			String sDate;
 			if(expDate.isEmpty()|| expDate.length()<6) {
@@ -620,41 +849,41 @@ public class BaseClass {
 			String monthstr;
 			switch(month) {
 			case "1":
-			monthstr="January";
-			break;
+				monthstr="January";
+				break;
 			case "2":
-			monthstr="February";
-			break;
+				monthstr="February";
+				break;
 			case "3":
-			monthstr="March";
-			break;
+				monthstr="March";
+				break;
 			case "4":
-			monthstr="April";
-			break;
+				monthstr="April";
+				break;
 			case "5":
-			monthstr="May";
-			break;
+				monthstr="May";
+				break;
 			case "6":
-			monthstr="June";
-			break;
+				monthstr="June";
+				break;
 			case "7":
-			monthstr="July";
-			break;
+				monthstr="July";
+				break;
 			case "8":
-			monthstr="August";
-			break;
+				monthstr="August";
+				break;
 			case "9":
-			monthstr="September";
-			break;
+				monthstr="September";
+				break;
 			case "10":
-			monthstr="October";
-			break;
+				monthstr="October";
+				break;
 			case "11":
-			monthstr="November";
-			break;
+				monthstr="November";
+				break;
 			case "12":
-			monthstr="December";
-			break;
+				monthstr="December";
+				break;
 			default:
 				monthstr="Invalid Month";
 				break;
@@ -667,26 +896,31 @@ public class BaseClass {
 					break;
 				}
 			}
-			TestListeners.test.log(Status.PASS,"\t Expected Date Selected");
+
 			log.info("\t Expected Date Selected");
+			if(runTestNG.toLowerCase().contains("true")) {
+				TestListeners.test.log(Status.PASS,"\t Expected Date Selected");	
+			}
+
 		}catch(Exception e) {
-			TestListeners.test.log(Status.FAIL,"\t Expected Date Did Not Selected");
 			log.info("\t Expected Date Did Not Selected");
+			if(runTestNG.toLowerCase().contains("true")) {
+				TestListeners.test.log(Status.FAIL,"\t Expected Date Did Not Selected");
+			}
 		}
-		}
+	}
+
 	/****************************************************************************************************************
-	*  Author: Md Rezaul Karim 
-	*  Function Name: SetClander
-	*  Function Arg: String dateLocator, String monthLocator, String yearLocator, String nextLocator,String expectedDate
-	*  FunctionOutPut: It will Select value from drop down when drop down is not able to select by select tag
-	* 
-	* ***************************************************************************************************************/
-	
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name: SetClander
+	 *  Function Arg: String dateLocator, String monthLocator, String yearLocator, String nextLocator,String expectedDate
+	 *  FunctionOutPut: It will Select value from drop down when drop down is not able to select by select tag
+	 ****************************************************************************************************************/
+
 	public static void SetClander(String dateLocator, String monthLocator, String yearLocator, String nextLocator,String expectedDate) throws InterruptedException {
-		
 		Reporter.log("******************************************Set Clander Started******************************************");
 		System.out.println("******************************************Set Clander Started************************************************");
-		
+
 		String expDate[] = expectedDate.split("/");
 		String Month=expDate[0];
 		String day=expDate[1];
@@ -702,16 +936,16 @@ public class BaseClass {
 			String month = objMonth.getText();
 			String year = objYear.getText();
 			if (month.toLowerCase().contains(Month.toLowerCase()))
+			{
+				if (year.toLowerCase().contains(years.toLowerCase()))
 				{
-					if (year.toLowerCase().contains(years.toLowerCase()))
-						{
-							break;
-						}
-				} 
-			else
-				{
-					driver.findElement(By.xpath(nextLocator)).click();
+					break;
 				}
+			} 
+			else
+			{
+				driver.findElement(By.xpath(nextLocator)).click();
+			}
 		}
 		List<WebElement> listDate = driver.findElements(By.xpath(dateLocator));
 		int totalDate = listDate.size();
@@ -720,17 +954,17 @@ public class BaseClass {
 			String actualDate = listDate.get(i).getText();
 			String reActualDate = actualDate.trim();
 			if (reActualDate.contains(day))
+			{
+				if(listDate.get(i).isEnabled())//check if date is enable 
 				{
-					if(listDate.get(i).isEnabled())//check if date is enable 
-					{
-						listDate.get(i).click();
-						break;
-					}
-					else
-					{
-						System.out.println("The Date you want select is Disable");
-					}	
+					listDate.get(i).click();
+					break;
 				}
+				else
+				{
+					System.out.println("The Date you want select is Disable");
+				}	
+			}
 		}
 		Reporter.log("******************************************Set Clander Ended******************************************");
 		System.out.println("******************************************Set Clander Ended******************************************************");
@@ -746,7 +980,6 @@ public class BaseClass {
 			count++;
 			if(count%4==0 && (count!=allHeaderEle.size()  || strSize>=80)) {
 				if(allHeaderEle.size()-count>=4) {
-					
 					scindex=count+3;
 				}
 				else {
@@ -755,7 +988,6 @@ public class BaseClass {
 				scrollUpdown("",allHeaderEle.get(scindex));
 				strSize=0;
 			}
-			
 		}
 		return allHeaderName;
 	}
@@ -808,13 +1040,12 @@ public class BaseClass {
 					cf.RightArrow().click();
 				}
 			}
-			
 		}while(!checkifMorePage);
 		return allData;
 	}
-	
-	
+
 	////******************************   Validation Part   ******************************************************88
+
 	public static boolean checkDisable(WebElement expElement) {
 		boolean applyResult=false;
 		String actualClassValue=expElement.getAttribute("class");
@@ -823,105 +1054,110 @@ public class BaseClass {
 		}
 		return applyResult;
 	}
+	
 	public static void validateDisable(WebElement expElement) throws IOException {
 		String expDisableElement=null;
 		waitVisibility(expElement);
 		expDisableElement=expElement.getText().trim();
 		if (checkDisable(expElement)==true){
-				Assert.assertTrue(true,"Expected ==> "+expDisableElement+" <==Disabled And Passed");
+			log.info("Expected ==> "+expDisableElement+" <==Disabled And Passed");
+			if(runTestNG.toLowerCase().contains("true")) {
 				TestListeners.test.log(Status.PASS,"Expected ==> "+expDisableElement+" <==Disabled And Passed");
-				log.info("Expected ==> "+expDisableElement+" <==Disabled And Passed");
 			}
+			softAssert().assertEquals(true,"Expected ==> "+expDisableElement+" <==Disabled And Passed");
+		}
 		else
-			{
-			Assert.assertTrue(true,"\tExpected ==> "+expDisableElement+" <==Enabled And Failed");
-			TestListeners.test.log(Status.PASS,"\tExpected ==> "+expDisableElement+" <==Enabled And Failed");
+		{
+			if(runTestNG.toLowerCase().contains("true")) {
+				TestListeners.test.log(Status.PASS,"\tExpected ==> "+expDisableElement+" <==Enabled And Failed");
+			}
+			softAssert().assertEquals(false,"\tExpected ==> "+expDisableElement+" <==Enabled And Failed");
 			log.info("\tExpected ==> "+expDisableElement+" <==Enabled And Failed");
 			takeScreenShot("ValidateTitle",".png");
 		}
 	}
-	
-	
+
+
 	/****************************************************************************************************************
-	*  Author: Md Rezaul Karim 
-	*  Function Name: ValidateUrl
-	*  Function Arg: ExpectedUrl(Which Url You want work for)
-	*  FunctionOutPut: It will open Url That you want Automated
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name: ValidateUrl
+	 *  Function Arg: ExpectedUrl(Which Url You want work for)
+	 *  FunctionOutPut: It will open Url That you want Automated
 	 * @throws IOException 
-	* 
-	* ***************************************************************************************************************/
-		
+	 * 
+	 * ***************************************************************************************************************/
+
 	public static void validateUrl() throws IOException{
-	
+
 		Reporter.log("******************************************Validate Url Strated******************************************");
 		System.out.println("******************************************Validate Url Strated***********************************************");
 		String actualUrl = driver.getCurrentUrl();
 		int uIndex=urlAddress.indexOf("www");
 		int aIndex=actualUrl.indexOf("www");
 		if(uIndex>0 && aIndex<0 )
-			{
-				urlAddress=urlAddress.replace("www.","");	
-			}
+		{
+			urlAddress=urlAddress.replace("www.","");	
+		}
 		else if(uIndex<0 && aIndex>0)
-			{
-				actualUrl=actualUrl.replace("www.","");
-			} 
+		{
+			actualUrl=actualUrl.replace("www.","");
+		} 
 		urlAddress=urlAddress.trim();
 		actualUrl=actualUrl.trim();
 		int eplength = urlAddress.length();
 		int aclength = actualUrl.length();
 		int lengthDiffrent =eplength-aclength;
 		if (actualUrl.equals(urlAddress))
-			{
-				System.out.println("Expected Url ****** " + urlAddress + " ******* Found And Validation of Url Successfully Passed");
-				Assert.assertTrue(true,"Expected Url ****** " + urlAddress + " ******* Found And Validation of Url Successfully Passed");
-				log.info("Expected Url ****** ==> " + urlAddress + " <== ******* Found And Validation of Url Successfully Passed");
-			}
+		{
+			System.out.println("Expected Url ****** " + urlAddress + " ******* Found And Validation of Url Successfully Passed");
+			Assert.assertTrue(true,"Expected Url ****** " + urlAddress + " ******* Found And Validation of Url Successfully Passed");
+			log.info("Expected Url ****** ==> " + urlAddress + " <== ******* Found And Validation of Url Successfully Passed");
+		}
 		else if (actualUrl.equalsIgnoreCase(urlAddress))
-			{
-				System.out.println("Expected Url ****** " + urlAddress+ " ******* Found And Validation of Url Successfully Passed but there is lower and upper case character does not match actual Url was****"+ actualUrl+" ****");
-				Assert.assertTrue(true, "Expected Url ****** " + urlAddress+ " ******* Found And Validation of Url Successfully Passed but there is lower and upper case character does not match actual Url was****"+ actualUrl+" ****");
-				log.warn("Expected Url ****** " + urlAddress+ " ******* Found And Validation of Url Successfully Passed but there is lower and upper case character does not match actual Url was****"+ actualUrl+" ****");
-			}
+		{
+			System.out.println("Expected Url ****** " + urlAddress+ " ******* Found And Validation of Url Successfully Passed but there is lower and upper case character does not match actual Url was****"+ actualUrl+" ****");
+			Assert.assertTrue(true, "Expected Url ****** " + urlAddress+ " ******* Found And Validation of Url Successfully Passed but there is lower and upper case character does not match actual Url was****"+ actualUrl+" ****");
+			log.warn("Expected Url ****** " + urlAddress+ " ******* Found And Validation of Url Successfully Passed but there is lower and upper case character does not match actual Url was****"+ actualUrl+" ****");
+		}
 		else if (actualUrl.contains(urlAddress))
-			{	
-				System.out.println("Expected Url ****** " +urlAddress+ " ******* Found And Validation of Url Successfully Passed but Actual Url Contains expected Url current url is **** "+actualUrl+"****");
-				Assert.assertTrue(true,"Expected Url ****** " +urlAddress+ " ******* Found And Validation of Url Successfully Passed but Actual Url Contains expected Url current url is **** "+actualUrl+"****");
-				log.warn("Expected Url ****** " +urlAddress+ " ******* Found And Validation of Url Successfully Passed but Actual Url Contains expected Url current url is **** "+actualUrl+"****");
-			} 
+		{	
+			System.out.println("Expected Url ****** " +urlAddress+ " ******* Found And Validation of Url Successfully Passed but Actual Url Contains expected Url current url is **** "+actualUrl+"****");
+			Assert.assertTrue(true,"Expected Url ****** " +urlAddress+ " ******* Found And Validation of Url Successfully Passed but Actual Url Contains expected Url current url is **** "+actualUrl+"****");
+			log.warn("Expected Url ****** " +urlAddress+ " ******* Found And Validation of Url Successfully Passed but Actual Url Contains expected Url current url is **** "+actualUrl+"****");
+		} 
 		else if (actualUrl.contains(urlAddress.toLowerCase()))
-			{
-				System.out.println("Expected Url ****** " +urlAddress+ " ******* Found And Validation of Url Successfully Passed but Actual Url Contains expected Url and does not match upper and lower case letter acutal url was **** "+actualUrl+" ****");
-				Assert.assertTrue(true, "Expected Url ****** " +urlAddress+ " ******* Found And Validation of Url Successfully Passed but Actual Url Contains expected Url and does not match upper and lower case letter acutal url was **** "+actualUrl+" ****");
-				log.warn("Expected Url ****** " +urlAddress+ " ******* Found And Validation of Url Successfully Passed but Actual Url Contains expected Url and does not match upper and lower case letter acutal url was **** "+actualUrl+" ****");
-			}
+		{
+			System.out.println("Expected Url ****** " +urlAddress+ " ******* Found And Validation of Url Successfully Passed but Actual Url Contains expected Url and does not match upper and lower case letter acutal url was **** "+actualUrl+" ****");
+			Assert.assertTrue(true, "Expected Url ****** " +urlAddress+ " ******* Found And Validation of Url Successfully Passed but Actual Url Contains expected Url and does not match upper and lower case letter acutal url was **** "+actualUrl+" ****");
+			log.warn("Expected Url ****** " +urlAddress+ " ******* Found And Validation of Url Successfully Passed but Actual Url Contains expected Url and does not match upper and lower case letter acutal url was **** "+actualUrl+" ****");
+		}
 		else if(lengthDiffrent>0 && lengthDiffrent<5)
+		{
+			if(urlAddress.toLowerCase().contains(actualUrl.toLowerCase()))
 			{
-				if(urlAddress.toLowerCase().contains(actualUrl.toLowerCase()))
-				{
-					System.out.println("Expected Url ****** " +urlAddress+ " ******* Found And Validation of Url Successfully Passed but Actual Url Contains expected Url and might be does not match upper and lower case letter acutal url was **** "+actualUrl+" ****");
-					Assert.assertTrue(true, "Expected Url ****** " +urlAddress+ " ******* Found And Validation of Url Successfully Passed but Actual Url Contains expected Url and might be does not match upper and lower case letter acutal url was **** "+actualUrl+" ****");
-					log.warn("Expected Url ****** " +urlAddress+ " ******* Found And Validation of Url Successfully Passed but Actual Url Contains expected Url and might be does not match upper and lower case letter acutal url was **** "+actualUrl+" ****");
-				}
+				System.out.println("Expected Url ****** " +urlAddress+ " ******* Found And Validation of Url Successfully Passed but Actual Url Contains expected Url and might be does not match upper and lower case letter acutal url was **** "+actualUrl+" ****");
+				Assert.assertTrue(true, "Expected Url ****** " +urlAddress+ " ******* Found And Validation of Url Successfully Passed but Actual Url Contains expected Url and might be does not match upper and lower case letter acutal url was **** "+actualUrl+" ****");
+				log.warn("Expected Url ****** " +urlAddress+ " ******* Found And Validation of Url Successfully Passed but Actual Url Contains expected Url and might be does not match upper and lower case letter acutal url was **** "+actualUrl+" ****");
 			}
+		}
 		else 
-			{
-				takeScreenShot("ValidateUrl",".png");
-				Assert.assertFalse(false, "Expected Url ***** " + urlAddress+ " ***** Not Found And Validation of Url Are Failed " + "Actual Url Was **** " + actualUrl+" ****");
-				System.out.println("Expected Url ***** " + urlAddress+ " ***** Not Found And Validation of Url Are Failed " + "Actual Url Was **** " + actualUrl+" ****");
-				log.error("Expected Url ****** ==> " + urlAddress+ " <== ****** Not Found And Validation of Url Are Failed " + "Actual Url Was **** " + actualUrl+" ****");
-			}
+		{
+			takeScreenShot("ValidateUrl",".png");
+			Assert.assertFalse(false, "Expected Url ***** " + urlAddress+ " ***** Not Found And Validation of Url Are Failed " + "Actual Url Was **** " + actualUrl+" ****");
+			System.out.println("Expected Url ***** " + urlAddress+ " ***** Not Found And Validation of Url Are Failed " + "Actual Url Was **** " + actualUrl+" ****");
+			log.error("Expected Url ****** ==> " + urlAddress+ " <== ****** Not Found And Validation of Url Are Failed " + "Actual Url Was **** " + actualUrl+" ****");
+		}
 		Reporter.log("******************************************Validate Url Ended******************************************");
 		System.out.println("******************************************Validate Url Ended*************************************************");
 	}
 	/****************************************************************************************************************
-	*  Author: Md Rezaul Karim 
-    *  Function Name: validateText
-	*  Function Arg: ExpectedText And Actual Text
-	*  FunctionOutPut: It will Validate Expected Text And Actual Text
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name: validateText
+	 *  Function Arg: ExpectedText And Actual Text
+	 *  FunctionOutPut: It will Validate Expected Text And Actual Text
 	 * @throws IOException 
-	* 
-	* ***************************************************************************************************************/
+	 * 
+	 * ***************************************************************************************************************/
 	public static void verifyDownload(String expFileName) {
 		File objDir=new File(downloadPath+"//");
 		File[] objFiles=objDir.listFiles();
@@ -935,23 +1171,23 @@ public class BaseClass {
 		if(lastModifiedFile.getName().toString().startsWith(expFileName)) {
 			System.out.println("Download Sucessfull");
 		}
-		
+
 	}
-	
-	
-	
-	
+
+
+
+
 	/****************************************************************************************************************
-	*  Author: Md Rezaul Karim 
-    *  Function Name: validateText
-	*  Function Arg: ExpectedText And Actual Text
-	*  FunctionOutPut: It will Validate Expected Text And Actual Text
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name: validateText
+	 *  Function Arg: ExpectedText And Actual Text
+	 *  FunctionOutPut: It will Validate Expected Text And Actual Text
 	 * @throws IOException 
-	* 
-	* ***************************************************************************************************************/
-		
+	 * 
+	 * ***************************************************************************************************************/
+
 	public static void validateText(String expectedText,String actualText) throws IOException {
-		
+
 		Reporter.log("******************************************Validate Text Started******************************************");
 		System.out.println("******************************************Validate Text Started**********************************************");
 		String exText;	
@@ -962,215 +1198,215 @@ public class BaseClass {
 		expLength=expText.length;
 		actLength=actText.length;	
 		if(expLength>actLength)
-			{
-				expText=Arrays.copyOf(expText,(actLength));	
-			}
+		{
+			expText=Arrays.copyOf(expText,(actLength));	
+		}
 		if(expLength<actLength)
-			{
-				actText=Arrays.copyOf(actText,(expLength));	
-			}
+		{
+			actText=Arrays.copyOf(actText,(expLength));	
+		}
 		expLength=expText.length;
 		actLength=actText.length;	
 		int j=0;
 		for(int i=0;i<expLength;i++)
+		{
+			while(j<actLength)
 			{
-				while(j<actLength)
+				exText=expText[i].trim();
+				acText=actText[j].trim();
+				if (exText.equals(acText))
 				{
-					exText=expText[i].trim();
-					acText=actText[j].trim();
-					if (exText.equals(acText))
-						{
-							System.out.println("Expected Text Element  ****** " + exText + " ******* Found And Validation of Text Successfully Passed");
-							Assert.assertTrue(true,"Expected Text Element  ****** " + exText + " ******* Found And Validation of Text Successfully Passed");
-							log.info("Expected Text Element  ****** " + exText + " ******* Found And Validation of Text Successfully Passed");
-						}
-					else if (exText.equalsIgnoreCase(acText))
-						{
-							System.out.println("Expected Text Element ****** " +exText+ " ******* Found And Validation of Text Successfully Passed but there is lower and upper case character Does not match The Actual Text Was *** "+acText+" ***");
-							Assert.assertTrue(true,"Expected Text Element ****** " +exText+ " ******* Found And Validation of Text Successfully Passed but there is lower and upper case character Does not match The Actual Text Was *** "+acText+" ***");
-							log.warn("Expected Text Element ****** " +exText+ " ******* Found And Validation of Text Successfully Passed but there is lower and upper case character Does not match The Actual Text Was *** "+acText+" ***");
-						}
-					else if (exText.contains(acText))
-						{
-							System.out.println("Expected Text Element  ****** " +exText+ " ******* Found From Actual Text but Actual Text Contains expected Text And Validation of Text Successfully Passed The Actual Text Was *** "+acText+" ***");
-							Assert.assertTrue(true,"Expected Text Element  ****** " +exText+ " ******* Found From Actual Text but Actual Text Contains expected Text And Validation of Text Successfully Passed The Actual Text Was *** "+acText+" ***");
-							log.warn("Expected Text Element  ****** " +exText+ " ******* Found From Actual Text but Actual Text Contains expected Text And Validation of Text Successfully Passed The Actual Text Was *** "+acText+" ***");
-						} 
-					else if (exText.contains(acText.toLowerCase()))
-						{
-							System.out.println("Expected Text Element ****** " + exText+ " ******* Found From Actual Text but Actual Text Contains expected Text but there is lower and upper case character Does not match And Validation of Text SuccessfullyThe Actual Text Was *** "+acText+" ***");
-							Assert.assertTrue(true,"Expected Text Element ****** " + exText+ " ******* Found From Actual Text but Actual Text Contains expected Text but there is lower and upper case character Does not match And Validation of Text Successfully The Actual Text Was *** "+acText+" ***");
-							log.warn("Expected Text Element ****** " + exText+ " ******* Found From Actual Text but Actual Text Contains expected Text but there is lower and upper case character Does not match And Validation of Text SuccessfullyThe Actual Text Was *** "+acText+" ***");
-						}
-						else
-						{
-							takeScreenShot("ValidateText",".png");
-							Assert.assertFalse(false, "Expected Text Element  ***** " + exText+ " *****  Not Found And Validation of Text element  Are Failed " + "The Actual Text Was *** " + acText+" ***");
-							System.out.println("Expected Text Element  ***** " + exText+ " *****  Not Found And Validation of Text element  Are Failed " + "The Actual Text Was *** " + acText+" ***");
-							log.error("Expected Text Element  ***** " + exText+ " *****  Not Found And Validation of Text element  Are Failed " + "The Actual Text Was *** " + acText+" ***");
-						}
-					j++;
-					break;
+					System.out.println("Expected Text Element  ****** " + exText + " ******* Found And Validation of Text Successfully Passed");
+					Assert.assertTrue(true,"Expected Text Element  ****** " + exText + " ******* Found And Validation of Text Successfully Passed");
+					log.info("Expected Text Element  ****** " + exText + " ******* Found And Validation of Text Successfully Passed");
 				}
+				else if (exText.equalsIgnoreCase(acText))
+				{
+					System.out.println("Expected Text Element ****** " +exText+ " ******* Found And Validation of Text Successfully Passed but there is lower and upper case character Does not match The Actual Text Was *** "+acText+" ***");
+					Assert.assertTrue(true,"Expected Text Element ****** " +exText+ " ******* Found And Validation of Text Successfully Passed but there is lower and upper case character Does not match The Actual Text Was *** "+acText+" ***");
+					log.warn("Expected Text Element ****** " +exText+ " ******* Found And Validation of Text Successfully Passed but there is lower and upper case character Does not match The Actual Text Was *** "+acText+" ***");
+				}
+				else if (exText.contains(acText))
+				{
+					System.out.println("Expected Text Element  ****** " +exText+ " ******* Found From Actual Text but Actual Text Contains expected Text And Validation of Text Successfully Passed The Actual Text Was *** "+acText+" ***");
+					Assert.assertTrue(true,"Expected Text Element  ****** " +exText+ " ******* Found From Actual Text but Actual Text Contains expected Text And Validation of Text Successfully Passed The Actual Text Was *** "+acText+" ***");
+					log.warn("Expected Text Element  ****** " +exText+ " ******* Found From Actual Text but Actual Text Contains expected Text And Validation of Text Successfully Passed The Actual Text Was *** "+acText+" ***");
+				} 
+				else if (exText.contains(acText.toLowerCase()))
+				{
+					System.out.println("Expected Text Element ****** " + exText+ " ******* Found From Actual Text but Actual Text Contains expected Text but there is lower and upper case character Does not match And Validation of Text SuccessfullyThe Actual Text Was *** "+acText+" ***");
+					Assert.assertTrue(true,"Expected Text Element ****** " + exText+ " ******* Found From Actual Text but Actual Text Contains expected Text but there is lower and upper case character Does not match And Validation of Text Successfully The Actual Text Was *** "+acText+" ***");
+					log.warn("Expected Text Element ****** " + exText+ " ******* Found From Actual Text but Actual Text Contains expected Text but there is lower and upper case character Does not match And Validation of Text SuccessfullyThe Actual Text Was *** "+acText+" ***");
+				}
+				else
+				{
+					takeScreenShot("ValidateText",".png");
+					Assert.assertFalse(false, "Expected Text Element  ***** " + exText+ " *****  Not Found And Validation of Text element  Are Failed " + "The Actual Text Was *** " + acText+" ***");
+					System.out.println("Expected Text Element  ***** " + exText+ " *****  Not Found And Validation of Text element  Are Failed " + "The Actual Text Was *** " + acText+" ***");
+					log.error("Expected Text Element  ***** " + exText+ " *****  Not Found And Validation of Text element  Are Failed " + "The Actual Text Was *** " + acText+" ***");
+				}
+				j++;
+				break;
 			}
+		}
 		Reporter.log("******************************************Validate Text Ended******************************************");
 		System.out.println("******************************************Validate Text Ended************************************************");
 	}
-		
+
 	/***************************************************************************************************************
-	*  Author: Md Rezaul Karim 
-	*  Function Name: ValidateHeader
-	*  Function Arg: actualHeader(Get From Application header),expectedHeader
-	*  FunctionOutPut: It will Validate Expected Header and Actual Header
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name: ValidateHeader
+	 *  Function Arg: actualHeader(Get From Application header),expectedHeader
+	 *  FunctionOutPut: It will Validate Expected Header and Actual Header
 	 * @throws IOException 
-	* 
-	* ***************************************************************************************************************/
-		
+	 * 
+	 * ***************************************************************************************************************/
+
 	public static void validateTitle(String expectedTitle) throws IOException {
-		
+
 		Reporter.log("******************************************Validate Title Header Started******************************************");
 		System.out.println("******************************************Validate Title Header Started*************************************************");
 		String actualTitle = driver.getTitle();
 		if (actualTitle.contains(expectedTitle))
-			{
-				Assert.assertTrue(true,"The Expected Title Header Is *** ==> "+actualTitle+" <==*** Found Test Case Pass Succefully");
-				System.out.println("The Expected Title Header Is *** ==> "+actualTitle+" <==*** Found Test Case Pass Succefully");
-			}
+		{
+			Assert.assertTrue(true,"The Expected Title Header Is *** ==> "+actualTitle+" <==*** Found Test Case Pass Succefully");
+			System.out.println("The Expected Title Header Is *** ==> "+actualTitle+" <==*** Found Test Case Pass Succefully");
+		}
 		else
-			{
-				takeScreenShot("ValidateTitle",".png");
-				Assert.assertTrue(false,"The Expected *** ==> "+expectedTitle+" <==*** Not Found Test Case Failed. The Actual Title was ***==> "+actualTitle+"<==*** ");
-				System.out.println("The Expected *** ==> "+expectedTitle+" <==*** Not Found Test Case Failed. The Actual Title was ***==> "+actualTitle+"<==*** ");
-			}
+		{
+			takeScreenShot("ValidateTitle",".png");
+			Assert.assertTrue(false,"The Expected *** ==> "+expectedTitle+" <==*** Not Found Test Case Failed. The Actual Title was ***==> "+actualTitle+"<==*** ");
+			System.out.println("The Expected *** ==> "+expectedTitle+" <==*** Not Found Test Case Failed. The Actual Title was ***==> "+actualTitle+"<==*** ");
+		}
 		Reporter.log("******************************************Validate Title Header Ended******************************************");
 		System.out.println("******************************************Validate Title Header Ended*************************************************");
 	}
-	
+
 	/****************************************************************************************************************
-    *  Author: Md Rezaul Karim 
-	*  Function Name: ValidateClick
-	*  Function Arg: expectedClick ==>Its Element sent from method,TextElement==>Text Element Name That Clicked
-	*  FunctionOutPut: It will Validate Expected Element Clicked Or Not
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name: ValidateClick
+	 *  Function Arg: expectedClick ==>Its Element sent from method,TextElement==>Text Element Name That Clicked
+	 *  FunctionOutPut: It will Validate Expected Element Clicked Or Not
 	 * @throws IOException 
-	* 
-	* ***************************************************************************************************************/
-		
+	 * 
+	 * ***************************************************************************************************************/
+
 	public static void validateClick(WebElement expectedClick,String TextElement) throws IOException{
-		
+
 		Reporter.log("******************************************Validate Clicked Started******************************************");
 		System.out.println("******************************************Validate Clicked Started*******************************************");
 		if(! expectedClick.isDisplayed())
-			{
-				System.out.println("The Expected Element *** "+TextElement+" is Clicked Successfully");
-				Assert.assertTrue(true,"The Expected Element *** "+TextElement+" is Clicked Successfully");
-				log.info("The Expected Element *** "+TextElement+" is Clicked Successfully");
-			}
+		{
+			System.out.println("The Expected Element *** "+TextElement+" is Clicked Successfully");
+			Assert.assertTrue(true,"The Expected Element *** "+TextElement+" is Clicked Successfully");
+			log.info("The Expected Element *** "+TextElement+" is Clicked Successfully");
+		}
 		else
-			{
-				setBorder(expectedClick);	
-				takeScreenShot("ValidateClick",".png");	
-				System.out.println("The Expected Element *** "+TextElement+" does not Performed Clicked Successfully");
-				Assert.assertTrue(false,"The Expected Element *** "+TextElement+" does not Performed Clicked Successfully");
-				log.error("The Expected Element *** "+TextElement+" does not Performed Clicked Successfully");
-			}
+		{
+			setBorder(expectedClick);	
+			takeScreenShot("ValidateClick",".png");	
+			System.out.println("The Expected Element *** "+TextElement+" does not Performed Clicked Successfully");
+			Assert.assertTrue(false,"The Expected Element *** "+TextElement+" does not Performed Clicked Successfully");
+			log.error("The Expected Element *** "+TextElement+" does not Performed Clicked Successfully");
+		}
 		Reporter.log("******************************************Validate Clicked Ended******************************************");
 		System.out.println("******************************************Validate Clicked Ended*********************************************");
 	}
-		
+
 	/****************************************************************************************************************
-	*  Author: Md Rezaul Karim 
-	*  Function Name: validateInputValue
-	*  Function Arg: expectedEditElement Its Element sent from method,actualEditValue=>The Value That Will Set on Input Field
-	*  FunctionOutPut: It will Validate Expected Input Value Set On Input Filed or Not
-	* 
-	* ***************************************************************************************************************/
-	
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name: validateInputValue
+	 *  Function Arg: expectedEditElement Its Element sent from method,actualEditValue=>The Value That Will Set on Input Field
+	 *  FunctionOutPut: It will Validate Expected Input Value Set On Input Filed or Not
+	 * 
+	 * ***************************************************************************************************************/
+
 	public static void validateInputValue(WebElement expectedEditElement,String actualEditValue) {
-		
+
 		Reporter.log("******************************************Validate Input Value Started******************************************");
 		System.out.println("******************************************Validate Input Value Started***************************************");
 		String EditValue=expectedEditElement.getAttribute("value");
 		if((EditValue.trim()).equals(actualEditValue))
-			{
-				System.out.println("The Expected Input Value *** "+actualEditValue+" *** is Successfully Set on Input Box");
-				Assert.assertTrue(true,"The Expected Input Value *** "+actualEditValue+" *** is Successfully Set on Input Box");
-				log.info("The Expected Input Value *** "+actualEditValue+" *** is Successfully Set on Input Box");
-			}
+		{
+			System.out.println("The Expected Input Value *** "+actualEditValue+" *** is Successfully Set on Input Box");
+			Assert.assertTrue(true,"The Expected Input Value *** "+actualEditValue+" *** is Successfully Set on Input Box");
+			log.info("The Expected Input Value *** "+actualEditValue+" *** is Successfully Set on Input Box");
+		}
 		else
-			{
-				System.out.println("The Expected Input Value *** "+actualEditValue+" *** Does not Set on Input Box Actual Input Value Was  *** "+EditValue+" ***");
-				Assert.assertTrue(false,"The Expected Input Value *** "+actualEditValue+" *** Does not Set on Input Box Actual Input Value Was  *** "+EditValue+" ***");
-				log.error("The Expected Input Value *** "+actualEditValue+" *** Does not Set on Input Box Actual Input Value Was  *** "+EditValue+" ***");
-			}
+		{
+			System.out.println("The Expected Input Value *** "+actualEditValue+" *** Does not Set on Input Box Actual Input Value Was  *** "+EditValue+" ***");
+			Assert.assertTrue(false,"The Expected Input Value *** "+actualEditValue+" *** Does not Set on Input Box Actual Input Value Was  *** "+EditValue+" ***");
+			log.error("The Expected Input Value *** "+actualEditValue+" *** Does not Set on Input Box Actual Input Value Was  *** "+EditValue+" ***");
+		}
 		Reporter.log("******************************************Validate Input Value Ended******************************************");
 		System.out.println("******************************************Validate Input Value Ended*****************************************");
 	}
-	
+
 	/****************************************************************************************************************
-	*  Author: Md Rezaul Karim 
-	*  Function Name: validateDropValue
-	*  Function Arg: expectedDropElement ==> Its Element sent from method, ActualSelectedValue==>The Value That Will Set on Input Field
-	*  FunctionOutPut: It will Validate Expected Input Value Set On Input Filed or Not
-	*
-	**************************************************************************************************************/
-	
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name: validateDropValue
+	 *  Function Arg: expectedDropElement ==> Its Element sent from method, ActualSelectedValue==>The Value That Will Set on Input Field
+	 *  FunctionOutPut: It will Validate Expected Input Value Set On Input Filed or Not
+	 *
+	 **************************************************************************************************************/
+
 	public static void validateDropValue(WebElement expectedDropElement,String ActualSelectedValue) throws InterruptedException {
-		
+
 		Reporter.log("****************************************** Validate Drop Value Started ******************************************");
 		System.out.println("******************************************Validate Drop Value Started ***************************************");
-		
+
 		String SelectedValue=expectedDropElement.getAttribute("value");
 		if((SelectedValue.trim()).equals(ActualSelectedValue.trim()))
-			{
-				System.out.println("The Expected Selected Input Value *** "+SelectedValue+" *** is Successfully Set on Drop Down List");
-				Assert.assertTrue(true,"The Expected Selected Input Value *** "+SelectedValue+" *** is Successfully Set on Drop Down List");
-				log.info("The Expected Selected Input Value *** "+SelectedValue+" *** is Successfully Set on Drop Down List");
-			}
+		{
+			System.out.println("The Expected Selected Input Value *** "+SelectedValue+" *** is Successfully Set on Drop Down List");
+			Assert.assertTrue(true,"The Expected Selected Input Value *** "+SelectedValue+" *** is Successfully Set on Drop Down List");
+			log.info("The Expected Selected Input Value *** "+SelectedValue+" *** is Successfully Set on Drop Down List");
+		}
 		else
-			{
-				System.out.println("The Expected Selected Input Value *** "+ActualSelectedValue+" *** Does not Set on Drop Down List The Actual Selected Input Value Was  *** "+SelectedValue+" ***");
-				Assert.assertTrue(false,"The Expected Selected Input Value *** "+ActualSelectedValue+" *** Does not Set on Drop Down List The Actual Selected Input Value Was  *** "+SelectedValue+" ***");
-				log.error("The Expected Selected Input Value *** "+ActualSelectedValue+" *** Does not Set on Drop Down List The Actual Selected Input Value Was  *** "+SelectedValue+" ***");
-			}
+		{
+			System.out.println("The Expected Selected Input Value *** "+ActualSelectedValue+" *** Does not Set on Drop Down List The Actual Selected Input Value Was  *** "+SelectedValue+" ***");
+			Assert.assertTrue(false,"The Expected Selected Input Value *** "+ActualSelectedValue+" *** Does not Set on Drop Down List The Actual Selected Input Value Was  *** "+SelectedValue+" ***");
+			log.error("The Expected Selected Input Value *** "+ActualSelectedValue+" *** Does not Set on Drop Down List The Actual Selected Input Value Was  *** "+SelectedValue+" ***");
+		}
 		Reporter.log("******************************************Validate Drop Value Ended******************************************");
 		System.out.println("******************************************Validate Drop Value Ended******************************************");
 	}
-	
+
 	/****************************************************************************************************************
-	*  Author: Md Rezaul Karim 
-	*  Function Name: ValidateStringShort
-	*  Function Arg: expectedEditElement Its Element sent from method,ActualEditValue=>The Value That Will Set on Input Field
-	*  FunctionOutPut: It will Validate Expected Input Value Set On Input Filed or Not
-	* ***************************************************************************************************************/
-	
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name: ValidateStringShort
+	 *  Function Arg: expectedEditElement Its Element sent from method,ActualEditValue=>The Value That Will Set on Input Field
+	 *  FunctionOutPut: It will Validate Expected Input Value Set On Input Filed or Not
+	 * ***************************************************************************************************************/
+
 	public static void validateStringShort(String ExpectedValue[], String Locator) {
-		
+
 		Reporter.log("******************************************Validate String Short Started******************************************");
 		System.out.println("******************************************Validate String Short Started**************************************");
 		List<WebElement> objCol = driver.findElements(By.xpath(Locator));
 		ArrayList<String> originalList = new ArrayList<String>();
 		for (int i = 0; i < objCol.size(); i++)
-			{
-				originalList.add(objCol.get(i).getText());
-			}
+		{
+			originalList.add(objCol.get(i).getText());
+		}
 		ArrayList<String> copyList = new ArrayList<String>();
 		for (int i = 0; i < originalList.size(); i++)
-			{
-				copyList.add(originalList.get(i));
-			}
+		{
+			copyList.add(originalList.get(i));
+		}
 		Collections.sort(copyList);
 		Assert.assertTrue(originalList.equals(copyList), "Expected Value Are Shorted:");
 		Reporter.log("******************************************Validate String Short Ended******************************************");
 		System.out.println("******************************************Validate String Short Ended****************************************");
 	}
-	
+
 	/****************************************************************************************************************
-	*  Author: Md Rezaul Karim 
-	*  Function Name: ValidateBrookenLink
-	*  Function Arg: expectedEditElement Its Element sent from method,ActualEditValue=>The Value That Will Set on Input Field
-	*  FunctionOutPut: It will Validate Expected Input Value Set On Input Filed or Not
-	* 
-	* ***************************************************************************************************************/
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name: ValidateBrookenLink
+	 *  Function Arg: expectedEditElement Its Element sent from method,ActualEditValue=>The Value That Will Set on Input Field
+	 *  FunctionOutPut: It will Validate Expected Input Value Set On Input Filed or Not
+	 * 
+	 * ***************************************************************************************************************/
 
 	public static void validateBrookenLink(String Locator, int TotalLink) throws InterruptedException {
 
@@ -1209,9 +1445,9 @@ public class BaseClass {
 		String actualColor=expColorEl.getCssValue("color");
 		validateText(expColor,actualColor);
 	}
-	
+
 	////******************************   All Input And Random Data Function  ***********************************************************
-	
+
 	/****************************************************************************************************************
 	 *  Author: Md Rezaul Karim 
 	 *  Function Name: getInput
@@ -1220,7 +1456,7 @@ public class BaseClass {
 	 * 
 	 * ***************************************************************************************************************/
 	public static void  getInput() {
-		
+
 		Reporter.log("******************************************Get Input Stared******************************************");
 		System.out.println("******************************************Get Input Stared***************************************************");
 		Scanner objInputValue = new Scanner(System.in);
@@ -1229,16 +1465,16 @@ public class BaseClass {
 			System.out.println(" Please Enter Your Value:(For Exit Please Enter Exit:)=>");
 			inputValue = objInputValue.nextLine();
 			if(!inputValue.equalsIgnoreCase("exit"))
-				{
-					System.out.println("You Enter :" + inputValue );
-				}
+			{
+				System.out.println("You Enter :" + inputValue );
+			}
 		}
 		System.out.println("Exit from input taker ");
 		Reporter.log("******************************************Get Input Ended******************************************");
 		System.out.println("******************************************Get Input Ended****************************************************");
 		objInputValue.close();
 	}
-	
+
 	/****************************************************************************************************************
 	 *  Author: Md Rezaul Karim 
 	 *  Function Name:randomNumeric
@@ -1246,9 +1482,9 @@ public class BaseClass {
 	 *  FunctionOutPut: It will get input from function and return Random numeric Number String
 	 * 
 	 * ***************************************************************************************************************/
-	
+
 	public static String randomNumeric(int stringSize) {
-		
+
 		Reporter.log("******************************************Create Random Numeric Strated******************************************");
 		System.out.println("******************************************Create Random Numeric Strated**************************************");
 		String AlphaNumericString ="0123456789"; 
@@ -1265,7 +1501,7 @@ public class BaseClass {
 		System.out.println("******************************************Create Random Numeric Ended****************************************");
 		return randomNumeric;
 	}
-	
+
 	/****************************************************************************************************************
 	 *  Author: Md Rezaul Karim 
 	 *  Function Name:RandomDecimal 
@@ -1273,9 +1509,9 @@ public class BaseClass {
 	 *  FunctionOutPut: It will get input from function and return Random numeric Number String
 	 * 
 	 * ***************************************************************************************************************/
-	
+
 	public static String randomDecimal  (int stringSize) {
-		
+
 		Reporter.log("******************************************Create Random Decimal Number Started******************************************");
 		System.out.println("******************************************Create Random Decimal Number Started*******************************");
 		String AlphaNumericString ="0123456789"; 
@@ -1283,7 +1519,7 @@ public class BaseClass {
 		for(int i=0;i<stringSize;i++)
 		{
 			// generate a random number between 0 to AlphaNumericString variable length
-           	int index=(int) (AlphaNumericString.length()*Math.random());
+			int index=(int) (AlphaNumericString.length()*Math.random());
 			objString.append(AlphaNumericString.charAt(index));
 		}
 		String randomDecimal =objString.toString()+".49";
@@ -1292,7 +1528,7 @@ public class BaseClass {
 		System.out.println("******************************************Create Random Decimal Number Ended****************************************");
 		return randomDecimal ;
 	}
-	
+
 	/****************************************************************************************************************
 	 *  Author: Md Rezaul Karim 
 	 *  Function Name:RandomAlphaNumeric
@@ -1300,23 +1536,23 @@ public class BaseClass {
 	 *  FunctionOutPut: It will get input from function and return Random Alpha numeric String
 	 * 
 	 * ************************************************************************************************************** */
-	
+
 	public static String randomAlphaNumeric(int stringSize) {
-		
+
 		Reporter.log("******************************************Create Random Alpha Numeric Started******************************************");
 		System.out.println("******************************************Create Random Alpha Numeric Started********************************");
-		
+
 		String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "0123456789"+ "abcdefghijklmnopqrstuvxyz"; 
 		StringBuilder objString = new StringBuilder(stringSize);
 		for(int i=0;i<stringSize;i++)
 		{
 			// generate a random number between 0 to AlphaNumericString variable length
-            int index=(int) (AlphaNumericString.length()*Math.random());
+			int index=(int) (AlphaNumericString.length()*Math.random());
 			objString.append(AlphaNumericString.charAt(index));
 		}
 		String randomAlphaNumeric=objString.toString();
 		System.out.println(objString.toString());
-		
+
 		Reporter.log("******************************************Create Random Alpha Numeric Ended******************************************");
 		System.out.println("******************************************Create Random Alpha Numeric Ended**********************************");
 		return randomAlphaNumeric;
@@ -1329,23 +1565,23 @@ public class BaseClass {
 	 *  FunctionOutPut: It will get input from function and return Random Alpha  character upper and lower case String
 	 * 
 	 * ***************************************************************************************************************/
-	
+
 	public static String randomUpperLower(int stringSize) {
-		
+
 		Reporter.log("******************************************Create Random Upper Lower Case String Started******************************************");
 		System.out.println("******************************************Create Random Upper Lower Case String Started**********************");
-		
+
 		String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "abcdefghijklmnopqrstuvxyz"; 
 		StringBuilder objString = new StringBuilder(stringSize);
 		for(int i=0;i<stringSize;i++)
 		{
 			// generate a random number between 0 to AlphaNumericString variable length 
-            int index=(int) (AlphaNumericString.length()*Math.random());
+			int index=(int) (AlphaNumericString.length()*Math.random());
 			objString.append(AlphaNumericString.charAt(index));
 		}
 		String randomUpperLower=objString.toString();
 		System.out.println(objString.toString());
-		
+
 		Reporter.log("******************************************Create Random Upper Lower Case String Ended******************************************");
 		System.out.println("******************************************Create Random Upper Lower Case String Ended************************");
 		return randomUpperLower;
@@ -1358,29 +1594,29 @@ public class BaseClass {
 	 *  FunctionOutPut: It will get input from function and return Random Alpha numeric and special character String
 	 * 
 	 * ***************************************************************************************************************/
-	
+
 	public static String randomAlphaNumericSpeceal(int stringSize) {
-		
+
 		Reporter.log("******************************************Create Random Numeric Speceal String Started******************************************");
 		System.out.println("******************************************Create Random Numeric Speceal String Started***********************");
-		
+
 		String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "0123456789"+"!@#$%^&*()_+<>?"+ "abcdefghijklmnopqrstuvxyz"; 
 		StringBuilder objString = new StringBuilder(stringSize);
 		for(int i=0;i<stringSize;i++)
 		{
 			// generate a random number between 0 to AlphaNumericString variable length
-            int index=(int) (AlphaNumericString.length()*Math.random());
+			int index=(int) (AlphaNumericString.length()*Math.random());
 			objString.append(AlphaNumericString.charAt(index));
 		}
 		String randomAlphaNumericSpeceal=objString.toString();
 		System.out.println(objString.toString());
-		
+
 		Reporter.log("******************************************Create Random Numeric Speceal String Ended******************************************");
 		System.out.println("******************************************Create Random Numeric Speceal String Ended****************************************");
-		
+
 		return randomAlphaNumericSpeceal;
 	}
-	
+
 	public static void Prime(int ExpNum)
 	{
 		int Num;
@@ -1401,10 +1637,10 @@ public class BaseClass {
 			{
 				primeNumber.add(i);
 				PrimeNumber=PrimeNumber+i+" ";
-				
+
 				Tag=Tag+1;
 			}
-			
+
 		}
 		for(int i=0;i<primeNumber.size();i++)
 		{
@@ -1418,7 +1654,7 @@ public class BaseClass {
 	 *  FunctionOutPut: It will get if number is prime number or not 
 	 * 
 	 * ***************************************************************************************************************/
-	
+
 	public static boolean isPrime(int ExpNum){
 		if(ExpNum<=1) {
 			return false;
@@ -1430,7 +1666,7 @@ public class BaseClass {
 			}
 		}
 		return true;
-		}
+	}
 	/****************************************************************************************************************
 	 *  Author: Md Rezaul Karim 
 	 *  Function Name:primeNumber
@@ -1438,7 +1674,7 @@ public class BaseClass {
 	 *  FunctionOutPut: It will print prime number 
 	 * 
 	 * ***************************************************************************************************************/
-	
+
 	public static void primeNumber(int ExpNum) {
 		for(int i=2;i<=ExpNum;i++) {
 			if(isPrime(i)) {
@@ -1468,7 +1704,7 @@ public class BaseClass {
 			System.out.println("Given Number is not panidrome");
 		}
 	}
-	
+
 	/****************************************************************************************************************
 	 *  Author: Md Rezaul Karim 
 	 *  Function Name:palindrom
@@ -1539,83 +1775,83 @@ public class BaseClass {
 			}
 		}
 	}
-//======================================================		User Action Method		===================================================
-	
-	
-	
-	
+	//======================================================		User Action Method		===================================================
+
+
+
+
 	//*******************************************          Utility               *****************************************************//
 
-	
-	
+
+
 	/****************************************************************************************************************
-	*  Author: Md Rezaul Karim 
-	*  Function Name: setAlert
-	*  Function Arg:  
-	*  FunctionOutPut: It will handle Alert acuction
-	* 
-	* **************************************************************************************************************/
-	
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name: setAlert
+	 *  Function Arg:  
+	 *  FunctionOutPut: It will handle Alert acuction
+	 * 
+	 * **************************************************************************************************************/
+
 	public static  Alert setAlert(){
 		Alert alert = driver.switchTo().alert();
 		return alert;
 	}
-	
+
 	/****************************************************************************************************************
-	*  Author: Md Rezaul Karim 
-	*  Function Name: setAlert
-	*  Function Arg:  
-	*  FunctionOutPut: It will handle Alert acuction
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name: setAlert
+	 *  Function Arg:  
+	 *  FunctionOutPut: It will handle Alert acuction
 	 * @return 
-	* 
-	* **************************************************************************************************************/
-	
+	 * 
+	 * **************************************************************************************************************/
+
 	public static   boolean isAlertPresent(){
 		try {
-				driver.switchTo().alert();
-				return true;
-			}
-			catch(Exception e)
-			{
-				return false;
-			}
+			driver.switchTo().alert();
+			return true;
+		}
+		catch(Exception e)
+		{
+			return false;
+		}
 	}
-	
+
 	/****************************************************************************************************************
-	*  Author: Md Rezaul Karim 
-	*  Function Name: frame
-	*  Function Arg:  ExFrame it can be index or webelement or value 
-	*  FunctionOutPut: It will handle frame auction
-	* 
-	* 
-	**************************************************************************************************************/
-	
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name: frame
+	 *  Function Arg:  ExFrame it can be index or webelement or value 
+	 *  FunctionOutPut: It will handle frame auction
+	 * 
+	 * 
+	 **************************************************************************************************************/
+
 	public static   WebDriver setFrame(WebElement ExFrame){
-		 WebDriver frame = driver.switchTo().frame(ExFrame);
+		WebDriver frame = driver.switchTo().frame(ExFrame);
 		return frame;
 	}
-	
+
 	/****************************************************************************************************************
-	*  Author: Md Rezaul Karim 
-	*  Function Name: frame
-	*  Function Arg:  ExFrame it can be index or webelement or value 
-	*  FunctionOutPut: It will handle frame auction
-	* 
-	* 
-	**************************************************************************************************************/
-	
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name: frame
+	 *  Function Arg:  ExFrame it can be index or webelement or value 
+	 *  FunctionOutPut: It will handle frame auction
+	 * 
+	 * 
+	 **************************************************************************************************************/
+
 	public static    Actions setAction(){
 		Actions  action = new Actions(driver);
 		return action;
 	}
-	
+
 	/****************************************************************************************************************
-	*  Author: Md Rezaul Karim 
-	*  Function Name: uniqueName
-	*  Function Arg:  expFileStart it can be start With File Name  
-	*  FunctionOutPut: It will Create A Unique File Name 
-	**************************************************************************************************************/
-	
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name: uniqueName
+	 *  Function Arg:  expFileStart it can be start With File Name  
+	 *  FunctionOutPut: It will Create A Unique File Name 
+	 **************************************************************************************************************/
+
 	public static String uniqueName(String expFileStart) {
 		if(expFileStart==null || expFileStart.length()<1) {
 			expFileStart="Test";
@@ -1626,13 +1862,13 @@ public class BaseClass {
 	}
 
 	/****************************************************************************************************************
-	*  Author: Md Rezaul Karim 
-	*  Function Name: createFolder
-	*  Function Arg: String expFolderName
-	*  FunctionOutPut: It will take Create a folder with current date
-	* 
-	***************************************************************************************************************/
-	
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name: createFolder
+	 *  Function Arg: String expFolderName
+	 *  FunctionOutPut: It will take Create a folder with current date
+	 * 
+	 ***************************************************************************************************************/
+
 	public static String createFolder(String expFolderNameAndPath) {
 
 		Reporter.log("********************************Folder Create Strated******************************************");
@@ -1653,17 +1889,17 @@ public class BaseClass {
 		Reporter.log("***************************Folder Create Ended******************************************");
 		return folderNamePath;
 	}
-	
+
 	/****************************************************************************************************************
-	*  Author: Md Rezaul Karim 
-	*  Function Name: createFolder
-	*  Function Arg: String expFolderName
-	*  FunctionOutPut: It will take Create a folder with current date
-	* 
-	***************************************************************************************************************/
-	
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name: createFolder
+	 *  Function Arg: String expFolderName
+	 *  FunctionOutPut: It will take Create a folder with current date
+	 * 
+	 ***************************************************************************************************************/
+
 	public static String createFolderFile(String expFolderNameAndPath,String expFile,String expFileExtention) throws IOException{
-	 	
+
 		Reporter.log("*****************Folder and File Create Strated******************************************");
 		String folderPath = createFolder(expFolderNameAndPath);
 		if (expFile.isEmpty()|| expFile.length()<1) {
@@ -1672,26 +1908,26 @@ public class BaseClass {
 		if (expFileExtention.isEmpty()|| expFileExtention.length()<1) {
 			expFileExtention=".docx";
 		} 
-		
+
 		String filePath =folderPath+ "\\" + expFile + "_" + expFileExtention;
-		
+
 		File file = new File(filePath);
 		if (file.createNewFile()) {
 			Reporter.log("******************************** File Created ******************************************");
 		} else {
 			Reporter.log("******************************** File Exist ******************************************");
-			}
+		}
 		return filePath;
 	}
-		
+
 	/****************************************************************************************************************
-	*  Author: Md Rezaul Karim 
-	*  Function Name: takeScreenShot
-	*  Function Arg: methodName
-	*  FunctionOutPut: It will take a screen shot from screen
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name: takeScreenShot
+	 *  Function Arg: methodName
+	 *  FunctionOutPut: It will take a screen shot from screen
 	 * @return 
-	* 
-	***************************************************************************************************************/
+	 * 
+	 ***************************************************************************************************************/
 	public static String takeScreenShot(String expScName,String expScShotType) throws IOException {
 		String filePath = null;
 		if(expScName==null||expScName.length()<1) {
@@ -1701,42 +1937,42 @@ public class BaseClass {
 			expScShotType=".png";
 		}
 		try {
-		String UName=uniqueName(expScName);	
-		filePath=System.getProperty("user.dir")+"\\ScreenShots\\"+UName+expScShotType;
-		System.out.println(filePath);
-		File srcFile=((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-		FileUtils.copyFile(srcFile,new File(filePath));
-	//	Screenshot objsc=new AShot().takeScreenshot(driver);
-	//	ImageIO.write(objsc.getImage(),"PNG",new File(filePath));
+			String UName=uniqueName(expScName);	
+			filePath=System.getProperty("user.dir")+"\\ScreenShots\\"+UName+expScShotType;
+			System.out.println(filePath);
+			File srcFile=((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
+			FileUtils.copyFile(srcFile,new File(filePath));
+			//	Screenshot objsc=new AShot().takeScreenshot(driver);
+			//	ImageIO.write(objsc.getImage(),"PNG",new File(filePath));
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 		return filePath;
 	}
-	
+
 	/****************************************************************************************************************
-	*  Author: Md Rezaul Karim 
-	*  Function Name: setBorder
-	*  Function Arg: expElement which element want make border 
-	*  FunctionOutPut: It will make border which element you want 
-	* 
-	***************************************************************************************************************/
-		
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name: setBorder
+	 *  Function Arg: expElement which element want make border 
+	 *  FunctionOutPut: It will make border which element you want 
+	 * 
+	 ***************************************************************************************************************/
+
 	public static void setBorder(WebElement expElement) throws IOException {
 		jse.executeScript("arguments[0].style.border='3px solid red'", expElement);
 	}
-	
-	
+
+
 	//*******************************************          Close                 *****************************************************//
-	
+
 	/****************************************************************************************************************
-	*  Author: Md Rezaul Karim 
-	*  Function Name: CloseBrowser
-	*  Function Arg: expCloseBrowser ==> Do You Want Close All Browser that open or just current browser if user does not provied any it will close all browser
-	*  FunctionOutPut: It will close all browser or current browser
-	* 
-	* ***************************************************************************************************************/
-	
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name: CloseBrowser
+	 *  Function Arg: expCloseBrowser ==> Do You Want Close All Browser that open or just current browser if user does not provied any it will close all browser
+	 *  FunctionOutPut: It will close all browser or current browser
+	 * 
+	 * ***************************************************************************************************************/
+
 	public static void closeBrowser(String expCloseBrowser) {
 		try {
 			if ((expCloseBrowser.toLowerCase()).contains("current")) {
@@ -1746,35 +1982,40 @@ public class BaseClass {
 			}
 
 			driver = null;
-			TestListeners.test.log(Status.PASS, "\t Expected Browser Closed Successfully");
-			log.info("\t Expected Browser Closed Successfully");
 
+			log.info("\t Expected Browser Closed Successfully");
+			if(runTestNG.toLowerCase().contains("true")) {
+				TestListeners.test.log(Status.PASS, "\t Expected Browser Closed Successfully");
+			}
 		} catch (Exception e) {
-			TestListeners.test.log(Status.FAIL, "\t Expected Browser ' " + browserName + " ' Failed To Close");
+
 			log.error("\t Expected Browser ' " + browserName + " ' Failed To Close");
+			if(runTestNG.toLowerCase().contains("true")) {
+				TestListeners.test.log(Status.FAIL, "\t Expected Browser ' " + browserName + " ' Failed To Close");
+			}
 		}
 	}
-	
+
 	public static void tearDown1() {
-		
+
 		Reporter.log("****************************************** Expected Browser Close Started ******************************************");
 		System.out.println("****************************************** Expected Browser Close Started ***********************************");
-		
-			driver.quit();
+
+		driver.quit();
 		driver=null;
 		Reporter.log("******************************************Expected Browser Closed ******************************************");
 		System.out.println("****************************************** Expected Browser Closed ******************************************");
 	}
 	/****************************************************************************************************************
-	*  Author: Md Rezaul Karim 
-	*  Function Name: closeExpectedWindow
-	*  Function Arg: expWindowTabClose  ==> it will take number of child window tab that user want close
-	*  FunctionOutPut: close child window
-	* 
-	* **************************************************************************************************************/
-	
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name: closeExpectedWindow
+	 *  Function Arg: expWindowTabClose  ==> it will take number of child window tab that user want close
+	 *  FunctionOutPut: close child window
+	 * 
+	 * **************************************************************************************************************/
+
 	public static void closeExpectedWindow(String expWindowTabClose){
-		
+
 		String[] ExTab=expWindowTabClose.split(",");
 		int totalTab=ExTab.length;
 		String PareantWindow=driver.getWindowHandle();
@@ -1783,38 +2024,52 @@ public class BaseClass {
 		ArrayList<String> objTab=new ArrayList<String>(objWhandles);
 		int TotalWindow=objWhandles.size();
 		for(int i=0;i<totalTab;i++)
-			{
-				driver.switchTo().window(objTab.get(Integer.parseInt(ExTab[i]))).close();
-				System.out.println("No. of tabs: " +TotalWindow);	
-			}
+		{
+			driver.switchTo().window(objTab.get(Integer.parseInt(ExTab[i]))).close();
+			System.out.println("No. of tabs: " +TotalWindow);	
+		}
 		driver.switchTo().window(PareantWindow);
 	}
-	
+
 	/****************************************************************************************************************
-	*  Author: Md Rezaul Karim 
-	*  Function Name: CloseAllChildWindow
-	*  Function Arg: it will close all  child window tab that user open
-	*  FunctionOutPut: close all child window
-	* 
-	* ***************************************************************************************************************/
-		
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name: CloseAllChildWindow
+	 *  Function Arg: it will close all  child window tab that user open
+	 *  FunctionOutPut: close all child window
+	 * 
+	 * ***************************************************************************************************************/
+
 	public static void CloseAllChildWindow(){
-		
+
 		String PareantWindow=driver.getWindowHandle();
 		System.out.println("No. of tabs: " + PareantWindow);
 		Set<String> objWhandles = driver.getWindowHandles();
 		int TotalWindow=objWhandles.size();
 		for(String child:objWhandles)
+		{
+			if(!PareantWindow.equalsIgnoreCase(child))
 			{
-				if(!PareantWindow.equalsIgnoreCase(child))
-				{
-					driver.switchTo().window(child).close();
-					System.out.println("No. of tabs: " +TotalWindow);
-				}
+				driver.switchTo().window(child).close();
+				System.out.println("No. of tabs: " +TotalWindow);
 			}
+		}
 		driver.switchTo().window(PareantWindow);
 	}
-	
+
+	/****************************************************************************************************************
+	 *  Author: Md Rezaul Karim 
+	 *  Function Name: closeExpAppByExe
+	 *  Function Arg: expExeFile ==> Expected Exe File Name
+	 *  FunctionOutPut: It will close all Open .exe or open File
+	 * 
+	 * ***************************************************************************************************************/
+
+	public static void closeExpAppByExe(String expExeFile) throws IOException {
+		Runtime.getRuntime().exec("taskkill /F /IM "+expExeFile+" /T");
+	}
+
+
+
 	public static void factorial(int n)
 	{
 		for(int i=n;i>0;i--)
@@ -1827,11 +2082,11 @@ public class BaseClass {
 			{
 				System.out.print(i+"*");
 			}
-			
+
 		}
-		
+
 	}
-	
+
 	public static boolean findlipYear(int expYear) {
 		boolean res = true;
 		if(expYear%4==0) {
@@ -1840,15 +2095,19 @@ public class BaseClass {
 					res=true;
 				}
 				else {
-					 res=false;
+					res=false;
 				}
 			}
 			else {
 				res=true;
 			}
-		
+
 		}
 		return res;
 	}
-	
+
+	public void autoIT() throws IOException {
+		Runtime.getRuntime().exec("D:/Selenium/FileUpload.exe");
+	}
+
 }
